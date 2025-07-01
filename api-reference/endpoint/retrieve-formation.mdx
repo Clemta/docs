@@ -1,0 +1,116 @@
+---
+title: "Retrieve Formation"
+description: "Retrieve the current status of a company formation process."
+openapi: "GET /formations/{id}"
+---
+
+# Get Company Formation Status
+
+This endpoint allows partners to retrieve the current status of a company formation process. It supports conditional requests using the If-Modified-Since header for efficient polling.
+
+## Headers
+
+| Parameter         | Type   | Description                                                                   |
+| ----------------- | ------ | ----------------------------------------------------------------------------- |
+| X-API-KEY         | string | Formation API Key (required)                                                  |
+| If-Modified-Since | string | RFC 7232 formatted date to check if the resource has been modified (optional) |
+
+## Path Parameters
+
+| Parameter  | Type   | Description           |
+| ---------- | ------ | --------------------- |
+| company_id | string | Company ID (required) |
+
+## Response
+
+```json
+{
+  "success": true,
+  "company_id": "60d21b4667d0d8992e610c85",
+  "company_name": "Acme Corporation LLC",
+  "status": "active",
+  "formation_date": "2023-06-15",
+  "ein": "12-3456789"
+}
+```
+
+### Response Parameters
+
+| Parameter      | Type    | Description                                                                                                                                                                            |
+| -------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| success        | boolean | Indicates if the operation was successful                                                                                                                                              |
+| company_id     | string  | Unique identifier for the company                                                                                                                                                      |
+| company_name   | string  | Name of the company                                                                                                                                                                    |
+| status         | string  | Current status of the company formation (possible values: "shareholder-verification", "in-progress", "active", "refunded", "name-change", "signature-requested", "submitted-to-state") |
+| formation_date | string  | Date when the company was formed (if completed)                                                                                                                                        |
+| ein            | string  | Employer Identification Number (if assigned)                                                                                                                                           |
+
+### Response Headers
+
+| Header        | Description                                                            |
+| ------------- | ---------------------------------------------------------------------- |
+| Last-Modified | RFC 7232 formatted date indicating when the resource was last modified |
+
+## Status Codes
+
+| Status Code | Description                                                |
+| ----------- | ---------------------------------------------------------- |
+| 200         | Success - Returns the company formation status             |
+| 304         | Not Modified - No changes since the If-Modified-Since date |
+| 400         | Bad Request - Invalid company ID format                    |
+| 401         | Unauthorized - Invalid API key                             |
+| 403         | Forbidden - Company doesn't belong to the partner          |
+| 404         | Not Found - Company not found                              |
+| 500         | Internal Server Error                                      |
+
+## Error Responses
+
+### Invalid Company ID (400)
+
+```json
+{
+  "success": false,
+  "message": "Invalid company ID format",
+  "code": "FORMATION_ERROR_INVALID_REQUEST"
+}
+```
+
+### Unauthorized - Invalid API Key (401)
+
+```json
+{
+  "success": false,
+  "message": "Invalid API key",
+  "code": "FORMATION_ERROR_UNAUTHORIZED"
+}
+```
+
+### Access Denied (403)
+
+```json
+{
+  "success": false,
+  "message": "Access denied",
+  "code": "FORMATION_ERROR_ACCESS_DENIED"
+}
+```
+
+### Company Not Found (404)
+
+```json
+{
+  "success": false,
+  "message": "Company not found",
+  "code": "FORMATION_ERROR_COMPANY_NOT_FOUND"
+}
+```
+
+### Internal Server Error (500)
+
+```json
+{
+  "success": false,
+  "message": "Internal server error",
+  "code": "FORMATION_ERROR_INTERNAL_ERROR"
+}
+```

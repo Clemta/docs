@@ -1,0 +1,163 @@
+---
+title: "Initiate Formation"
+description: "Start the company formation process with provided details."
+openapi: "POST /formations"
+---
+
+# Initiate Company Formation
+
+The Formation API allows partners to initiate company formations programmatically. This endpoint starts the company formation process with the provided details.
+
+## Headers
+
+| Parameter    | Type   | Description                  |
+| ------------ | ------ | ---------------------------- |
+| X-API-KEY    | string | Formation API Key (required) |
+| Content-Type | string | multipart/form-data          |
+
+## Request Body (multipart/form-data)
+
+The request must be sent as `multipart/form-data` with the following fields:
+
+### Required Fields
+
+| Field        | Type   | Description                                      |
+| ------------ | ------ | ------------------------------------------------ |
+| company_data | string | JSON string containing company formation details |
+
+### Optional Fields
+
+| Field                  | Type | Description                                                               |
+| ---------------------- | ---- | ------------------------------------------------------------------------- |
+| shareholder_passport_0 | file | Passport file for individual shareholder at index 0 (PDF, JPG, JPEG, PNG) |
+| shareholder_passport_1 | file | Passport file for individual shareholder at index 1 (PDF, JPG, JPEG, PNG) |
+| shareholder_passport_N | file | Additional passport files as needed                                       |
+
+### company_data JSON Structure
+
+The `company_data` field must contain a JSON string with the following structure:
+
+```json
+{
+  "name": "Example Corp",
+  "type": "LLC",
+  "state": "DE",
+  "ending": "LLC",
+  "industry": "Technology",
+  "address": {
+    "address1": "123 Main St",
+    "city": "Wilmington",
+    "state": "DE",
+    "zip": "19801",
+    "country": "US"
+  },
+  "shareholders": [
+    {
+      "type": "individual",
+      "first_name": "John",
+      "last_name": "Doe",
+      "number_of_shares": 100,
+      "email": "john@example.com",
+      "phone": "+1234567890",
+      "iso_code": "US",
+      "title": "CEO",
+      "address": {
+        "address1": "123 Main St",
+        "city": "Wilmington",
+        "state": "DE",
+        "zip": "19801",
+        "country": "US"
+      },
+      "is_main_incorporator": true,
+      "ssn": "123456789"
+    }
+  ],
+  "timezone": "America/New_York",
+  "account_holder": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john@example.com",
+    "phone": "+1234567890"
+  },
+  "package": "essential",
+  "external_id": "your-unique-id-123",
+  "custom_data": {
+    "your_field": "your_value"
+  }
+}
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "message": "Formation created successfully",
+  "company_id": "64b8f1a2e4b0c8d9f0123456",
+  "status": "shareholder_verification",
+  "external_id": "your-unique-id-123"
+}
+```
+
+### Response Parameters
+
+| Parameter   | Type    | Description                                |
+| ----------- | ------- | ------------------------------------------ |
+| success     | boolean | Indicates if the operation was successful  |
+| message     | string  | Additional information about the operation |
+| company_id  | string  | Unique identifier for the created company  |
+| status      | string  | Current status of the company formation    |
+| external_id | string  | Your provided external ID (if any)         |
+
+## Error Responses
+
+### Invalid Request or Validation Failed (400)
+
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "code": "VALIDATION_FAILED",
+  "details": "Field 'name' is required"
+}
+```
+
+### Unauthorized - Invalid API Key (401)
+
+```json
+{
+  "success": false,
+  "message": "Invalid API key",
+  "code": "INVALID_API_KEY"
+}
+```
+
+### Conflict - External ID Already Exists (409)
+
+```json
+{
+  "success": false,
+  "message": "External ID already exists",
+  "code": "DUPLICATE_EXTERNAL_ID"
+}
+```
+
+### Rate Limit Exceeded (429)
+
+```json
+{
+  "success": false,
+  "message": "Rate limit exceeded",
+  "code": "RATE_LIMIT_EXCEEDED"
+}
+```
+
+### Internal Server Error (500)
+
+```json
+{
+  "success": false,
+  "message": "Internal server error",
+  "code": "INTERNAL_ERROR"
+}
+```

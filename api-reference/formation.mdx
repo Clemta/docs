@@ -1,0 +1,62 @@
+---
+title: 'Formation API'
+description: 'API for managing company formations and retrieving formation status'
+---
+
+# Formation API
+
+The Formation API allows partners to programmatically initiate company formations and check their status. This API is designed for partners who want to integrate Clemta's company formation services into their own platforms.
+
+## Authentication
+
+All Formation API endpoints require authentication using an API key. The API key should be included in the `X-API-KEY` header of each request.
+
+```
+X-API-KEY: your_api_key
+```
+
+To obtain an API key, please contact our support team.
+
+## Base URL
+
+All API endpoints are relative to the base URL:
+
+```
+https://api.clemta.com/v1
+```
+
+## Rate Limiting
+
+The Formation API is subject to rate limiting to ensure fair usage and system stability. Please refer to our [Rate Limiting](/api-reference/rate-limiting) documentation for more details.
+
+## Available Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | [/formation/initiate](/api-reference/endpoint/formation/initiate) | Start the company formation process |
+| GET | [/formation/status/{company_id}](/api-reference/endpoint/formation/status) | Retrieve the current status of a company formation |
+
+## Company Formation Status
+
+The company formation process goes through several stages, represented by the following status values:
+
+| Status | Description |
+|--------|-------------|
+| shareholder-verification | Waiting for shareholder verification |
+| in-progress | The company formation is in progress |
+| active | The company formation has been completed successfully and the company is active |
+| refunded | The company formation was refunded |
+| name-change | The company name is being changed |
+| signature-requested | Signatures have been requested for company documents |
+| submitted-to-state | The company formation documents have been submitted to the state |
+
+## Error Codes
+
+| Code | Description |
+|------|-------------|
+| FORMATION_ERROR_INVALID_REQUEST | The request is invalid or missing required fields |
+| FORMATION_ERROR_UNAUTHORIZED | The API key is invalid or missing |
+| FORMATION_ERROR_ACCESS_DENIED | The API key does not have permission to access the requested resource |
+| FORMATION_ERROR_COMPANY_NOT_FOUND | The requested company could not be found |
+| FORMATION_ERROR_PACKAGE_NOT_FOUND | The requested package could not be found |
+| FORMATION_ERROR_INTERNAL_ERROR | An internal server error occurred | 

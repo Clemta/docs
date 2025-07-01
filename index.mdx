@@ -1,0 +1,67 @@
+---
+title: "Introduction"
+description: "Clemta API Reference Documentation"
+---
+
+# API Reference
+
+Welcome to the official Clemta API reference documentation. Our APIs allow you to programmatically interact with Clemta's services, enabling you to integrate company formation, accounting, and other business services into your own applications.
+
+<img src="/images/logo.png" alt="Hero" />
+
+## Available APIs
+
+<CardGroup cols={2}>
+  <Card title="Formation API" icon="building" href="/api-reference/formation">
+    Programmatically initiate company formations and check their status
+  </Card>
+  <Card title="Accounting API (WIP)" icon="calculator" href="/">
+    Manage invoices, expenses, and other accounting functions
+  </Card>
+</CardGroup>
+
+## Authentication
+
+Most API endpoints are authenticated using API keys or Bearer tokens, depending on the specific API.
+
+### Formation API
+
+Formation API endpoints use API key authentication. Include your API key in the `X-API-KEY` header:
+
+```
+X-API-KEY: your_api_key
+```
+
+## Base URL
+
+Clemta provides two environments for API usage:
+
+- **Production**: For live, real company formations and data
+- **Sandbox**: For testing and development (no real companies are created)
+
+**Production Base URL:**
+
+```
+https://api.clemta.com/v1
+```
+
+**Sandbox Base URL:**
+
+```
+https://sandbox.clemta.com/v1
+```
+
+## Response Format
+
+All API responses are returned in JSON format. Successful responses typically include a `success` field set to `true` and the requested data. Error responses include a `success` field set to `false`, an error message, and often an error code.
+
+## Rate Limiting
+
+Our APIs implement rate limiting to ensure fair usage and system stability. For details, see:
+
+- [Formation API Rate Limiting](/api-reference/formation-rate-limiting)
+- [General API Rate Limiting](/api-reference/rate-limiting)
+
+## Need Help?
+
+If you need assistance with our APIs, please email us at tech@clemta.com.

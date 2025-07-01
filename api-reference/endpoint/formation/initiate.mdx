@@ -1,0 +1,126 @@
+---
+title: 'Initiate Company Formation'
+description: 'Start the company formation process with provided details'
+---
+
+# Initiate Company Formation
+
+The Formation API allows partners to initiate company formations programmatically. This endpoint starts the company formation process with the provided details.
+
+## API Endpoint
+
+```
+POST /v1/formation/initiate
+```
+
+## Headers
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| X-API-KEY | string | Formation API Key (required) |
+| Content-Type | string | application/json |
+
+## Request Body
+
+```json
+{
+  "name": "Acme Corporation",
+  "type": "LLC",
+  "state": "DE",
+  "ending": "LLC",
+  "industry": "Technology",
+  "address": {
+    "address_line_1": "123 Main St",
+    "address_line_2": "Suite 456",
+    "address_state": "CA",
+    "address_city": "San Francisco",
+    "address_zip": "94107",
+    "address_country": "US"
+  },
+  "founder": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john.doe@example.com",
+    "phone": "+12025550179",
+    "iso_code": "US",
+    "ssn": "123-45-6789",
+    "address": {
+      "address_line_1": "123 Main St",
+      "address_line_2": "Apt 789",
+      "address_state": "CA",
+      "address_city": "San Francisco",
+      "address_zip": "94107",
+      "address_country": "US"
+    }
+  },
+  "package": "essential",
+  "ein": "12-3456789"
+}
+```
+
+### Request Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| name | string | Company name (required) |
+| type | string | Company type (LLC, C-CORP) (required) |
+| state | string | US state where the company will be registered (required) |
+| ending | string | Company name suffix (LLC, Inc., etc.) (required) |
+| industry | string | Company's primary industry (required) |
+| address | object | Company's official address (required) |
+| founder | object | Information about the company founder (required) |
+| package | string | Service package to include (optional, values: "none", "essential") |
+| ein | string | Employer Identification Number (optional) |
+
+## Response
+
+```json
+{
+  "success": true,
+  "message": "Company formation initiated successfully",
+  "company_id": "60d21b4667d0d8992e610c85",
+  "status": "in-progress"
+}
+```
+
+### Response Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| success | boolean | Indicates if the operation was successful |
+| message | string | Additional information about the operation |
+| company_id | string | Unique identifier for the created company |
+| status | string | Current status of the company formation (possible values: "shareholder-verification", "in-progress", "active", "refunded", "name-change", "signature-requested", "submitted-to-state") |
+
+## Error Responses
+
+### Invalid Request or Validation Failed (400)
+
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "code": "FORMATION_ERROR_INVALID_REQUEST",
+  "details": "Field 'name' is required"
+}
+```
+
+### Unauthorized - Invalid API Key (401)
+
+```json
+{
+  "success": false,
+  "message": "Invalid API key",
+  "code": "FORMATION_ERROR_UNAUTHORIZED"
+}
+```
+
+### Internal Server Error (500)
+
+```json
+{
+  "success": false,
+  "message": "Failed to create company",
+  "code": "FORMATION_ERROR_INTERNAL_ERROR"
+}
+``` 

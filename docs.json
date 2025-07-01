@@ -1,0 +1,103 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "almond",
+  "name": "Clemta",
+  "colors": {
+    "primary": "#2563EB",
+    "light": "#2563EB",
+    "dark": "#2563EB"
+  },
+  "api": {
+    "openapi": "api-reference/openapi.json",
+    "playground": {"display": "interactive"}
+  },
+  "favicon": "favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "index",
+              "quickstart",
+              "development"
+            ]
+          },
+          {
+            "group": "Formation API",
+            "pages": [
+              "api-reference/formation",
+              "api-reference/formation-rate-limiting"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Formation API Endpoints",
+            "pages": [
+              "api-reference/endpoint/initiate-formation",
+              "api-reference/endpoint/retrieve-formation",
+              "api-reference/endpoint/cancel-formation"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "api-reference/endpoint/dummy-webhook"
+            ]
+          },
+          {
+            "group": "API Documentation",
+            "pages": [
+              "api-reference/formation",
+              "api-reference/formation-rate-limiting"
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Blog",
+          "href": "https://clemta.com/blog",
+          "icon": "newspaper"
+        },
+        {
+          "anchor": "About Us",
+          "href": "https://clemta.com/about-clemta",
+          "icon": "building-columns"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto:admin@clemta.com"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://app.clemta.com"
+    }
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/clemta_us",
+      "github": "https://github.com/clemta",
+      "linkedin": "https://linkedin.com/company/clemta-support"
+    }
+  }
+}

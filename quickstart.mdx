@@ -1,0 +1,46 @@
+---
+title: "Quickstart"
+description: "Get started with Clemta API in minutes"
+---
+
+# Clemta Quickstart
+
+Welcome to Clemta! This guide will help you get up and running with the Clemta API in just a few minutes.
+
+## 1. Get Your Clemta Credentials
+
+There is no public signup for Clemta. Your API credentials will be sent to you via email by our team.  
+**Check your inbox for an email from Clemta containing your API key and other credentials.**
+
+If you have not received your credentials, please contact us at [tech@clemta.com](mailto:tech@clemta.com).
+
+Your token should look like this:
+
+`clemta_gUrCvqYbJBNh4m3LbEZ_7n6yZxCdPP5ZRxHDmfmHH3Kr7kYLU4`
+
+## 2. Make Your First API Call
+
+Here's how to initiate a company formation using the Clemta API.
+
+### Example: Using cURL
+
+```bash
+curl -X POST https://api.clemta.com/company/initiate \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "company_name": "Acme Inc.",
+    "country": "US",
+    "email": "founder@acme.com"
+  }'
+```
+
+## 3. Next Steps
+
+- Explore the [API Reference](/api-reference) for all available endpoints.
+- Review [Rate Limiting](/api-reference/rate-limiting) to understand usage limits.
+- Check out our [Guides](/guides) for more advanced use cases.
+
+## Need Help?
+
+If you have any questions or need support, reach out to us at [support@clemta.com](mailto:support@clemta.com).

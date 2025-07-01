@@ -1,0 +1,1102 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Clemta Formation API",
+    "description": "API for company formation services. This API allows partners to create, retrieve, and manage company formations programmatically.",
+    "version": "2025-06-24",
+    "contact": {
+      "name": "Clemta API Support",
+      "email": "api-support@clemta.com"
+    },
+    "license": {
+      "name": "Proprietary",
+      "url": "https://clemta.com/terms"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.clemta.com",
+      "description": "Production server"
+    },
+    {
+      "url": "https://sandbox.clemta.com",
+      "description": "Sandbox server"
+    }
+  ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/formations": {
+      "post": {
+        "summary": "Create Company Formation",
+        "description": "Creates a new company formation with the provided details. Requires multipart/form-data with company_data JSON and optional shareholder passport files.",
+        "operationId": "createFormation",
+        "tags": ["Formation"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["company_data"],
+                "properties": {
+                  "company_data": {
+                    "type": "string",
+                    "description": "JSON string containing company formation details",
+                    "example": "{\"name\":\"Example Corp\",\"type\":\"LLC\",\"state\":\"DE\",\"ending\":\"LLC\",\"industry\":\"Technology\",\"address\":{\"address1\":\"123 Main St\",\"city\":\"Wilmington\",\"state\":\"DE\",\"zip\":\"19801\",\"country\":\"US\"},\"shareholders\":[{\"type\":\"individual\",\"first_name\":\"John\",\"last_name\":\"Doe\",\"number_of_shares\":100,\"email\":\"john@example.com\",\"phone\":\"+1234567890\",\"iso_code\":\"US\",\"title\":\"CEO\",\"address\":{\"address1\":\"123 Main St\",\"city\":\"Wilmington\",\"state\":\"DE\",\"zip\":\"19801\",\"country\":\"US\"},\"is_main_incorporator\":true,\"ssn\":\"123456789\"}],\"timezone\":\"America/New_York\",\"account_holder\":{\"first_name\":\"John\",\"last_name\":\"Doe\",\"email\":\"john@example.com\",\"phone\":\"+1234567890\"},\"package\":\"essential\"}"
+                  },
+                  "shareholder_passport_0": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Passport file for individual shareholder at index 0 (PDF, JPG, JPEG, PNG)"
+                  }
+                },
+                "additionalProperties": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "format": "binary",
+                      "description": "Additional shareholder passport files (shareholder_passport_1, shareholder_passport_2, etc.)"
+                    }
+                  ]
+                }
+              },
+              "encoding": {
+                "company_data": {
+                  "contentType": "application/json"
+                },
+                "shareholder_passport_0": {
+                  "contentType": "application/pdf, image/jpeg, image/png"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Formation created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - External ID already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds to wait before retrying",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Number of requests remaining in the current window",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Unix timestamp when the rate limit resets",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/formations/{id}": {
+      "get": {
+        "summary": "Get Formation Status",
+        "description": "Retrieves the current status and details of a company formation. The ID can be either the company ID or the external ID provided during creation.",
+        "operationId": "getFormation",
+        "tags": ["Formation"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Company ID (ObjectID) or External ID",
+            "schema": {
+              "type": "string",
+              "maxLength": 64,
+              "example": "64b8f1a2e4b0c8d9f0123456"
+            }
+          },
+          {
+            "name": "If-Modified-Since",
+            "in": "header",
+            "required": false,
+            "description": "HTTP conditional request header for caching",
+            "schema": {
+              "type": "string",
+              "format": "http-date",
+              "example": "Wed, 21 Oct 2015 07:28:00 GMT"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Formation details retrieved successfully",
+            "headers": {
+              "Last-Modified": {
+                "description": "Last modification time of the formation",
+                "schema": {
+                  "type": "string",
+                  "format": "http-date"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationStatusResponse"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not Modified - Formation has not been updated since the time specified in If-Modified-Since header"
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Access denied to this formation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Formation not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "headers": {
+              "Retry-After": {
+                "description": "Number of seconds to wait before retrying",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Number of requests remaining in the current window",
+                "schema": {
+                  "type": "integer"
+                }
+              },
+              "X-RateLimit-Reset": {
+                "description": "Unix timestamp when the rate limit resets",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Cancel Formation",
+        "description": "Cancels a company formation. The ID can be either the company ID or the external ID provided during creation.",
+        "operationId": "cancelFormation",
+        "tags": ["Formation"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Company ID (ObjectID) or External ID",
+            "schema": {
+              "type": "string",
+              "maxLength": 64,
+              "example": "64b8f1a2e4b0c8d9f0123456"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Formation cancelled successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Formation not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "Formation API key for authentication. Can also be provided as Bearer token in Authorization header."
+      }
+    },
+    "schemas": {
+      "FormationRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "type", 
+          "state",
+          "ending",
+          "industry",
+          "address",
+          "shareholders",
+          "timezone",
+          "account_holder"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Company name",
+            "example": "Example Corp"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["LLC", "C-CORP"],
+            "description": "Company type"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"],
+            "description": "State abbreviation"
+          },
+          "ending": {
+            "type": "string",
+            "enum": ["LLC", "Inc.", "Corporation", "Corp."],
+            "description": "Company ending"
+          },
+          "industry": {
+            "type": "string",
+            "description": "Industry type",
+            "example": "Technology"
+          },
+          "address": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "shareholders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FormationShareholderRequest"
+            },
+            "minItems": 1,
+            "description": "List of shareholders"
+          },
+          "timezone": {
+            "type": "string",
+            "description": "Company timezone",
+            "example": "America/New_York"
+          },
+          "account_holder": {
+            "$ref": "#/components/schemas/AccountHolder"
+          },
+          "package": {
+            "type": "string",
+            "enum": ["none", "essential"],
+            "description": "Package option",
+            "default": "none"
+          },
+          "external_id": {
+            "type": "string",
+            "description": "Partner's unique identifier for this company",
+            "maxLength": 64
+          },
+          "custom_data": {
+            "type": "object",
+            "description": "Partner's custom data for this company",
+            "additionalProperties": true
+          },
+          "number_of_shares": {
+            "type": "number",
+            "description": "Custom number of shares (if package allows)",
+            "minimum": 1
+          },
+          "par_value": {
+            "type": "number",
+            "description": "Custom par value (if package allows)",
+            "minimum": 0
+          },
+          "private": {
+            "type": "boolean",
+            "description": "Whether the company is private",
+            "default": false
+          },
+          "ein": {
+            "type": "string",
+            "description": "Optional EIN for C-CORP companies",
+            "pattern": "^\\d{2}-\\d{7}$"
+          },
+          "directors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FormationPersonRequest"
+            },
+            "description": "Non-shareholder directors (C-CORP only)"
+          },
+          "officers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FormationPersonRequest"
+            },
+            "description": "Non-shareholder officers (C-CORP only)"
+          }
+        }
+      },
+      "FormationShareholderRequest": {
+        "type": "object",
+        "required": [
+          "type",
+          "number_of_shares",
+          "email",
+          "phone",
+          "iso_code",
+          "title",
+          "address"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["individual", "organization"],
+            "description": "Shareholder type"
+          },
+          "number_of_shares": {
+            "type": "number",
+            "minimum": 1,
+            "description": "Number of shares"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number"
+          },
+          "iso_code": {
+            "type": "string",
+            "description": "Country ISO code"
+          },
+          "title": {
+            "type": "string",
+            "description": "Position/title"
+          },
+          "address": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "is_main_incorporator": {
+            "type": "boolean",
+            "description": "Whether this shareholder is the main incorporator",
+            "default": false
+          },
+          "is_director": {
+            "type": "boolean",
+            "description": "Whether this shareholder is also a director (C-CORP only)"
+          },
+          "is_officer": {
+            "type": "boolean",
+            "description": "Whether this shareholder is also an officer (C-CORP only)"
+          },
+          "first_name": {
+            "type": "string",
+            "description": "First name (required for individual shareholders)"
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Last name (required for individual shareholders)"
+          },
+          "ssn": {
+            "type": "string",
+            "description": "SSN (either SSN or ITIN required for individual shareholders)"
+          },
+          "itin": {
+            "type": "string",
+            "description": "ITIN (either SSN or ITIN required for individual shareholders)"
+          },
+          "legal_entity_name": {
+            "type": "string",
+            "description": "Legal entity name (required for organization shareholders)"
+          },
+          "representative_name": {
+            "type": "string",
+            "description": "Representative name (required for organization shareholders)"
+          },
+          "ein": {
+            "type": "string",
+            "description": "EIN (required for organization shareholders)"
+          }
+        }
+      },
+      "FormationPersonRequest": {
+        "type": "object",
+        "required": ["first_name", "last_name", "title"],
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "description": "First name"
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Last name"
+          },
+          "title": {
+            "type": "string",
+            "description": "Position/title"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address"
+          },
+          "ssn": {
+            "type": "string",
+            "description": "SSN"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number"
+          },
+          "iso_code": {
+            "type": "string",
+            "description": "Country ISO code"
+          },
+          "address": {
+            "$ref": "#/components/schemas/Address"
+          }
+        }
+      },
+      "AccountHolder": {
+        "type": "object",
+        "required": ["first_name", "last_name", "email", "phone"],
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "description": "First name"
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Last name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number"
+          }
+        }
+      },
+      "Address": {
+        "type": "object",
+        "required": ["address1", "city", "state", "zip", "country"],
+        "properties": {
+          "address1": {
+            "type": "string",
+            "description": "Address line 1"
+          },
+          "address2": {
+            "type": "string",
+            "description": "Address line 2"
+          },
+          "city": {
+            "type": "string",
+            "description": "City"
+          },
+          "state": {
+            "type": "string",
+            "description": "State"
+          },
+          "zip": {
+            "type": "string",
+            "description": "ZIP code"
+          },
+          "country": {
+            "type": "string",
+            "description": "Country code"
+          }
+        }
+      },
+      "FormationResponse": {
+        "type": "object",
+        "required": ["success", "message", "company_id", "status"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Success status",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message",
+            "example": "Company formation initiated successfully"
+          },
+          "company_id": {
+            "type": "string",
+            "description": "Created company ID",
+            "example": "64b8f1a2e4b0c8d9f0123456"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["shareholder_verification", "in_progress", "active", "refunded", "name_change", "signature_requested", "submitted_to_state", "cancelled"],
+            "description": "Formation status",
+            "example": "in_progress"
+          },
+          "external_id": {
+            "type": "string",
+            "description": "Partner's external ID for this formation",
+            "example": "partner-123"
+          }
+        }
+      },
+      "FormationStatusResponse": {
+        "type": "object",
+        "required": ["success", "company_id", "company_name", "status"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Success status",
+            "example": true
+          },
+          "company_id": {
+            "type": "string",
+            "description": "Company ID",
+            "example": "64b8f1a2e4b0c8d9f0123456"
+          },
+          "company_name": {
+            "type": "string",
+            "description": "Company name",
+            "example": "Example Corp"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["shareholder_verification", "in_progress", "active", "refunded", "name_change", "signature_requested", "submitted_to_state", "cancelled"],
+            "description": "Formation status",
+            "example": "in_progress"
+          },
+          "formation_date": {
+            "type": "string",
+            "description": "Company formation date",
+            "example": "2024-01-15"
+          },
+          "ein": {
+            "type": "string",
+            "description": "Employer Identification Number",
+            "example": "12-3456789"
+          },
+          "external_id": {
+            "type": "string",
+            "description": "Partner's external ID",
+            "example": "partner-123"
+          },
+          "custom_data": {
+            "type": "object",
+            "description": "Partner's custom data",
+            "additionalProperties": true
+          },
+          "type": {
+            "type": "string",
+            "description": "Company type",
+            "example": "LLC"
+          },
+          "state": {
+            "type": "string",
+            "description": "State abbreviation",
+            "example": "DE"
+          },
+          "country": {
+            "type": "string",
+            "description": "Country code",
+            "example": "US"
+          },
+          "ending": {
+            "type": "string",
+            "description": "Company ending",
+            "example": "LLC"
+          },
+          "industry": {
+            "type": "string",
+            "description": "Industry type",
+            "example": "Technology"
+          },
+          "number_of_shares": {
+            "type": "number",
+            "description": "Number of shares",
+            "example": 100
+          },
+          "par_value": {
+            "type": "number",
+            "description": "Par value per share",
+            "example": 1
+          },
+          "is_company_private": {
+            "type": "boolean",
+            "description": "Whether company is private",
+            "example": false
+          },
+          "address": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "timezone": {
+            "type": "string",
+            "description": "Company timezone",
+            "example": "America/New_York"
+          },
+          "shareholders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShareholderResponse"
+            },
+            "description": "List of shareholders"
+          },
+          "directors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonResponse"
+            },
+            "description": "List of directors (C-CORP only)"
+          },
+          "officers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonResponse"
+            },
+            "description": "List of officers (C-CORP only)"
+          },
+          "created_at": {
+            "type": "integer",
+            "description": "Creation timestamp",
+            "example": 1640995200
+          },
+          "updated_at": {
+            "type": "integer",
+            "description": "Last update timestamp",
+            "example": 1640995200
+          },
+          "foreign_qualification_addresses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Address"
+            },
+            "description": "Foreign qualification addresses"
+          }
+        }
+      },
+      "ShareholderResponse": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "description": "First name"
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Last name"
+          },
+          "title": {
+            "type": "string",
+            "description": "Position/title"
+          },
+          "number_of_shares": {
+            "type": "number",
+            "description": "Number of shares"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number"
+          },
+          "iso_code": {
+            "type": "string",
+            "description": "Country ISO code"
+          },
+          "address": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "is_director": {
+            "type": "boolean",
+            "description": "Whether shareholder is also a director"
+          },
+          "is_main_incorporator": {
+            "type": "boolean",
+            "description": "Whether shareholder is the main incorporator"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["individual", "organization"],
+            "description": "Shareholder type"
+          },
+          "legal_entity_name": {
+            "type": "string",
+            "description": "Legal entity name (for organization shareholders)"
+          },
+          "representative_name": {
+            "type": "string",
+            "description": "Representative name (for organization shareholders)"
+          }
+        }
+      },
+      "PersonResponse": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "description": "First name"
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Last name"
+          },
+          "title": {
+            "type": "string",
+            "description": "Position/title"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number"
+          },
+          "iso_code": {
+            "type": "string",
+            "description": "Country ISO code"
+          },
+          "address": {
+            "$ref": "#/components/schemas/Address"
+          }
+        }
+      },
+      "FormationErrorResponse": {
+        "type": "object",
+        "required": ["success", "message"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Success status (always false for errors)",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message",
+            "example": "Invalid request data"
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "API_KEY_REQUIRED",
+              "INVALID_API_KEY", 
+              "ACCESS_DENIED",
+              "RATE_LIMIT_EXCEEDED",
+              "INVALID_REQUEST",
+              "VALIDATION_FAILED",
+              "COMPANY_NOT_FOUND",
+              "PACKAGE_NOT_FOUND",
+              "DUPLICATE_EXTERNAL_ID",
+              "INTERNAL_ERROR"
+            ],
+            "description": "Error code",
+            "example": "INVALID_REQUEST"
+          },
+          "details": {
+            "type": "string",
+            "description": "Additional error details",
+            "example": "Field 'name' is required"
+          }
+        }
+      },
+      "BadRequestError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/FormationErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "enum": ["INVALID_REQUEST", "VALIDATION_FAILED"]
+              }
+            },
+            "example": {
+              "success": false,
+              "message": "Invalid request data",
+              "code": "INVALID_REQUEST",
+              "details": "Field 'name' is required"
+            }
+          }
+        ]
+      },
+      "UnauthorizedError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/FormationErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "enum": ["API_KEY_REQUIRED", "INVALID_API_KEY"]
+              }
+            },
+            "example": {
+              "success": false,
+              "message": "API key is required",
+              "code": "API_KEY_REQUIRED"
+            }
+          }
+        ]
+      },
+      "ForbiddenError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/FormationErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "enum": ["ACCESS_DENIED"]
+              }
+            },
+            "example": {
+              "success": false,
+              "message": "Access denied",
+              "code": "ACCESS_DENIED"
+            }
+          }
+        ]
+      },
+      "NotFoundError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/FormationErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "enum": ["COMPANY_NOT_FOUND", "PACKAGE_NOT_FOUND"]
+              }
+            },
+            "example": {
+              "success": false,
+              "message": "Company not found",
+              "code": "COMPANY_NOT_FOUND"
+            }
+          }
+        ]
+      },
+      "ConflictError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/FormationErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "enum": ["DUPLICATE_EXTERNAL_ID"]
+              }
+            },
+            "example": {
+              "success": false,
+              "message": "External ID already exists for this partner",
+              "code": "DUPLICATE_EXTERNAL_ID"
+            }
+          }
+        ]
+      },
+      "RateLimitError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/FormationErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "enum": ["RATE_LIMIT_EXCEEDED"]
+              }
+            },
+            "example": {
+              "success": false,
+              "message": "Rate limit exceeded",
+              "code": "RATE_LIMIT_EXCEEDED"
+            }
+          }
+        ]
+      },
+      "InternalServerError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/FormationErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "enum": ["INTERNAL_ERROR"]
+              }
+            },
+            "example": {
+              "success": false,
+              "message": "Internal server error",
+              "code": "INTERNAL_ERROR"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "x-rate-limits": {
+    "formation_api": "Per API key rate limiting with per-company ID sub-limits for GET requests"
+  },
+  "x-authentication": {
+    "formation_endpoints": "API Key via X-API-Key header or Bearer token"
+  },
+  "x-versioning": {
+    "current_version": "2025-06-24",
+    "version_header": "X-API-Version",
+    "latest_version_header": "X-API-Latest-Version"
+  }
+} 
