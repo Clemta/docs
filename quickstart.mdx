@@ -25,13 +25,14 @@ Here's how to initiate a company formation using the Clemta API.
 ### Example: Using cURL
 
 ```bash
-curl -X POST https://api.clemta.com/formation \
+curl -X POST https://api.clemta.com/formations \
   -H "X-API-KEY: YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "company_name": "Acme Inc.",
     "country": "US",
-    "email": "founder@acme.com"
+    "email": "founder@acme.com",
+    ...
   }'
 ```
 

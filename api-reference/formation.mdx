@@ -31,10 +31,10 @@ The Formation API is subject to rate limiting to ensure fair usage and system st
 
 ## Available Endpoints
 
-| Method | Endpoint                                                                   | Description                                        |
-| ------ | -------------------------------------------------------------------------- | -------------------------------------------------- |
-| POST   | [/formation/initiate](/api-reference/endpoint/formation/initiate)          | Start the company formation process                |
-| GET    | [/formation/status/{company_id}](/api-reference/endpoint/formation/status) | Retrieve the current status of a company formation |
+| Method | Endpoint                                                              | Description                                        |
+| ------ | --------------------------------------------------------------------- | -------------------------------------------------- |
+| POST   | [/formations](/api-reference/endpoint/initiate-formation)             | Start the company formation process                |
+| GET    | [/formations/:company_id](/api-reference/endpoint/retrieve-formation) | Retrieve the current status of a company formation |
 
 ## Company Formation Status
 
@@ -42,21 +42,26 @@ The company formation process goes through several stages, represented by the fo
 
 | Status                   | Description                                                                     |
 | ------------------------ | ------------------------------------------------------------------------------- |
-| shareholder-verification | Waiting for shareholder verification                                            |
-| in-progress              | The company formation is in progress                                            |
+| shareholder_verification | Waiting for shareholder verification                                            |
+| in_progress              | The company formation is in progress                                            |
 | active                   | The company formation has been completed successfully and the company is active |
 | refunded                 | The company formation was refunded                                              |
-| name-change              | The company name is being changed                                               |
-| signature-requested      | Signatures have been requested for company documents                            |
-| submitted-to-state       | The company formation documents have been submitted to the state                |
+| name_change              | The company name is being changed                                               |
+| signature_requested      | Signatures have been requested for company documents                            |
+| submitted_to_state       | The company formation documents have been submitted to the state                |
+| cancelled                | The company formation was cancelled                                             |
 
 ## Error Codes
 
-| Code                              | Description                                                           |
-| --------------------------------- | --------------------------------------------------------------------- |
-| FORMATION_ERROR_INVALID_REQUEST   | The request is invalid or missing required fields                     |
-| FORMATION_ERROR_UNAUTHORIZED      | The API key is invalid or missing                                     |
-| FORMATION_ERROR_ACCESS_DENIED     | The API key does not have permission to access the requested resource |
-| FORMATION_ERROR_COMPANY_NOT_FOUND | The requested company could not be found                              |
-| FORMATION_ERROR_PACKAGE_NOT_FOUND | The requested package could not be found                              |
-| FORMATION_ERROR_INTERNAL_ERROR    | An internal server error occurred                                     |
+| Code                  | Description                                                           |
+| --------------------- | --------------------------------------------------------------------- |
+| API_KEY_REQUIRED      | The API key is required                                               |
+| INVALID_API_KEY       | The API key is invalid                                                |
+| ACCESS_DENIED         | The API key does not have permission to access the requested resource |
+| RATE_LIMIT_EXCEEDED   | Rate limit exceeded                                                   |
+| INVALID_REQUEST       | The request is invalid or missing required fields                     |
+| VALIDATION_FAILED     | The request failed validation                                         |
+| COMPANY_NOT_FOUND     | The requested company could not be found                              |
+| PACKAGE_NOT_FOUND     | The requested package could not be found                              |
+| DUPLICATE_EXTERNAL_ID | The provided external ID already exists                               |
+| INTERNAL_ERROR        | An internal server error occurred                                     |
