@@ -33,21 +33,26 @@ This endpoint allows you to cancel a company formation that is in progress. The 
 {
   "success": true,
   "message": "Formation cancelled successfully",
-  "company_id": "64b8f1a2e4b0c8d9f0123456",
-  "status": "cancelled",
-  "external_id": "your-unique-id-123"
+  "data": {
+    "formation_id": "64b8f1a2e4b0c8d9f0123456",
+    "company_id": "64b8f1a2e4b0c8d9f0123456",
+    "status": "cancelled",
+    "external_id": "your-unique-id-123"
+  }
 }
 ```
 
 ### Response Parameters
 
-| Parameter   | Type    | Description                                |
-| ----------- | ------- | ------------------------------------------ |
-| success     | boolean | Indicates if the operation was successful  |
-| message     | string  | Additional information about the operation |
-| company_id  | string  | Unique identifier for the company          |
-| status      | string  | Updated status of the company formation    |
-| external_id | string  | Your provided external ID (if any)         |
+| Parameter         | Type    | Description                                |
+| ----------------- | ------- | ------------------------------------------ |
+| success           | boolean | Indicates if the operation was successful  |
+| message           | string  | Additional information about the operation |
+| data              | object  | Response data for successful requests      |
+| data.formation_id | string  | Unique formation process ID                |
+| data.company_id   | string  | Unique identifier for the company          |
+| data.status       | string  | Updated status of the company formation    |
+| data.external_id  | string  | Your provided external ID (if any)         |
 
 ## Error Responses
 
@@ -57,8 +62,10 @@ This endpoint allows you to cancel a company formation that is in progress. The 
 {
   "success": false,
   "message": "Invalid request data",
-  "code": "INVALID_REQUEST",
-  "details": "Invalid ID parameter format"
+  "error": {
+    "code": "INVALID_REQUEST",
+    "details": "Invalid ID parameter format"
+  }
 }
 ```
 
@@ -68,7 +75,9 @@ This endpoint allows you to cancel a company formation that is in progress. The 
 {
   "success": false,
   "message": "API key is required",
-  "code": "API_KEY_REQUIRED"
+  "error": {
+    "code": "API_KEY_REQUIRED"
+  }
 }
 ```
 
@@ -78,7 +87,9 @@ This endpoint allows you to cancel a company formation that is in progress. The 
 {
   "success": false,
   "message": "Company not found",
-  "code": "COMPANY_NOT_FOUND"
+  "error": {
+    "code": "COMPANY_NOT_FOUND"
+  }
 }
 ```
 
@@ -88,7 +99,9 @@ This endpoint allows you to cancel a company formation that is in progress. The 
 {
   "success": false,
   "message": "Internal server error",
-  "code": "INTERNAL_ERROR"
+  "error": {
+    "code": "INTERNAL_ERROR"
+  }
 }
 ```
 

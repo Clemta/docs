@@ -93,21 +93,26 @@ The `company_data` field must contain a JSON string with the following structure
 {
   "success": true,
   "message": "Formation created successfully",
-  "company_id": "64b8f1a2e4b0c8d9f0123456",
-  "status": "shareholder_verification",
-  "external_id": "your-unique-id-123"
+  "data": {
+    "formation_id": "64b8f1a2e4b0c8d9f0123456",
+    "company_id": "64b8f1a2e4b0c8d9f0123456",
+    "status": "shareholder_verification",
+    "external_id": "your-unique-id-123"
+  }
 }
 ```
 
 ### Response Parameters
 
-| Parameter   | Type    | Description                                |
-| ----------- | ------- | ------------------------------------------ |
-| success     | boolean | Indicates if the operation was successful  |
-| message     | string  | Additional information about the operation |
-| company_id  | string  | Unique identifier for the created company  |
-| status      | string  | Current status of the company formation    |
-| external_id | string  | Your provided external ID (if any)         |
+| Parameter         | Type    | Description                                |
+| ----------------- | ------- | ------------------------------------------ |
+| success           | boolean | Indicates if the operation was successful  |
+| message           | string  | Additional information about the operation |
+| data              | object  | Response data for successful requests      |
+| data.formation_id | string  | Unique formation process ID                |
+| data.company_id   | string  | Unique identifier for the created company  |
+| data.status       | string  | Current status of the company formation    |
+| data.external_id  | string  | Your provided external ID (if any)         |
 
 ## Error Responses
 
@@ -116,9 +121,11 @@ The `company_data` field must contain a JSON string with the following structure
 ```json
 {
   "success": false,
-  "message": "Validation failed",
-  "code": "VALIDATION_FAILED",
-  "details": "Field 'name' is required"
+  "message": "Invalid request data",
+  "error": {
+    "code": "VALIDATION_FAILED",
+    "details": "Field 'name' is required"
+  }
 }
 ```
 
@@ -127,8 +134,10 @@ The `company_data` field must contain a JSON string with the following structure
 ```json
 {
   "success": false,
-  "message": "Invalid API key",
-  "code": "INVALID_API_KEY"
+  "message": "API key is required",
+  "error": {
+    "code": "API_KEY_REQUIRED"
+  }
 }
 ```
 
@@ -137,8 +146,10 @@ The `company_data` field must contain a JSON string with the following structure
 ```json
 {
   "success": false,
-  "message": "External ID already exists",
-  "code": "DUPLICATE_EXTERNAL_ID"
+  "message": "External ID already exists for this partner",
+  "error": {
+    "code": "DUPLICATE_EXTERNAL_ID"
+  }
 }
 ```
 
@@ -148,7 +159,9 @@ The `company_data` field must contain a JSON string with the following structure
 {
   "success": false,
   "message": "Rate limit exceeded",
-  "code": "RATE_LIMIT_EXCEEDED"
+  "error": {
+    "code": "RATE_LIMIT_EXCEEDED"
+  }
 }
 ```
 
@@ -158,6 +171,8 @@ The `company_data` field must contain a JSON string with the following structure
 {
   "success": false,
   "message": "Internal server error",
-  "code": "INTERNAL_ERROR"
+  "error": {
+    "code": "INTERNAL_ERROR"
+  }
 }
 ```

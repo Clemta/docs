@@ -30,20 +30,88 @@ This endpoint allows partners to retrieve the current status of a company format
   "company_name": "Acme Corporation LLC",
   "status": "active",
   "formation_date": "2023-06-15",
-  "ein": "12-3456789"
+  "ein": "12-3456789",
+  "external_id": "your-unique-id-123",
+  "custom_data": {
+    "your_field": "your_value"
+  },
+  "type": "LLC",
+  "state": "DE",
+  "country": "US",
+  "ending": "LLC",
+  "industry": "Technology",
+  "number_of_shares": 100,
+  "par_value": 0.01,
+  "is_company_private": false,
+  "address": {
+    "address1": "123 Main St",
+    "city": "Wilmington",
+    "state": "DE",
+    "zip": "19801",
+    "country": "US"
+  },
+  "timezone": "America/New_York",
+  "shareholders": [
+    {
+      "first_name": "John",
+      "last_name": "Doe",
+      "title": "CEO",
+      "number_of_shares": 100,
+      "email": "john@example.com",
+      "phone": "+1234567890",
+      "iso_code": "US",
+      "address": {
+        "address1": "123 Main St",
+        "city": "Wilmington",
+        "state": "DE",
+        "zip": "19801",
+        "country": "US"
+      },
+      "is_director": true,
+      "is_main_incorporator": true,
+      "type": "individual"
+    }
+  ],
+  "directors": [],
+  "officers": [],
+  "created_at": 1686787200,
+  "updated_at": 1686787200,
+  "federal_tax_filing": 1686787200,
+  "state_tax_filing": 1686787200,
+  "foreign_qualification_addresses": []
 }
 ```
 
 ### Response Parameters
 
-| Parameter      | Type    | Description                                                                                                                                                                            |
-| -------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| success        | boolean | Indicates if the operation was successful                                                                                                                                              |
-| company_id     | string  | Unique identifier for the company                                                                                                                                                      |
-| company_name   | string  | Name of the company                                                                                                                                                                    |
-| status         | string  | Current status of the company formation (possible values: "shareholder-verification", "in-progress", "active", "refunded", "name-change", "signature-requested", "submitted-to-state") |
-| formation_date | string  | Date when the company was formed (if completed)                                                                                                                                        |
-| ein            | string  | Employer Identification Number (if assigned)                                                                                                                                           |
+| Parameter                       | Type    | Description                                                                                                                                                                                         |
+| ------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| success                         | boolean | Indicates if the operation was successful                                                                                                                                                           |
+| company_id                      | string  | Unique identifier for the company                                                                                                                                                                   |
+| company_name                    | string  | Name of the company                                                                                                                                                                                 |
+| status                          | string  | Current status of the company formation (possible values: "shareholder_verification", "in_progress", "active", "refunded", "name_change", "signature_requested", "submitted_to_state", "cancelled") |
+| formation_date                  | string  | Date when the company was formed (if completed)                                                                                                                                                     |
+| ein                             | string  | Employer Identification Number (if assigned)                                                                                                                                                        |
+| external_id                     | string  | Partner's external ID (if provided during creation)                                                                                                                                                 |
+| custom_data                     | object  | Partner's custom data for this company                                                                                                                                                              |
+| type                            | string  | Company type ("LLC" or "C-CORP")                                                                                                                                                                    |
+| state                           | string  | State abbreviation                                                                                                                                                                                  |
+| country                         | string  | Country code                                                                                                                                                                                        |
+| ending                          | string  | Company ending ("LLC", "Inc.", "Corporation", "Corp.")                                                                                                                                              |
+| industry                        | string  | Industry type                                                                                                                                                                                       |
+| number_of_shares                | number  | Number of shares                                                                                                                                                                                    |
+| par_value                       | number  | Par value per share                                                                                                                                                                                 |
+| is_company_private              | boolean | Whether the company is private                                                                                                                                                                      |
+| address                         | object  | Company address                                                                                                                                                                                     |
+| timezone                        | string  | Company timezone                                                                                                                                                                                    |
+| shareholders                    | array   | List of shareholders                                                                                                                                                                                |
+| directors                       | array   | List of directors (C-CORP only)                                                                                                                                                                     |
+| officers                        | array   | List of officers (C-CORP only)                                                                                                                                                                      |
+| created_at                      | integer | Creation timestamp                                                                                                                                                                                  |
+| updated_at                      | integer | Last update timestamp                                                                                                                                                                               |
+| federal_tax_filing              | integer | Federal tax filing timestamp                                                                                                                                                                        |
+| state_tax_filing                | integer | State tax filing timestamp                                                                                                                                                                          |
+| foreign_qualification_addresses | array   | Foreign qualification addresses                                                                                                                                                                     |
 
 ### Response Headers
 
@@ -70,8 +138,11 @@ This endpoint allows partners to retrieve the current status of a company format
 ```json
 {
   "success": false,
-  "message": "Invalid company ID format",
-  "code": "FORMATION_ERROR_INVALID_REQUEST"
+  "message": "Invalid request data",
+  "error": {
+    "code": "INVALID_REQUEST",
+    "details": "Invalid company ID format"
+  }
 }
 ```
 
@@ -80,8 +151,10 @@ This endpoint allows partners to retrieve the current status of a company format
 ```json
 {
   "success": false,
-  "message": "Invalid API key",
-  "code": "FORMATION_ERROR_UNAUTHORIZED"
+  "message": "API key is required",
+  "error": {
+    "code": "API_KEY_REQUIRED"
+  }
 }
 ```
 
@@ -91,7 +164,9 @@ This endpoint allows partners to retrieve the current status of a company format
 {
   "success": false,
   "message": "Access denied",
-  "code": "FORMATION_ERROR_ACCESS_DENIED"
+  "error": {
+    "code": "ACCESS_DENIED"
+  }
 }
 ```
 
@@ -101,7 +176,9 @@ This endpoint allows partners to retrieve the current status of a company format
 {
   "success": false,
   "message": "Company not found",
-  "code": "FORMATION_ERROR_COMPANY_NOT_FOUND"
+  "error": {
+    "code": "COMPANY_NOT_FOUND"
+  }
 }
 ```
 
@@ -111,6 +188,8 @@ This endpoint allows partners to retrieve the current status of a company format
 {
   "success": false,
   "message": "Internal server error",
-  "code": "FORMATION_ERROR_INTERNAL_ERROR"
+  "error": {
+    "code": "INTERNAL_ERROR"
+  }
 }
 ```

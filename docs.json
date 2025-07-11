@@ -45,12 +45,6 @@
             ]
           },
           {
-            "group": "Webhooks",
-            "pages": [
-              "api-reference/endpoint/dummy-webhook"
-            ]
-          },
-          {
             "group": "API Documentation",
             "pages": [
               "api-reference/formation",
