@@ -98,7 +98,8 @@ The `company_data` field must contain a JSON string with the following structure
     "company_id": "64b8f1a2e4b0c8d9f0123456",
     "status": "shareholder_verification",
     "external_id": "your-unique-id-123"
-  }
+  },
+  "error": null
 }
 ```
 
@@ -122,6 +123,7 @@ The `company_data` field must contain a JSON string with the following structure
 {
   "success": false,
   "message": "Invalid request data",
+  "data": null,
   "error": {
     "code": "VALIDATION_FAILED",
     "details": "Field 'name' is required"
@@ -135,6 +137,7 @@ The `company_data` field must contain a JSON string with the following structure
 {
   "success": false,
   "message": "API key is required",
+  "data": null,
   "error": {
     "code": "API_KEY_REQUIRED"
   }
@@ -147,6 +150,7 @@ The `company_data` field must contain a JSON string with the following structure
 {
   "success": false,
   "message": "External ID already exists for this partner",
+  "data": null,
   "error": {
     "code": "DUPLICATE_EXTERNAL_ID"
   }
@@ -159,6 +163,7 @@ The `company_data` field must contain a JSON string with the following structure
 {
   "success": false,
   "message": "Rate limit exceeded",
+  "data": null,
   "error": {
     "code": "RATE_LIMIT_EXCEEDED"
   }
@@ -171,6 +176,7 @@ The `company_data` field must contain a JSON string with the following structure
 {
   "success": false,
   "message": "Internal server error",
+  "data": null,
   "error": {
     "code": "INTERNAL_ERROR"
   }

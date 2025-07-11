@@ -26,59 +26,61 @@ This endpoint allows partners to retrieve the current status of a company format
 ```json
 {
   "success": true,
-  "company_id": "60d21b4667d0d8992e610c85",
-  "company_name": "Acme Corporation LLC",
-  "status": "active",
-  "formation_date": "2023-06-15",
-  "ein": "12-3456789",
-  "external_id": "your-unique-id-123",
-  "custom_data": {
-    "your_field": "your_value"
-  },
-  "type": "LLC",
-  "state": "DE",
-  "country": "US",
-  "ending": "LLC",
-  "industry": "Technology",
-  "number_of_shares": 100,
-  "par_value": 0.01,
-  "is_company_private": false,
-  "address": {
-    "address1": "123 Main St",
-    "city": "Wilmington",
+  "data": {
+    "company_id": "60d21b4667d0d8992e610c85",
+    "company_name": "Acme Corporation LLC",
+    "status": "active",
+    "formation_date": "2023-06-15",
+    "ein": "12-3456789",
+    "external_id": "your-unique-id-123",
+    "custom_data": {
+      "your_field": "your_value"
+    },
+    "type": "LLC",
     "state": "DE",
-    "zip": "19801",
-    "country": "US"
-  },
-  "timezone": "America/New_York",
-  "shareholders": [
-    {
-      "first_name": "John",
-      "last_name": "Doe",
-      "title": "CEO",
-      "number_of_shares": 100,
-      "email": "john@example.com",
-      "phone": "+1234567890",
-      "iso_code": "US",
-      "address": {
-        "address1": "123 Main St",
-        "city": "Wilmington",
-        "state": "DE",
-        "zip": "19801",
-        "country": "US"
-      },
-      "is_director": true,
-      "is_main_incorporator": true,
-      "type": "individual"
-    }
-  ],
-  "directors": [],
-  "officers": [],
-  "created_at": 1686787200,
-  "updated_at": 1686787200,
-  "federal_tax_filing": 1686787200,
-  "state_tax_filing": 1686787200,
-  "foreign_qualification_addresses": []
+    "country": "US",
+    "ending": "LLC",
+    "industry": "Technology",
+    "number_of_shares": 100,
+    "par_value": 0.01,
+    "is_company_private": false,
+    "address": {
+      "address1": "123 Main St",
+      "city": "Wilmington",
+      "state": "DE",
+      "zip": "19801",
+      "country": "US"
+    },
+    "timezone": "America/New_York",
+    "shareholders": [
+      {
+        "first_name": "John",
+        "last_name": "Doe",
+        "title": "CEO",
+        "number_of_shares": 100,
+        "email": "john@example.com",
+        "phone": "+1234567890",
+        "iso_code": "US",
+        "address": {
+          "address1": "123 Main St",
+          "city": "Wilmington",
+          "state": "DE",
+          "zip": "19801",
+          "country": "US"
+        },
+        "is_director": true,
+        "is_main_incorporator": true,
+        "type": "individual"
+      }
+    ],
+    "directors": [],
+    "officers": [],
+    "created_at": 1686787200,
+    "updated_at": 1686787200,
+    "federal_tax_filing": 1686787200,
+    "state_tax_filing": 1686787200,
+    "foreign_qualification_addresses": []
+  }
 }
 ```
 
@@ -139,6 +141,7 @@ This endpoint allows partners to retrieve the current status of a company format
 {
   "success": false,
   "message": "Invalid request data",
+  "data": null,
   "error": {
     "code": "INVALID_REQUEST",
     "details": "Invalid company ID format"
@@ -152,6 +155,7 @@ This endpoint allows partners to retrieve the current status of a company format
 {
   "success": false,
   "message": "API key is required",
+  "data": null,
   "error": {
     "code": "API_KEY_REQUIRED"
   }
@@ -164,6 +168,7 @@ This endpoint allows partners to retrieve the current status of a company format
 {
   "success": false,
   "message": "Access denied",
+  "data": null,
   "error": {
     "code": "ACCESS_DENIED"
   }
@@ -176,6 +181,7 @@ This endpoint allows partners to retrieve the current status of a company format
 {
   "success": false,
   "message": "Company not found",
+  "data": null,
   "error": {
     "code": "COMPANY_NOT_FOUND"
   }
@@ -188,6 +194,7 @@ This endpoint allows partners to retrieve the current status of a company format
 {
   "success": false,
   "message": "Internal server error",
+  "data": null,
   "error": {
     "code": "INTERNAL_ERROR"
   }

@@ -78,8 +78,11 @@ POST /formations
 {
   "success": true,
   "message": "Company formation initiated successfully",
-  "company_id": "60d21b4667d0d8992e610c85",
-  "status": "in-progress"
+  "data": {
+    "company_id": "60d21b4667d0d8992e610c85",
+    "status": "in-progress"
+  },
+  "error": null
 }
 ```
 
@@ -100,8 +103,11 @@ POST /formations
 {
   "success": false,
   "message": "Validation failed",
-  "code": "FORMATION_ERROR_INVALID_REQUEST",
-  "details": "Field 'name' is required"
+  "data": null,
+  "error": {
+    "code": "FORMATION_ERROR_INVALID_REQUEST",
+    "details": "Field 'name' is required"
+  }
 }
 ```
 
@@ -111,7 +117,10 @@ POST /formations
 {
   "success": false,
   "message": "Invalid API key",
-  "code": "FORMATION_ERROR_UNAUTHORIZED"
+  "data": null,
+  "error": {
+    "code": "FORMATION_ERROR_UNAUTHORIZED"
+  }
 }
 ```
 
@@ -121,6 +130,9 @@ POST /formations
 {
   "success": false,
   "message": "Failed to create company",
-  "code": "FORMATION_ERROR_INTERNAL_ERROR"
+  "data": null,
+  "error": {
+    "code": "FORMATION_ERROR_INTERNAL_ERROR"
+  }
 }
 ```

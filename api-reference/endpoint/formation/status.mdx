@@ -31,11 +31,14 @@ GET /formations/{company_id}
 ```json
 {
   "success": true,
-  "company_id": "60d21b4667d0d8992e610c85",
-  "company_name": "Acme Corporation LLC",
-  "status": "active",
-  "formation_date": "2023-06-15",
-  "ein": "12-3456789"
+  "data": {
+    "company_id": "60d21b4667d0d8992e610c85",
+    "company_name": "Acme Corporation LLC",
+    "status": "active",
+    "formation_date": "2023-06-15",
+    "ein": "12-3456789"
+  },
+  "error": null
 }
 ```
 
@@ -76,7 +79,10 @@ GET /formations/{company_id}
 {
   "success": false,
   "message": "Invalid company ID format",
-  "code": "FORMATION_ERROR_INVALID_REQUEST"
+  "data": null,
+  "error": {
+    "code": "FORMATION_ERROR_INVALID_REQUEST"
+  }
 }
 ```
 
@@ -86,7 +92,10 @@ GET /formations/{company_id}
 {
   "success": false,
   "message": "Invalid API key",
-  "code": "FORMATION_ERROR_UNAUTHORIZED"
+  "data": null,
+  "error": {
+    "code": "FORMATION_ERROR_UNAUTHORIZED"
+  }
 }
 ```
 
@@ -96,7 +105,10 @@ GET /formations/{company_id}
 {
   "success": false,
   "message": "Access denied",
-  "code": "FORMATION_ERROR_ACCESS_DENIED"
+  "data": null,
+  "error": {
+    "code": "FORMATION_ERROR_ACCESS_DENIED"
+  }
 }
 ```
 
@@ -106,7 +118,10 @@ GET /formations/{company_id}
 {
   "success": false,
   "message": "Company not found",
-  "code": "FORMATION_ERROR_COMPANY_NOT_FOUND"
+  "data": null,
+  "error": {
+    "code": "FORMATION_ERROR_COMPANY_NOT_FOUND"
+  }
 }
 ```
 
@@ -116,6 +131,9 @@ GET /formations/{company_id}
 {
   "success": false,
   "message": "Internal server error",
-  "code": "FORMATION_ERROR_INTERNAL_ERROR"
+  "data": null,
+  "error": {
+    "code": "FORMATION_ERROR_INTERNAL_ERROR"
+  }
 }
 ```

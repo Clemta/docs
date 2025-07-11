@@ -75,7 +75,11 @@ When a rate limit is exceeded, the API will respond with:
 {
   "success": false,
   "message": "Rate limit exceeded",
-  "code": "RATE_LIMIT_EXCEEDED"
+  "data": null,
+  "error": {
+    "code": "RATE_LIMIT_EXCEEDED",
+    "details": "Too many requests. Please try again later."
+  }
 }
 ```
 
