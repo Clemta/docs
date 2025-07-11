@@ -14,7 +14,7 @@ There is no public signup for Clemta. Your API credentials will be sent to you v
 
 If you have not received your credentials, please contact us at [tech@clemta.com](mailto:tech@clemta.com).
 
-Your token should look like this:
+Your API key should look like this:
 
 `clemta_gUrCvqYbJBNh4m3LbEZ_7n6yZxCdPP5ZRxHDmfmHH3Kr7kYLU4`
 
@@ -26,7 +26,7 @@ Here's how to initiate a company formation using the Clemta API.
 
 ```bash
 curl -X POST https://api.clemta.com/formation \
-  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "X-API-KEY: YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "company_name": "Acme Inc.",

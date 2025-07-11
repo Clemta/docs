@@ -335,7 +335,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "X-API-Key",
-        "description": "Formation API key for authentication. Can also be provided as Bearer token in Authorization header."
+        "description": "Formation API key for authentication."
       }
     },
     "schemas": {
