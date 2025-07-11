@@ -6,8 +6,8 @@ The Clemta API implements rate limiting to ensure fair usage and system stabilit
 
 The Clemta API uses two different rate limiting strategies depending on the endpoint:
 
-1. **API Key-based Rate Limiting**: Applied to the `/company/initiate` endpoint
-2. **Company ID-based Rate Limiting**: Applied to the `/company/status/{company_id}` endpoint
+1. **API Key-based Rate Limiting**: Applied to the `/formations` endpoint
+2. **Company ID-based Rate Limiting**: Applied to the `/formations/{company_id}` endpoint
 
 ## Rate Limit Headers
 
@@ -30,13 +30,13 @@ When a rate limit is exceeded, you'll also receive:
 
 ## Rate Limit Behavior
 
-### For `/company/initiate` Endpoint
+### For `/formations` Endpoint
 
 - Rate limiting is based on your API key.
 - Each API key has its own rate limit defined when the key is created.
 - The rate limit applies across all requests made with that API key.
 
-### For `/company/status/{company_id}` Endpoint
+### For `/formations/{company_id}` Endpoint
 
 - Rate limiting is based on the company ID in the URL parameter.
 - Default limit is 60 requests per minute per company ID.
@@ -59,7 +59,7 @@ When a rate limit is exceeded, the API will respond with:
 
 ## Example Rate Limit Headers
 
-### Successful Request to `/company/initiate`
+### Successful Request to `/company`
 
 ```
 X-RateLimit-API: 60 requests per minute
@@ -69,7 +69,7 @@ X-RateLimit-Limit: 60
 X-RateLimit-Type: api_key
 ```
 
-### Rate Limited Request to `/company/status/{company_id}`
+### Rate Limited Request to `/formations/{company_id}`
 
 ```
 X-RateLimit-API: 60 requests per minute

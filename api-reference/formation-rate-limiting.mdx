@@ -1,6 +1,6 @@
 ---
-title: 'Formation API Rate Limiting'
-description: 'Understanding rate limits for the Formation API'
+title: "Formation API Rate Limiting"
+description: "Understanding rate limits for the Formation API"
 ---
 
 # Formation API Rate Limiting
@@ -11,8 +11,8 @@ The Formation API implements rate limiting to ensure fair usage and system stabi
 
 The Formation API employs two different rate limiting strategies depending on the endpoint:
 
-1. **API Key-based Rate Limiting**: Applied to the `/formation/initiate` endpoint
-2. **Company ID-based Rate Limiting**: Applied to the `/formation/status/{company_id}` endpoint
+1. **API Key-based Rate Limiting**: Applied to the `/formations` endpoint
+2. **Company ID-based Rate Limiting**: Applied to the `/formations/{company_id}` endpoint
 
 ## Rate Limit Headers
 
@@ -25,7 +25,8 @@ All Formation API responses include headers that provide information about rate 
 </ResponseField>
 
 <ResponseField name="X-RateLimit-Status-Endpoint" type="string">
-  Shows the rate limit for status endpoint per company ID (e.g., "60 requests per minute per company ID")
+  Shows the rate limit for status endpoint per company ID (e.g., "60 requests
+  per minute per company ID")
 </ResponseField>
 
 ### Endpoint-specific Headers
@@ -50,13 +51,13 @@ When a rate limit is exceeded, you'll also receive:
 
 ## Rate Limit Behavior
 
-### For `/formation/initiate` Endpoint
+### For `/formations` Endpoint
 
 - Rate limiting is based on your API key
 - Each API key has its own rate limit defined when the key is created
 - The rate limit applies across all requests made with that API key
 
-### For `/formation/status/{company_id}` Endpoint
+### For `/formations/{company_id}` Endpoint
 
 - Rate limiting is based on the company ID in the URL parameter
 - Default limit is 60 requests per minute per company ID
@@ -82,7 +83,8 @@ When a rate limit is exceeded, the API will respond with:
 
 <Steps>
   <Step title="Implement exponential backoff">
-    When receiving a 429 response, wait the suggested time in the `Retry-After` header and then retry with increasing delays.
+    When receiving a 429 response, wait the suggested time in the `Retry-After`
+    header and then retry with increasing delays.
   </Step>
   <Step title="Monitor your usage">
     Keep track of the `X-RateLimit-Remaining` header to avoid hitting limits.
@@ -97,7 +99,7 @@ When a rate limit is exceeded, the API will respond with:
 
 ## Example Rate Limit Headers
 
-### Successful Request to `/formation/initiate`
+### Successful Request to `/formations`
 
 ```
 X-RateLimit-API: 60 requests per minute
@@ -107,7 +109,7 @@ X-RateLimit-Limit: 60
 X-RateLimit-Type: api_key
 ```
 
-### Rate Limited Request to `/formation/status/{company_id}`
+### Rate Limited Request to `/formations/{company_id}`
 
 ```
 X-RateLimit-API: 60 requests per minute
@@ -119,5 +121,6 @@ Retry-After: 60
 ```
 
 <Card title="Need Higher Limits?" icon="bolt" iconType="duotone">
-  If you need a higher rate limit for your integration, please contact our support team with details about your use case.
-</Card> 
+  If you need a higher rate limit for your integration, please contact our
+  support team with details about your use case.
+</Card>{" "}
