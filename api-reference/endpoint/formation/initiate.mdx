@@ -1,6 +1,6 @@
 ---
-title: 'Initiate Company Formation'
-description: 'Start the company formation process with provided details'
+title: "Initiate Company Formation"
+description: "Start the company formation process with provided details"
 ---
 
 # Initiate Company Formation
@@ -10,15 +10,15 @@ The Formation API allows partners to initiate company formations programmaticall
 ## API Endpoint
 
 ```
-POST /v1/formation/initiate
+POST /formation/initiate
 ```
 
 ## Headers
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| X-API-KEY | string | Formation API Key (required) |
-| Content-Type | string | application/json |
+| Parameter    | Type   | Description                  |
+| ------------ | ------ | ---------------------------- |
+| X-API-KEY    | string | Formation API Key (required) |
+| Content-Type | string | application/json             |
 
 ## Request Body
 
@@ -60,17 +60,17 @@ POST /v1/formation/initiate
 
 ### Request Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| name | string | Company name (required) |
-| type | string | Company type (LLC, C-CORP) (required) |
-| state | string | US state where the company will be registered (required) |
-| ending | string | Company name suffix (LLC, Inc., etc.) (required) |
-| industry | string | Company's primary industry (required) |
-| address | object | Company's official address (required) |
-| founder | object | Information about the company founder (required) |
-| package | string | Service package to include (optional, values: "none", "essential") |
-| ein | string | Employer Identification Number (optional) |
+| Parameter | Type   | Description                                                        |
+| --------- | ------ | ------------------------------------------------------------------ |
+| name      | string | Company name (required)                                            |
+| type      | string | Company type (LLC, C-CORP) (required)                              |
+| state     | string | US state where the company will be registered (required)           |
+| ending    | string | Company name suffix (LLC, Inc., etc.) (required)                   |
+| industry  | string | Company's primary industry (required)                              |
+| address   | object | Company's official address (required)                              |
+| founder   | object | Information about the company founder (required)                   |
+| package   | string | Service package to include (optional, values: "none", "essential") |
+| ein       | string | Employer Identification Number (optional)                          |
 
 ## Response
 
@@ -85,12 +85,12 @@ POST /v1/formation/initiate
 
 ### Response Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| success | boolean | Indicates if the operation was successful |
-| message | string | Additional information about the operation |
-| company_id | string | Unique identifier for the created company |
-| status | string | Current status of the company formation (possible values: "shareholder-verification", "in-progress", "active", "refunded", "name-change", "signature-requested", "submitted-to-state") |
+| Parameter  | Type    | Description                                                                                                                                                                            |
+| ---------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| success    | boolean | Indicates if the operation was successful                                                                                                                                              |
+| message    | string  | Additional information about the operation                                                                                                                                             |
+| company_id | string  | Unique identifier for the created company                                                                                                                                              |
+| status     | string  | Current status of the company formation (possible values: "shareholder-verification", "in-progress", "active", "refunded", "name-change", "signature-requested", "submitted-to-state") |
 
 ## Error Responses
 
@@ -123,4 +123,4 @@ POST /v1/formation/initiate
   "message": "Failed to create company",
   "code": "FORMATION_ERROR_INTERNAL_ERROR"
 }
-``` 
+```
