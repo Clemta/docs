@@ -1,0 +1,143 @@
+---
+title: "Conditional Requests Examples"
+---
+
+<CodeGroup dropdown>
+
+```go conditional_requests.go
+package main
+
+import (
+	"fmt"
+	"net/http"
+)
+
+func makeConditionalRequest(url string, apiKey string, lastModified string) (*http.Response, error) {
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("X-API-KEY", apiKey)
+	if lastModified != "" {
+		req.Header.Set("If-Modified-Since", lastModified)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode == http.StatusNotModified { // 304
+		fmt.Println("No changes since last request")
+	} else {
+		fmt.Printf("Last-Modified: %s\n", resp.Header.Get("Last-Modified"))
+	}
+	return resp, nil
+}
+```
+
+```typescript conditional_requests.ts
+export async function makeConditionalRequest(
+  url: string,
+  apiKey: string
+): Promise<Response> {
+  const lastModified = localStorage.getItem("lastModified");
+  const headers: Record<string, string> = { "X-API-KEY": apiKey };
+  if (lastModified) headers["If-Modified-Since"] = lastModified;
+
+  const response = await fetch(url, { headers });
+
+  if (response.status === 304) {
+    console.log("No changes since last request");
+  } else {
+    const newLastModified = response.headers.get("Last-Modified");
+    if (newLastModified) localStorage.setItem("Last-Modified", newLastModified);
+  }
+
+  return response;
+}
+```
+
+```rust conditional_requests.rs
+use reqwest::header::HeaderMap;
+use reqwest::Client;
+
+pub async fn make_conditional_request(
+    url: &str,
+    api_key: &str,
+    last_modified: Option<&str>,
+) -> Result<reqwest::Response, Box<dyn std::error::Error>> {
+    let client = Client::new();
+
+    let mut headers = HeaderMap::new();
+    headers.insert("X-API-KEY", api_key.parse()?);
+    if let Some(lm) = last_modified {
+        headers.insert("If-Modified-Since", lm.parse()?);
+    }
+
+    let res = client.get(url).headers(headers).send().await?;
+
+    if res.status() == 304 {
+        println!("No changes since last request");
+    } else if let Some(lm) = res.headers().get("Last-Modified") {
+        println!("Last-Modified: {}", lm.to_str()?);
+    }
+
+    Ok(res)
+}
+```
+
+```java ConditionalRequests.java
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.URI;
+import java.util.Optional;
+
+public class ConditionalRequests {
+  private static final HttpClient client = HttpClient.newHttpClient();
+
+  public static HttpResponse<String> makeConditionalRequest(
+      String url, String apiKey, Optional<String> lastModified) throws Exception {
+    HttpRequest.Builder b = HttpRequest.newBuilder()
+        .uri(URI.create(url))
+        .header("X-API-KEY", apiKey)
+        .GET();
+    lastModified.ifPresent(lm -> b.header("If-Modified-Since", lm));
+
+    HttpResponse<String> res = client.send(b.build(), HttpResponse.BodyHandlers.ofString());
+    if (res.statusCode() == 304) {
+      System.out.println("No changes since last request");
+    } else {
+      res.headers().firstValue("Last-Modified")
+          .ifPresent(lm -> System.out.println("Last-Modified: " + lm));
+    }
+    return res;
+  }
+}
+```
+
+```python conditional_requests.py
+import aiohttp
+from typing import Optional
+
+
+async def make_conditional_request(
+    url: str, api_key: str, last_modified: Optional[str] = None
+):
+    async with aiohttp.ClientSession() as session:
+        headers = {"X-API-KEY": api_key}
+        if last_modified:
+            headers["If-Modified-Since"] = last_modified
+        async with session.get(url, headers=headers) as resp:
+            if resp.status == 304:
+                print("No changes since last request")
+            else:
+                lm = resp.headers.get("Last-Modified")
+                if lm:
+                    print(f"Last-Modified: {lm}")
+            return resp
+```
+
+</CodeGroup>

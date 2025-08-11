@@ -1,46 +1,54 @@
-# Clemta API Rate Limiting
+---
+title: "Rate Limiting"
+description: "Understanding rate limits across all Clemta APIs"
+---
 
-The Clemta API implements rate limiting to ensure fair usage and system stability. This document explains how rate limiting works and how to interpret the rate limit headers.
+import ExponentialBackoff from "/snippets/rate-limiting/ExponentialBackoff.mdx";
+import MonitorHeaders from "/snippets/rate-limiting/MonitorHeaders.mdx";
+import ConditionalRequests from "/snippets/rate-limiting/ConditionalRequests.mdx";
+
+# Rate Limiting
+
+Clemta APIs implement rate limiting to ensure fair usage and system stability. This page explains how rate limiting works across all our APIs.
 
 ## Rate Limit Types
 
-The Clemta API uses two different rate limiting strategies depending on the endpoint:
+Clemta APIs employ different rate limiting strategies depending on the endpoint:
 
-1. **API Key-based Rate Limiting**: Applied to the `/formations` endpoint
-2. **Company ID-based Rate Limiting**: Applied to the `/formations/{company_id}` endpoint
+1. **API Key-based Rate Limiting**: Applied to most endpoints
+2. **Resource-based Rate Limiting**: Applied to specific resources (e.g., per company ID)
 
 ## Rate Limit Headers
 
-All Clemta API responses include headers that provide information about rate limits:
+All API responses include headers that provide information about rate limits:
 
 ### Common Headers
 
-- `X-RateLimit-API`: Displays your API key's rate limit (e.g., "60 requests per minute")
-- `X-RateLimit-Status-Endpoint`: Shows the rate limit for the status endpoint per company ID (e.g., "60 requests per minute per company ID")
+<ResponseField name="X-RateLimit-API" type="string">
+  Displays your API key's rate limit (e.g., "100 requests per minute")
+</ResponseField>
 
-### Endpoint-specific Headers
+<ResponseField name="X-RateLimit-Remaining" type="integer">
+  Number of requests remaining in the current time window
+</ResponseField>
 
-- `X-RateLimit-Remaining`: Number of requests remaining in the current time window
-- `X-RateLimit-Limit`: Maximum number of requests allowed per minute
-- `X-RateLimit-Type`: Indicates which rate limit type is being applied ("api_key" or "company_id")
+<ResponseField name="X-RateLimit-Limit" type="integer">
+  Maximum number of requests allowed per minute
+</ResponseField>
+
+<ResponseField name="X-RateLimit-Reset" type="integer">
+  Unix timestamp when the rate limit resets
+</ResponseField>
+
+<ResponseField name="X-RateLimit-Type" type="string">
+  Indicates which rate limit type is being applied ("api_key" or "resource")
+</ResponseField>
 
 When a rate limit is exceeded, you'll also receive:
 
-- `Retry-After`: Seconds to wait before making another request (typically 60 seconds)
-
-## Rate Limit Behavior
-
-### For `/formations` Endpoint
-
-- Rate limiting is based on your API key.
-- Each API key has its own rate limit defined when the key is created.
-- The rate limit applies across all requests made with that API key.
-
-### For `/formations/{company_id}` Endpoint
-
-- Rate limiting is based on the company ID in the URL parameter.
-- Default limit is 60 requests per minute per company ID.
-- This allows you to check status for multiple companies without hitting API key limits.
+<ResponseField name="Retry-After" type="integer">
+  Seconds to wait before making another request (typically 60 seconds)
+</ResponseField>
 
 ## Rate Limit Errors
 
@@ -48,38 +56,65 @@ When a rate limit is exceeded, the API will respond with:
 
 - HTTP Status Code: `429 Too Many Requests`
 - Error Code: `RATE_LIMIT_EXCEEDED`
-- Error Message: "Rate limit exceeded" or "Rate limit exceeded for this company ID"
+- Error Message: "Rate limit exceeded"
+
+```json
+{
+  "success": false,
+  "message": "Rate limit exceeded",
+  "error": {
+    "code": "RATE_LIMIT_EXCEEDED",
+    "details": "Too many requests. Please try again later."
+  }
+}
+```
 
 ## Best Practices
 
-1. **Implement exponential backoff**: When receiving a 429 response, wait the suggested time in the `Retry-After` header and then retry with increasing delays.
-2. **Monitor your usage**: Keep track of the `X-RateLimit-Remaining` header to avoid hitting limits.
-3. **Batch requests**: When possible, batch multiple operations into a single API call.
-4. **Cache responses**: Cache status responses when appropriate to reduce the number of API calls.
+<Steps>
+  <Step title="Implement exponential backoff">
+    Use a retry strategy with exponential backoff when you receive 429.
+  </Step>
+  <Step title="Monitor your usage">
+    Track `X-RateLimit-Remaining` and slow down before hitting limits.
+  </Step>
+  <Step title="Use conditional requests">
+    Use `If-Modified-Since` for GET endpoints.
+  </Step>
+  <Step title="Use pagination">Paginate list endpoints to reduce load.</Step>
+</Steps>
+
+### 1. Implement Exponential Backoff
+
+<ExponentialBackoff />
+
+### 2. Monitor Rate Limit Headers
+
+<MonitorHeaders />
+
+### 3. Use Conditional Requests
+
+<ConditionalRequests />
 
 ## Example Rate Limit Headers
 
-### Successful Request to `/company`
+### Successful Request
 
 ```
-X-RateLimit-API: 60 requests per minute
-X-RateLimit-Status-Endpoint: 60 requests per minute per company ID
-X-RateLimit-Remaining: 59
-X-RateLimit-Limit: 60
+X-RateLimit-API: 100 requests per minute
+X-RateLimit-Remaining: 95
+X-RateLimit-Limit: 100
+X-RateLimit-Reset: 1640995200
 X-RateLimit-Type: api_key
 ```
 
-### Rate Limited Request to `/formations/{company_id}`
+### Rate Limited Request
 
 ```
-X-RateLimit-API: 60 requests per minute
-X-RateLimit-Status-Endpoint: 60 requests per minute per company ID
+X-RateLimit-API: 100 requests per minute
 X-RateLimit-Remaining: 0
-X-RateLimit-Limit: 60
-X-RateLimit-Type: company_id
+X-RateLimit-Limit: 100
+X-RateLimit-Reset: 1640995200
+X-RateLimit-Type: api_key
 Retry-After: 60
 ```
-
-## Contact Support
-
-If you need a higher rate limit for your integration, please contact our support team with details about your use case.

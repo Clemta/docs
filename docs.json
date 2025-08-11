@@ -21,14 +21,21 @@
             "group": "Get Started",
             "pages": [
               "index",
-              "quickstart"
+              "quickstart",
+              "api-reference/rate-limiting",
+              "api-reference/authentication"
             ]
           },
           {
             "group": "Formation API",
             "pages": [
-              "api-reference/formation",
-              "api-reference/formation-rate-limiting"
+              "api-reference/formation"
+            ]
+          },
+          {
+            "group": "Accounting API",
+            "pages": [
+              "api-reference/contacts"
             ]
           }
         ]
@@ -39,16 +46,27 @@
           {
             "group": "Formation API Endpoints",
             "pages": [
-              "api-reference/endpoint/initiate-formation",
-              "api-reference/endpoint/retrieve-formation",
-              "api-reference/endpoint/cancel-formation"
+              "api-reference/formation/initiate-formation",
+              "api-reference/formation/retrieve-formation",
+              "api-reference/formation/cancel-formation"
+            ]
+          },
+          {
+            "group": "Contacts API",
+            "pages": [
+              "api-reference/accounting/contacts/create-contact",
+              "api-reference/accounting/contacts/list-contacts",
+              "api-reference/accounting/contacts/get-contact",
+              "api-reference/accounting/contacts/update-contact",
+              "api-reference/accounting/contacts/delete-contact"
             ]
           },
           {
             "group": "API Documentation",
             "pages": [
               "api-reference/formation",
-              "api-reference/formation-rate-limiting"
+              "api-reference/rate-limiting",
+              "api-reference/authentication"
             ]
           }
         ]

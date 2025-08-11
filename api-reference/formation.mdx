@@ -1,5 +1,5 @@
 ---
-title: "Formation API"
+title: "Formation"
 description: "API for managing company formations and retrieving formation status"
 ---
 
@@ -9,21 +9,7 @@ The Formation API allows partners to programmatically initiate company formation
 
 ## Authentication
 
-All Formation API endpoints require authentication using an API key. The API key should be included in the `X-API-KEY` header of each request.
-
-```
-X-API-KEY: your_api_key
-```
-
-To obtain an API key, please contact our support team.
-
-## Base URL
-
-All API endpoints are relative to the base URL:
-
-```
-https://api.clemta.com
-```
+See [Authentication](/api-reference/authentication) for how to authenticate requests.
 
 ## Rate Limiting
 
@@ -31,10 +17,11 @@ The Formation API is subject to rate limiting to ensure fair usage and system st
 
 ## Available Endpoints
 
-| Method | Endpoint                                                              | Description                                        |
-| ------ | --------------------------------------------------------------------- | -------------------------------------------------- |
-| POST   | [/formations](/api-reference/endpoint/initiate-formation)             | Start the company formation process                |
-| GET    | [/formations/:company_id](/api-reference/endpoint/retrieve-formation) | Retrieve the current status of a company formation |
+| Method | Endpoint                                                               | Description                                        |
+| ------ | ---------------------------------------------------------------------- | -------------------------------------------------- |
+| POST   | [/formations](/api-reference/formation/initiate-formation)             | Start the company formation process                |
+| GET    | [/formations/:company_id](/api-reference/formation/retrieve-formation) | Retrieve the current status of a company formation |
+| DELETE | [/formations/:company_id](/api-reference/formation/cancel-formation)   | Cancel a company formation                         |
 
 ## Company Formation Status
 

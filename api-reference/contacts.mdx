@@ -1,0 +1,53 @@
+---
+title: "Contacts"
+description: "API for managing contacts in the accounting system"
+---
+
+# Contacts API
+
+The Contacts API allows partners to programmatically manage contacts (customers and vendors) in the accounting system. This API is designed for partners who want to integrate Clemta's contact management services into their own platforms.
+
+## Authentication
+
+See [Authentication](/api-reference/authentication) for how to authenticate requests.
+
+## Rate Limiting
+
+The Contacts API is subject to rate limiting to ensure fair usage and system stability. Please refer to our [Rate Limiting](/api-reference/rate-limiting) documentation for more details.
+
+## Available Endpoints
+
+| Method | Endpoint                                                                   | Description                                |
+| ------ | -------------------------------------------------------------------------- | ------------------------------------------ |
+| POST   | [/contacts](/api-reference/accounting/contacts/create-contact)             | Create a new contact                       |
+| GET    | [/contacts](/api-reference/accounting/contacts/list-contacts)              | Retrieve a list of contacts with filtering |
+| GET    | [/contacts/:contact_id](/api-reference/accounting/contacts/get-contact)    | Retrieve a specific contact by ID          |
+| PATCH  | [/contacts/:contact_id](/api-reference/accounting/contacts/update-contact) | Update an existing contact                 |
+| DELETE | [/contacts/:contact_id](/api-reference/accounting/contacts/delete-contact) | Delete a contact                           |
+
+## Contact Types
+
+Contacts can be categorized into two main types:
+
+| Type     | Description                                  |
+| -------- | -------------------------------------------- |
+| customer | A customer contact for invoicing and billing |
+| vendor   | A vendor contact for expense tracking        |
+
+## Contact Status
+
+Contacts can have various statuses depending on their current state in the system. The specific status values may vary based on your account configuration.
+
+## Error Codes
+
+| Code                | Description                                                           |
+| ------------------- | --------------------------------------------------------------------- |
+| API_KEY_REQUIRED    | The API key is required                                               |
+| INVALID_API_KEY     | The API key is invalid                                                |
+| ACCESS_DENIED       | The API key does not have permission to access the requested resource |
+| RATE_LIMIT_EXCEEDED | Rate limit exceeded                                                   |
+| INVALID_REQUEST     | The request is invalid or missing required fields                     |
+| VALIDATION_FAILED   | The request failed validation                                         |
+| COMPANY_NOT_FOUND   | The requested company could not be found                              |
+| CONTACT_NOT_FOUND   | The requested contact could not be found                              |
+| INTERNAL_ERROR      | An internal server error occurred                                     |

@@ -1,0 +1,69 @@
+---
+title: "Authentication"
+description: "How to authenticate and authorize requests with the Clemta APIs"
+---
+
+# Authentication
+
+All Clemta APIs use API key authentication. Include your API key in the `X-API-KEY` header on every request.
+
+## Header
+
+```
+X-API-KEY: your_api_key
+```
+
+## Getting an API Key
+
+There is no public signup. Your credentials are provisioned by Clemta. If you do not have an API key, contact us at tech@clemta.com.
+
+## Authorization (Access Control)
+
+Clemta authorizes requests based on your API key and associated partner account. You can only access resources that belong to your account.
+
+- Company resources are only accessible if they are linked to your partner account
+- Contacts and other accounting resources are restricted to your companies
+- Some endpoints may apply additional resource-level checks
+
+If a request is authenticated but not authorized, the API returns 403 with `ACCESS_DENIED`.
+
+```json
+{
+  "success": false,
+  "message": "Access denied",
+  "data": null,
+  "error": { "code": "ACCESS_DENIED" }
+}
+```
+
+## Example Requests
+
+<CodeGroup dropdown>
+
+```bash curl.sh
+curl -H "X-API-KEY: YOUR_API_KEY" \
+     https://api.clemta.com/formations
+```
+
+```typescript fetch.ts
+await fetch("https://api.clemta.com/formations", {
+  headers: { "X-API-KEY": "YOUR_API_KEY" },
+});
+```
+
+```python requests.py
+import requests
+requests.get('https://api.clemta.com/formations', headers={'X-API-KEY': 'YOUR_API_KEY'})
+```
+
+```go http.go
+req, _ := http.NewRequest("GET", "https://api.clemta.com/formations", nil)
+req.Header.Set("X-API-KEY", "YOUR_API_KEY")
+```
+
+</CodeGroup>
+
+## Notes
+
+- Do not embed API keys in client-side code.
+- Use separate keys per environment (sandbox vs production).

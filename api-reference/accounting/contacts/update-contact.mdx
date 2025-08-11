@@ -1,0 +1,204 @@
+---
+title: "Update Contact"
+description: "Update an existing contact"
+openapi: "PATCH /contacts/{contact_id}"
+---
+
+# Update Contact
+
+This endpoint allows you to update an existing contact's information.
+
+## Headers
+
+| Parameter    | Type   | Description                  |
+| ------------ | ------ | ---------------------------- |
+| X-API-KEY    | string | Formation API Key (required) |
+| Content-Type | string | application/json             |
+
+## Path Parameters
+
+| Parameter  | Type   | Description           |
+| ---------- | ------ | --------------------- |
+| contact_id | string | Contact ID (required) |
+
+## Request Body
+
+```json
+{
+  "type": "customer",
+  "status": "active",
+  "full_name": "John Doe Updated",
+  "email": "john.doe.updated@example.com",
+  "description": "Updated customer contact",
+  "cc_emails": ["billing@example.com", "support@example.com"],
+  "bcc_emails": ["admin@example.com"],
+  "default_category_id": "64b8f1a2e4b0c8d9f0123457",
+  "default_business_id": "64b8f1a2e4b0c8d9f0123458",
+  "default_client_id": "64b8f1a2e4b0c8d9f0123459",
+  "billing": {
+    "email": "billing.updated@example.com",
+    "phone": "+1234567890",
+    "phone_code": "+1",
+    "iso_code": "US",
+    "country": "United States",
+    "address_1": "456 Updated St",
+    "address_2": "Suite 200",
+    "postal_code": "54321",
+    "district": "Uptown",
+    "state": "NY",
+    "province": "New York",
+    "tax_id": "98-7654321"
+  },
+  "company_id": "64b8f1a2e4b0c8d9f0123456"
+}
+```
+
+### Required Fields
+
+| Field      | Type   | Description                               |
+| ---------- | ------ | ----------------------------------------- |
+| type       | string | Contact type: "customer" or "vendor"      |
+| full_name  | string | Full name of the contact                  |
+| email      | string | Email address of the contact              |
+| company_id | string | ID of the company this contact belongs to |
+
+### Optional Fields
+
+| Field               | Type   | Description                            |
+| ------------------- | ------ | -------------------------------------- |
+| status              | string | Contact status                         |
+| description         | string | Description or notes about the contact |
+| cc_emails           | array  | Array of CC email addresses            |
+| bcc_emails          | array  | Array of BCC email addresses           |
+| default_category_id | string | Default category ID                    |
+| default_business_id | string | Default business ID                    |
+| default_client_id   | string | Default client ID                      |
+| billing             | object | Billing information for the contact    |
+
+### Billing Object Fields
+
+| Field       | Type   | Description               |
+| ----------- | ------ | ------------------------- |
+| email       | string | Billing email address     |
+| phone       | string | Phone number              |
+| phone_code  | string | Phone country code        |
+| iso_code    | string | Country ISO code          |
+| country     | string | Country name              |
+| address_1   | string | Address line 1            |
+| address_2   | string | Address line 2            |
+| postal_code | string | Postal code               |
+| district    | string | District                  |
+| state       | string | State                     |
+| province    | string | Province                  |
+| tax_id      | string | Tax identification number |
+
+## Response
+
+```json
+{
+  "success": true,
+  "message": "Contact updated successfully",
+  "data": {
+    "id": "64b8f1a2e4b0c8d9f0123456",
+    "created_at": 1686787200,
+    "updated_at": 1686787300,
+    "type": "customer",
+    "status": "active",
+    "full_name": "John Doe Updated",
+    "email": "john.doe.updated@example.com",
+    "description": "Updated customer contact",
+    "cc_emails": ["billing@example.com", "support@example.com"],
+    "bcc_emails": ["admin@example.com"],
+    "default_category_id": "64b8f1a2e4b0c8d9f0123457",
+    "default_business_id": "64b8f1a2e4b0c8d9f0123458",
+    "default_client_id": "64b8f1a2e4b0c8d9f0123459",
+    "billing": {
+      "email": "billing.updated@example.com",
+      "phone": "+1234567890",
+      "phone_code": "+1",
+      "iso_code": "US",
+      "country": "United States",
+      "address_1": "456 Updated St",
+      "address_2": "Suite 200",
+      "postal_code": "54321",
+      "district": "Uptown",
+      "state": "NY",
+      "province": "New York",
+      "tax_id": "98-7654321"
+    }
+  }
+}
+```
+
+### Response Parameters
+
+| Parameter                | Type    | Description                                |
+| ------------------------ | ------- | ------------------------------------------ |
+| success                  | boolean | Indicates if the operation was successful  |
+| message                  | string  | Additional information about the operation |
+| data                     | object  | Response data for successful requests      |
+| data.id                  | string  | Unique identifier for the contact          |
+| data.created_at          | integer | Creation timestamp                         |
+| data.updated_at          | integer | Last update timestamp                      |
+| data.type                | string  | Contact type ("customer" or "vendor")      |
+| data.status              | string  | Contact status                             |
+| data.full_name           | string  | Full name of the contact                   |
+| data.email               | string  | Email address                              |
+| data.description         | string  | Contact description                        |
+| data.cc_emails           | array   | CC email addresses                         |
+| data.bcc_emails          | array   | BCC email addresses                        |
+| data.default_category_id | string  | Default category ID                        |
+| data.default_business_id | string  | Default business ID                        |
+| data.default_client_id   | string  | Default client ID                          |
+| data.billing             | object  | Billing information                        |
+
+## Error Responses
+
+### Invalid Request (400)
+
+```json
+{
+  "success": false,
+  "message": "Invalid request data",
+  "error": {
+    "code": "VALIDATION_FAILED",
+    "details": "Field 'email' is required"
+  }
+}
+```
+
+### Unauthorized (401)
+
+```json
+{
+  "success": false,
+  "message": "API key is required",
+  "error": {
+    "code": "API_KEY_REQUIRED"
+  }
+}
+```
+
+### Contact Not Found (404)
+
+```json
+{
+  "success": false,
+  "message": "Contact not found",
+  "error": {
+    "code": "CONTACT_NOT_FOUND"
+  }
+}
+```
+
+### Internal Server Error (500)
+
+```json
+{
+  "success": false,
+  "message": "Internal server error",
+  "error": {
+    "code": "INTERNAL_ERROR"
+  }
+}
+```

@@ -327,6 +327,397 @@
           }
         }
       }
+    },
+    "/contacts": {
+      "post": {
+        "summary": "Create Contact",
+        "description": "Creates a new contact for a company",
+        "operationId": "createContact",
+        "tags": ["Contacts"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateContactRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contact created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationBaseResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Company not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get Contacts",
+        "description": "Retrieves a list of contacts for a company with optional filtering and pagination",
+        "operationId": "getContacts",
+        "tags": ["Contacts"],
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "query",
+            "required": true,
+            "description": "Company ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "description": "Number of records to skip",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Number of records to return",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "description": "Search term",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Sort field",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "description": "Sort order (asc/desc)",
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"]
+            }
+          },
+          {
+            "name": "created_at",
+            "in": "query",
+            "required": false,
+            "description": "Created at filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "created_at_value",
+            "in": "query",
+            "required": false,
+            "description": "Created at value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "description": "End date filter",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contacts retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationBaseResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Company not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contacts/{contact_id}": {
+      "get": {
+        "summary": "Get Contact by ID",
+        "description": "Retrieves a specific contact by its ID",
+        "operationId": "getContactById",
+        "tags": ["Contacts"],
+        "parameters": [
+          {
+            "name": "contact_id",
+            "in": "path",
+            "required": true,
+            "description": "Contact ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contact retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationBaseResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Contact not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update Contact",
+        "description": "Updates an existing contact",
+        "operationId": "updateContact",
+        "tags": ["Contacts"],
+        "parameters": [
+          {
+            "name": "contact_id",
+            "in": "path",
+            "required": true,
+            "description": "Contact ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateContactRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contact updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationBaseResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Contact not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Contact",
+        "description": "Deletes a contact",
+        "operationId": "deleteContact",
+        "tags": ["Contacts"],
+        "parameters": [
+          {
+            "name": "contact_id",
+            "in": "path",
+            "required": true,
+            "description": "Contact ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contact deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationBaseResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Contact not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1402,6 +1793,240 @@
             }
           }
         ]
+      },
+      "CreateContactRequest": {
+        "type": "object",
+        "required": ["type", "full_name", "email", "company_id"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["customer", "vendor"],
+            "description": "Contact type"
+          },
+          "status": {
+            "type": "string",
+            "description": "Contact status"
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Full name of the contact"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address"
+          },
+          "description": {
+            "type": "string",
+            "description": "Contact description"
+          },
+          "cc_emails": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "email"
+            },
+            "description": "CC email addresses"
+          },
+          "bcc_emails": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "email"
+            },
+            "description": "BCC email addresses"
+          },
+          "billing": {
+            "$ref": "#/components/schemas/ContactBilling"
+          },
+          "company_id": {
+            "type": "string",
+            "description": "Company ID"
+          }
+        }
+      },
+      "UpdateContactRequest": {
+        "type": "object",
+        "required": ["type", "full_name", "email", "company_id"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["customer", "vendor"],
+            "description": "Contact type"
+          },
+          "status": {
+            "type": "string",
+            "description": "Contact status"
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Full name of the contact"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address"
+          },
+          "description": {
+            "type": "string",
+            "description": "Contact description"
+          },
+          "cc_emails": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "email"
+            },
+            "description": "CC email addresses"
+          },
+          "bcc_emails": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "email"
+            },
+            "description": "BCC email addresses"
+          },
+          "default_category_id": {
+            "type": "string",
+            "description": "Default category ID"
+          },
+          "default_business_id": {
+            "type": "string",
+            "description": "Default business ID"
+          },
+          "default_client_id": {
+            "type": "string",
+            "description": "Default client ID"
+          },
+          "billing": {
+            "$ref": "#/components/schemas/ContactBilling"
+          },
+          "company_id": {
+            "type": "string",
+            "description": "Company ID"
+          }
+        }
+      },
+      "ContactBilling": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Billing email address"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number"
+          },
+          "phone_code": {
+            "type": "string",
+            "description": "Phone country code"
+          },
+          "iso_code": {
+            "type": "string",
+            "description": "Country ISO code"
+          },
+          "country": {
+            "type": "string",
+            "description": "Country name"
+          },
+          "address_1": {
+            "type": "string",
+            "description": "Address line 1"
+          },
+          "address_2": {
+            "type": "string",
+            "description": "Address line 2"
+          },
+          "postal_code": {
+            "type": "string",
+            "description": "Postal code"
+          },
+          "district": {
+            "type": "string",
+            "description": "District"
+          },
+          "state": {
+            "type": "string",
+            "description": "State"
+          },
+          "province": {
+            "type": "string",
+            "description": "Province"
+          },
+          "tax_id": {
+            "type": "string",
+            "description": "Tax ID"
+          }
+        }
+      },
+      "ContactResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Contact ID"
+          },
+          "created_at": {
+            "type": "integer",
+            "description": "Creation timestamp"
+          },
+          "updated_at": {
+            "type": "integer",
+            "description": "Last update timestamp"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["customer", "vendor"],
+            "description": "Contact type"
+          },
+          "status": {
+            "type": "string",
+            "description": "Contact status"
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Full name"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description"
+          },
+          "cc_emails": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "CC email addresses"
+          },
+          "bcc_emails": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "BCC email addresses"
+          },
+          "default_category_id": {
+            "type": "string",
+            "description": "Default category ID"
+          },
+          "default_business_id": {
+            "type": "string",
+            "description": "Default business ID"
+          },
+          "default_client_id": {
+            "type": "string",
+            "description": "Default client ID"
+          },
+          "billing": {
+            "$ref": "#/components/schemas/ContactBilling"
+          }
+        }
       }
     }
   },

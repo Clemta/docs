@@ -1,0 +1,195 @@
+---
+title: "Monitor Rate Limit Headers Examples"
+---
+
+<CodeGroup dropdown>
+
+```go monitor_headers.go
+package main
+
+import (
+	"fmt"
+	"net/http"
+	"strconv"
+	"time"
+)
+
+func makeRequestWithMonitoring(url string, apiKey string) (*http.Response, error) {
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("X-API-KEY", apiKey)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	remaining := resp.Header.Get("X-RateLimit-Remaining")
+	reset := resp.Header.Get("X-RateLimit-Reset")
+	limit := resp.Header.Get("X-RateLimit-Limit")
+	fmt.Printf("Rate limit: %s/%s remaining\n", remaining, limit)
+
+	if remaining != "" && reset != "" {
+		if r, err := strconv.Atoi(remaining); err == nil && r < 10 {
+			if rs, err := strconv.ParseInt(reset, 10, 64); err == nil {
+				wait := (rs * 1000) - time.Now().UnixMilli()
+				if wait > 0 {
+					fmt.Printf("Waiting %dms before next request\n", wait)
+					time.Sleep(time.Duration(wait) * time.Millisecond)
+				}
+			}
+		}
+	}
+	return resp, nil
+}
+```
+
+```typescript monitor_headers.ts
+export async function makeRequestWithMonitoring(
+  url: string,
+  options: RequestInit
+): Promise<Response> {
+  const response = await fetch(url, options);
+  const remaining = response.headers.get("X-RateLimit-Remaining");
+  const reset = response.headers.get("X-RateLimit-Reset");
+  const limit = response.headers.get("X-RateLimit-Limit");
+
+  console.log(`Rate limit: ${remaining}/${limit} remaining`);
+
+  if (remaining && reset) {
+    const r = parseInt(remaining, 10);
+    if (r < 10) {
+      const waitTime = parseInt(reset, 10) * 1000 - Date.now();
+      if (waitTime > 0) {
+        console.log(`Waiting ${waitTime}ms before next request`);
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
+      }
+    }
+  }
+
+  return response;
+}
+```
+
+```rust monitor_headers.rs
+use reqwest::Client;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
+
+pub async fn make_request_with_monitoring(
+    url: &str,
+    api_key: &str,
+) -> Result<reqwest::Response, Box<dyn std::error::Error>> {
+    let client = Client::new();
+    let response = client
+        .get(url)
+        .header("X-API-KEY", api_key)
+        .send()
+        .await?;
+
+    let remaining = response
+        .headers()
+        .get("X-RateLimit-Remaining")
+        .and_then(|h| h.to_str().ok());
+    let reset = response
+        .headers()
+        .get("X-RateLimit-Reset")
+        .and_then(|h| h.to_str().ok());
+    let limit = response
+        .headers()
+        .get("X-RateLimit-Limit")
+        .and_then(|h| h.to_str().ok());
+
+    println!(
+        "Rate limit: {}/{} remaining",
+        remaining.unwrap_or("?"),
+        limit.unwrap_or("?")
+    );
+
+    if let (Some(r), Some(rs)) = (remaining, reset) {
+        if let (Ok(ri), Ok(rsi)) = (r.parse::<i32>(), rs.parse::<u64>()) {
+            if ri < 10 {
+                let now = SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap()
+                    .as_millis() as u64;
+                let wait = (rsi * 1000).saturating_sub(now);
+                if wait > 0 {
+                    println!("Waiting {}ms before next request", wait);
+                    tokio::time::sleep(Duration::from_millis(wait)).await;
+                }
+            }
+        }
+    }
+
+    Ok(response)
+}
+```
+
+```java MonitorHeaders.java
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.URI;
+import java.time.Instant;
+
+public class MonitorHeaders {
+  private static final HttpClient client = HttpClient.newHttpClient();
+
+  public static HttpResponse<String> makeRequestWithMonitoring(
+      String url, String apiKey) throws Exception {
+    HttpRequest req = HttpRequest.newBuilder()
+        .uri(URI.create(url))
+        .header("X-API-KEY", apiKey)
+        .GET()
+        .build();
+
+    HttpResponse<String> res = client.send(req, HttpResponse.BodyHandlers.ofString());
+    String remaining = res.headers().firstValue("X-RateLimit-Remaining").orElse("?");
+    String reset = res.headers().firstValue("X-RateLimit-Reset").orElse("?");
+    String limit = res.headers().firstValue("X-RateLimit-Limit").orElse("?");
+    System.out.printf("Rate limit: %s/%s remaining%n", remaining, limit);
+
+    if (!"?".equals(remaining) && !"?".equals(reset)) {
+      int ri = Integer.parseInt(remaining);
+      if (ri < 10) {
+        long wait = (Long.parseLong(reset) * 1000) - Instant.now().toEpochMilli();
+        if (wait > 0) {
+          System.out.printf("Waiting %dms before next request%n", wait);
+          Thread.sleep(wait);
+        }
+      }
+    }
+
+    return res;
+  }
+}
+```
+
+```python monitor_headers.py
+import asyncio
+import time
+
+import aiohttp
+
+
+async def make_request_with_monitoring(url: str, api_key: str):
+    async with aiohttp.ClientSession() as session:
+        headers = {"X-API-KEY": api_key}
+        async with session.get(url, headers=headers) as resp:
+            remaining = resp.headers.get("X-RateLimit-Remaining", "?")
+            reset = resp.headers.get("X-RateLimit-Reset", "?")
+            limit = resp.headers.get("X-RateLimit-Limit", "?")
+            print(f"Rate limit: {remaining}/{limit} remaining")
+            if remaining != "?" and reset != "?":
+                if int(remaining) < 10:
+                    wait = (int(reset) * 1000) - int(time.time() * 1000)
+                    if wait > 0:
+                        print(f"Waiting {wait}ms before next request")
+                        await asyncio.sleep(wait / 1000)
+            return resp
+```
+
+</CodeGroup>

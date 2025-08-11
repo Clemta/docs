@@ -15,22 +15,18 @@ Welcome to the official Clemta API reference documentation. Our APIs allow you t
   <Card title="Formation API" icon="building" href="/api-reference/formation">
     Programmatically initiate company formations and check their status
   </Card>
-  <Card title="Accounting API (WIP)" icon="calculator" href="/">
+  <Card
+    title="Accounting API (WIP)"
+    icon="calculator"
+    href="/api-reference/contacts"
+  >
     Manage invoices, expenses, and other accounting functions
   </Card>
 </CardGroup>
 
 ## Authentication
 
-All API endpoints are authenticated using API keys.
-
-### Formation API
-
-Formation API endpoints use API key authentication. Include your API key in the `X-API-KEY` header:
-
-```
-X-API-KEY: your_api_key
-```
+See [Authentication](/api-reference/authentication) for how to authenticate requests.
 
 ## Base URL
 
@@ -57,10 +53,7 @@ All API responses are returned in JSON format. Successful responses typically in
 
 ## Rate Limiting
 
-Our APIs implement rate limiting to ensure fair usage and system stability. For details, see:
-
-- [Formation API Rate Limiting](/api-reference/formation-rate-limiting)
-- [General API Rate Limiting](/api-reference/rate-limiting)
+For details about usage limits and headers, see [Rate Limiting](/api-reference/rate-limiting).
 
 ## Need Help?
 
