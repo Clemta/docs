@@ -1,0 +1,178 @@
+---
+title: "List Fixed Assets"
+description: "Retrieve a list of fixed assets with filtering and pagination"
+openapi: "GET /fixed-assets"
+---
+
+# List Fixed Assets
+
+This endpoint allows you to retrieve a list of fixed assets for a company with optional filtering and pagination.
+
+## Headers
+
+| Parameter | Type   | Description                  |
+| --------- | ------ | ---------------------------- |
+| X-API-KEY | string | Formation API Key (required) |
+
+## Query Parameters
+
+| Parameter                   | Type   | Required | Description                              |
+| --------------------------- | ------ | -------- | ---------------------------------------- |
+| company_id                  | string | Yes      | Company ID to filter fixed assets        |
+| skip                        | string | No       | Number of records to skip (pagination)   |
+| limit                       | string | No       | Number of records to return (pagination) |
+| search                      | string | No       | Search term to filter fixed assets       |
+| sort                        | string | No       | Field to sort by                         |
+| order                       | string | No       | Sort order: "asc" or "desc"              |
+| fixed_asset_number          | string | No       | Fixed asset number filter                |
+| fixed_asset_number_value    | string | No       | Fixed asset number value                 |
+| title                       | string | No       | Title filter                             |
+| title_value                 | string | No       | Title value                              |
+| placed_in_service           | string | No       | Placed in service filter                 |
+| placed_in_service_value     | string | No       | Placed in service value (timestamp)      |
+| end_placed_in_service_value | string | No       | End placed in service value (timestamp)  |
+| cost                        | string | No       | Cost filter                              |
+| cost_value                  | string | No       | Cost value                               |
+| end_cost_value              | string | No       | End cost value                           |
+| salvage_value               | string | No       | Salvage value filter                     |
+| salvage_value_value         | string | No       | Salvage value                            |
+| end_salvage_value           | string | No       | End salvage value                        |
+| business_use                | string | No       | Business use filter                      |
+| business_use_value          | string | No       | Business use value                       |
+| end_business_use_value      | string | No       | End business use value                   |
+| created_at                  | string | No       | Created at filter                        |
+| created_at_value            | string | No       | Created at value (timestamp)             |
+| end_date                    | string | No       | End date value (timestamp)               |
+
+### Parameter Examples
+
+- **Basic request**: `GET /fixed-assets?company_id=64b8f1a2e4b0c8d9f0123456`
+- **With pagination**: `GET /fixed-assets?company_id=64b8f1a2e4b0c8d9f0123456&skip=0&limit=10`
+- **With search**: `GET /fixed-assets?company_id=64b8f1a2e4b0c8d9f0123456&search=computer`
+- **With sorting**: `GET /fixed-assets?company_id=64b8f1a2e4b0c8d9f0123456&sort=created_at&order=desc`
+- **With cost filter**: `GET /fixed-assets?company_id=64b8f1a2e4b0c8d9f0123456&cost=cost_value&cost_value=1000&end_cost_value=2000`
+
+## Response
+
+```json
+{
+  "success": true,
+  "message": "Fixed assets retrieved successfully",
+  "data": {
+    "fixed_assets": [
+      {
+        "id": "64b8f1a2e4b0c8d9f0123456",
+        "title": "Office Computer",
+        "placed_in_service": 1640995200,
+        "cost": 1500.0,
+        "salvage_value": 150.0,
+        "business_use": 100.0,
+        "fixed_asset_number": 1,
+        "fixed_asset_number_text": "AST-1",
+        "created_at": 1640995200,
+        "updated_at": 1640995200
+      },
+      {
+        "id": "64b8f1a2e4b0c8d9f0123457",
+        "title": "Office Desk",
+        "placed_in_service": 1640995200,
+        "cost": 800.0,
+        "salvage_value": 80.0,
+        "business_use": 100.0,
+        "fixed_asset_number": 2,
+        "fixed_asset_number_text": "AST-2",
+        "created_at": 1640995200,
+        "updated_at": 1640995200
+      }
+    ],
+    "total": 2
+  }
+}
+```
+
+### Response Parameters
+
+| Parameter         | Type    | Description                                |
+| ----------------- | ------- | ------------------------------------------ |
+| success           | boolean | Indicates if the operation was successful  |
+| message           | string  | Additional information about the operation |
+| data              | object  | Response data for successful requests      |
+| data.fixed_assets | array   | Array of fixed asset objects               |
+| data.total        | integer | Total number of fixed assets               |
+
+### Fixed Asset Object Parameters
+
+| Parameter               | Type    | Description                                |
+| ----------------------- | ------- | ------------------------------------------ |
+| id                      | string  | Unique identifier for the fixed asset      |
+| title                   | string  | Title/name of the fixed asset              |
+| placed_in_service       | integer | Timestamp when asset was placed in service |
+| cost                    | number  | Original cost of the fixed asset           |
+| salvage_value           | number  | Estimated salvage value of the asset       |
+| business_use            | number  | Percentage of business use (0-100)         |
+| fixed_asset_number      | integer | Auto-generated fixed asset number          |
+| fixed_asset_number_text | string  | Formatted fixed asset number text          |
+| created_at              | integer | Creation timestamp                         |
+| updated_at              | integer | Last update timestamp                      |
+
+## Error Responses
+
+### Invalid Request (400)
+
+```json
+{
+  "success": false,
+  "message": "Invalid request",
+  "error": {
+    "code": "INVALID_REQUEST",
+    "details": "Company ID is required"
+  }
+}
+```
+
+### Unauthorized (401)
+
+```json
+{
+  "success": false,
+  "message": "API key is required",
+  "error": {
+    "code": "API_KEY_REQUIRED",
+    "details": ""
+  }
+}
+```
+
+### Company Not Found (404)
+
+```json
+{
+  "success": false,
+  "message": "Company not found",
+  "error": {
+    "code": "COMPANY_NOT_FOUND",
+    "details": ""
+  }
+}
+```
+
+### Internal Server Error (500)
+
+```json
+{
+  "success": false,
+  "message": "Internal server error",
+  "error": {
+    "code": "INTERNAL_ERROR",
+    "details": "An unexpected error occurred."
+  }
+}
+```
+
+## Notes
+
+- The `company_id` parameter is required for all requests
+- Pagination parameters (`skip` and `limit`) are optional but recommended for large datasets
+- Search functionality works across title and description fields
+- Timestamp filters should be provided in Unix timestamp format
+- Cost and salvage value filters support range queries using `_value` and `end_` parameters

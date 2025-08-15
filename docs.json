@@ -35,7 +35,8 @@
           {
             "group": "Accounting API",
             "pages": [
-              "api-reference/contacts"
+              "api-reference/contacts",
+              "api-reference/fixed-assets"
             ]
           }
         ]
@@ -59,6 +60,16 @@
               "api-reference/accounting/contacts/get-contact",
               "api-reference/accounting/contacts/update-contact",
               "api-reference/accounting/contacts/delete-contact"
+            ]
+          },
+          {
+            "group": "Fixed Assets API",
+            "pages": [
+              "api-reference/accounting/fixed-assets/create-fixed-asset",
+              "api-reference/accounting/fixed-assets/list-fixed-assets",
+              "api-reference/accounting/fixed-assets/get-fixed-asset",
+              "api-reference/accounting/fixed-assets/update-fixed-asset",
+              "api-reference/accounting/fixed-assets/delete-fixed-asset"
             ]
           },
           {

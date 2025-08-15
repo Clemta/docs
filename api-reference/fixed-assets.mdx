@@ -1,0 +1,54 @@
+---
+title: "Fixed Assets"
+description: "API for managing fixed assets in the accounting system"
+---
+
+# Fixed Assets API
+
+The Fixed Assets API allows partners to programmatically manage fixed assets in the accounting system. This API is designed for partners who want to integrate Clemta's fixed asset management services into their own platforms.
+
+## Authentication
+
+See [Authentication](/api-reference/authentication) for how to authenticate requests.
+
+## Rate Limiting
+
+The Fixed Assets API is subject to rate limiting to ensure fair usage and system stability. Please refer to our [Rate Limiting](/api-reference/rate-limiting) documentation for more details.
+
+## Available Endpoints
+
+| Method | Endpoint                                                                                   | Description                                    |
+| ------ | ------------------------------------------------------------------------------------------ | ---------------------------------------------- |
+| POST   | [/fixed-assets](/api-reference/accounting/fixed-assets/create-fixed-asset)                 | Create a new fixed asset                       |
+| GET    | [/fixed-assets](/api-reference/accounting/fixed-assets/list-fixed-assets)                  | Retrieve a list of fixed assets with filtering |
+| GET    | [/fixed-assets/:fixed_asset_id](/api-reference/accounting/fixed-assets/get-fixed-asset)    | Retrieve a specific fixed asset by ID          |
+| PATCH  | [/fixed-assets/:fixed_asset_id](/api-reference/accounting/fixed-assets/update-fixed-asset) | Update an existing fixed asset                 |
+| DELETE | [/fixed-assets/:fixed_asset_id](/api-reference/accounting/fixed-assets/delete-fixed-asset) | Delete a fixed asset                           |
+
+## Fixed Asset Properties
+
+Fixed assets have the following key properties:
+
+| Property          | Type    | Description                                    |
+| ----------------- | ------- | ---------------------------------------------- |
+| title             | string  | Title/name of the fixed asset                  |
+| placed_in_service | integer | Timestamp when the asset was placed in service |
+| cost              | number  | Original cost of the fixed asset               |
+| salvage_value     | number  | Estimated salvage value of the asset           |
+| business_use      | number  | Percentage of business use (0-100)             |
+| company_id        | string  | Company ID that owns the asset                 |
+
+## Error Codes
+
+The Fixed Assets API uses the same error codes as other Clemta APIs:
+
+| Code                | Description                                   |
+| ------------------- | --------------------------------------------- |
+| API_KEY_REQUIRED    | API key is missing from request               |
+| INVALID_API_KEY     | Provided API key is invalid                   |
+| ACCESS_DENIED       | API key does not have access to this resource |
+| RATE_LIMIT_EXCEEDED | Rate limit exceeded                           |
+| INVALID_REQUEST     | Request data is invalid                       |
+| VALIDATION_FAILED   | Request validation failed                     |
+| COMPANY_NOT_FOUND   | Specified company not found                   |
+| INTERNAL_ERROR      | Internal server error                         |

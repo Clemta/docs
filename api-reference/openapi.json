@@ -90,7 +90,9 @@
             "description": "Invalid request data",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -98,7 +100,9 @@
             "description": "Unauthorized - Invalid or missing API key",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -106,7 +110,9 @@
             "description": "Conflict - External ID already exists",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -134,7 +140,9 @@
             },
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -142,7 +150,9 @@
             "description": "Internal server error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           }
@@ -206,7 +216,9 @@
             "description": "Invalid request",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -214,7 +226,9 @@
             "description": "Unauthorized - Invalid or missing API key",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -222,7 +236,9 @@
             "description": "Forbidden - Access denied to this formation",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -230,7 +246,9 @@
             "description": "Formation not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -258,7 +276,9 @@
             },
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           }
@@ -297,7 +317,9 @@
             "description": "Invalid request",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -305,7 +327,9 @@
             "description": "Unauthorized - Invalid or missing API key",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -313,7 +337,9 @@
             "description": "Formation not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -321,7 +347,9 @@
             "description": "Internal server error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           }
@@ -350,7 +378,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationBaseResponse"
+                  "$ref": "#/components/schemas/ContactCreateResponse"
                 }
               }
             }
@@ -359,7 +387,9 @@
             "description": "Invalid request data",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -367,7 +397,9 @@
             "description": "Unauthorized - Invalid or missing API key",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -375,7 +407,9 @@
             "description": "Company not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -383,7 +417,9 @@
             "description": "Internal server error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           }
@@ -484,7 +520,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationBaseResponse"
+                  "$ref": "#/components/schemas/ContactListResponse"
                 }
               }
             }
@@ -493,7 +529,9 @@
             "description": "Invalid request",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -501,7 +539,9 @@
             "description": "Unauthorized - Invalid or missing API key",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -509,7 +549,9 @@
             "description": "Company not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -517,7 +559,9 @@
             "description": "Internal server error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           }
@@ -547,7 +591,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationBaseResponse"
+                  "$ref": "#/components/schemas/ContactGetResponse"
                 }
               }
             }
@@ -556,7 +600,9 @@
             "description": "Invalid request",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -564,7 +610,9 @@
             "description": "Unauthorized - Invalid or missing API key",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -572,7 +620,9 @@
             "description": "Contact not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -580,7 +630,9 @@
             "description": "Internal server error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           }
@@ -618,7 +670,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationBaseResponse"
+                  "$ref": "#/components/schemas/ContactUpdateResponse"
                 }
               }
             }
@@ -627,7 +679,9 @@
             "description": "Invalid request data",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -635,7 +689,9 @@
             "description": "Unauthorized - Invalid or missing API key",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -643,7 +699,9 @@
             "description": "Contact not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -651,7 +709,9 @@
             "description": "Internal server error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           }
@@ -679,7 +739,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationBaseResponse"
+                  "$ref": "#/components/schemas/ContactDeleteResponse"
                 }
               }
             }
@@ -688,7 +748,9 @@
             "description": "Invalid request",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -696,7 +758,9 @@
             "description": "Unauthorized - Invalid or missing API key",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -704,7 +768,9 @@
             "description": "Contact not found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           },
@@ -712,7 +778,584 @@
             "description": "Internal server error",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/FormationErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fixed-assets": {
+      "post": {
+        "summary": "Create Fixed Asset",
+        "description": "Creates a new fixed asset for a company",
+        "operationId": "createFixedAsset",
+        "tags": ["Fixed Assets"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFixedAssetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Fixed asset created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FixedAssetCreateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Company not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get Fixed Assets",
+        "description": "Retrieves a list of fixed assets for a company with optional filtering and pagination",
+        "operationId": "getFixedAssets",
+        "tags": ["Fixed Assets"],
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "query",
+            "required": true,
+            "description": "Company ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "description": "Number of records to skip",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Number of records to return",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "description": "Search term",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Sort field",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "description": "Sort order (asc/desc)",
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"]
+            }
+          },
+          {
+            "name": "fixed_asset_number",
+            "in": "query",
+            "required": false,
+            "description": "Fixed asset number filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fixed_asset_number_value",
+            "in": "query",
+            "required": false,
+            "description": "Fixed asset number value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "description": "Title filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "title_value",
+            "in": "query",
+            "required": false,
+            "description": "Title value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "placed_in_service",
+            "in": "query",
+            "required": false,
+            "description": "Placed in service filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "placed_in_service_value",
+            "in": "query",
+            "required": false,
+            "description": "Placed in service value (timestamp)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end_placed_in_service_value",
+            "in": "query",
+            "required": false,
+            "description": "End placed in service value (timestamp)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cost",
+            "in": "query",
+            "required": false,
+            "description": "Cost filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cost_value",
+            "in": "query",
+            "required": false,
+            "description": "Cost value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end_cost_value",
+            "in": "query",
+            "required": false,
+            "description": "End cost value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "salvage_value",
+            "in": "query",
+            "required": false,
+            "description": "Salvage value filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "salvage_value_value",
+            "in": "query",
+            "required": false,
+            "description": "Salvage value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end_salvage_value",
+            "in": "query",
+            "required": false,
+            "description": "End salvage value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "business_use",
+            "in": "query",
+            "required": false,
+            "description": "Business use filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "business_use_value",
+            "in": "query",
+            "required": false,
+            "description": "Business use value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end_business_use_value",
+            "in": "query",
+            "required": false,
+            "description": "End business use value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "created_at",
+            "in": "query",
+            "required": false,
+            "description": "Created at filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "created_at_value",
+            "in": "query",
+            "required": false,
+            "description": "Created at value (timestamp)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "description": "End date value (timestamp)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Fixed assets retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FixedAssetListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Company not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fixed-assets/{fixed_asset_id}": {
+      "get": {
+        "summary": "Get Fixed Asset by ID",
+        "description": "Retrieves a specific fixed asset by its ID",
+        "operationId": "getFixedAssetById",
+        "tags": ["Fixed Assets"],
+        "parameters": [
+          {
+            "name": "fixed_asset_id",
+            "in": "path",
+            "required": true,
+            "description": "Fixed Asset ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Fixed asset retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FixedAssetGetResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Fixed asset not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update Fixed Asset",
+        "description": "Updates an existing fixed asset",
+        "operationId": "updateFixedAsset",
+        "tags": ["Fixed Assets"],
+        "parameters": [
+          {
+            "name": "fixed_asset_id",
+            "in": "path",
+            "required": true,
+            "description": "Fixed Asset ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFixedAssetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Fixed asset updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FixedAssetUpdateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Fixed asset not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Fixed Asset",
+        "description": "Deletes a fixed asset",
+        "operationId": "deleteFixedAsset",
+        "tags": ["Fixed Assets"],
+        "parameters": [
+          {
+            "name": "fixed_asset_id",
+            "in": "path",
+            "required": true,
+            "description": "Fixed Asset ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Fixed asset deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FixedAssetDeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Fixed asset not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormationErrorResponse"
+                }
               }
             }
           }
@@ -734,7 +1377,7 @@
         "type": "object",
         "required": [
           "name",
-          "type", 
+          "type",
           "state",
           "ending",
           "industry",
@@ -756,7 +1399,58 @@
           },
           "state": {
             "type": "string",
-            "enum": ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"],
+            "enum": [
+              "AL",
+              "AK",
+              "AZ",
+              "AR",
+              "CA",
+              "CO",
+              "CT",
+              "DE",
+              "FL",
+              "GA",
+              "HI",
+              "ID",
+              "IL",
+              "IN",
+              "IA",
+              "KS",
+              "KY",
+              "LA",
+              "ME",
+              "MD",
+              "MA",
+              "MI",
+              "MN",
+              "MS",
+              "MO",
+              "MT",
+              "NE",
+              "NV",
+              "NH",
+              "NJ",
+              "NM",
+              "NY",
+              "NC",
+              "ND",
+              "OH",
+              "OK",
+              "OR",
+              "PA",
+              "RI",
+              "SC",
+              "SD",
+              "TN",
+              "TX",
+              "UT",
+              "VT",
+              "VA",
+              "WA",
+              "WV",
+              "WI",
+              "WY"
+            ],
             "description": "State abbreviation"
           },
           "ending": {
@@ -1464,7 +2158,16 @@
               "status": {
                 "type": "string",
                 "description": "Formation status",
-                "enum": ["shareholder_verification", "in_progress", "active", "refunded", "name_change", "signature_requested", "submitted_to_state", "cancelled"]
+                "enum": [
+                  "shareholder_verification",
+                  "in_progress",
+                  "active",
+                  "refunded",
+                  "name_change",
+                  "signature_requested",
+                  "submitted_to_state",
+                  "cancelled"
+                ]
               },
               "external_id": {
                 "type": "string",
@@ -1481,9 +2184,16 @@
                 "type": "string",
                 "description": "Error code",
                 "enum": [
-                  "API_KEY_REQUIRED", "INVALID_API_KEY", "ACCESS_DENIED", "RATE_LIMIT_EXCEEDED",
-                  "INVALID_REQUEST", "VALIDATION_FAILED", "COMPANY_NOT_FOUND", "PACKAGE_NOT_FOUND",
-                  "DUPLICATE_EXTERNAL_ID", "INTERNAL_ERROR"
+                  "API_KEY_REQUIRED",
+                  "INVALID_API_KEY",
+                  "ACCESS_DENIED",
+                  "RATE_LIMIT_EXCEEDED",
+                  "INVALID_REQUEST",
+                  "VALIDATION_FAILED",
+                  "COMPANY_NOT_FOUND",
+                  "PACKAGE_NOT_FOUND",
+                  "DUPLICATE_EXTERNAL_ID",
+                  "INTERNAL_ERROR"
                 ]
               },
               "details": {
@@ -1498,18 +2208,46 @@
         "type": "object",
         "required": ["success", "company_id", "company_name", "status"],
         "properties": {
-          "success": { "type": "boolean", "description": "Indicates if the request was successful" },
+          "success": {
+            "type": "boolean",
+            "description": "Indicates if the request was successful"
+          },
           "company_id": { "type": "string", "description": "Company ID" },
           "company_name": { "type": "string", "description": "Company name" },
           "status": {
             "type": "string",
             "description": "Formation status",
-            "enum": ["shareholder_verification", "in_progress", "active", "refunded", "name_change", "signature_requested", "submitted_to_state", "cancelled"]
+            "enum": [
+              "shareholder_verification",
+              "in_progress",
+              "active",
+              "refunded",
+              "name_change",
+              "signature_requested",
+              "submitted_to_state",
+              "cancelled"
+            ]
           },
-          "formation_date": { "type": "string", "description": "Company formation date", "nullable": true },
-          "ein": { "type": "string", "description": "Employer Identification Number", "nullable": true },
-          "external_id": { "type": "string", "description": "Partner's external ID", "nullable": true },
-          "custom_data": { "type": "object", "description": "Partner's custom data for this company", "nullable": true },
+          "formation_date": {
+            "type": "string",
+            "description": "Company formation date",
+            "nullable": true
+          },
+          "ein": {
+            "type": "string",
+            "description": "Employer Identification Number",
+            "nullable": true
+          },
+          "external_id": {
+            "type": "string",
+            "description": "Partner's external ID",
+            "nullable": true
+          },
+          "custom_data": {
+            "type": "object",
+            "description": "Partner's custom data for this company",
+            "nullable": true
+          },
           "type": {
             "type": "string",
             "description": "Company type",
@@ -1519,22 +2257,100 @@
           "state": {
             "type": "string",
             "description": "State abbreviation",
-            "enum": ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"],
+            "enum": [
+              "AL",
+              "AK",
+              "AZ",
+              "AR",
+              "CA",
+              "CO",
+              "CT",
+              "DE",
+              "FL",
+              "GA",
+              "HI",
+              "ID",
+              "IL",
+              "IN",
+              "IA",
+              "KS",
+              "KY",
+              "LA",
+              "ME",
+              "MD",
+              "MA",
+              "MI",
+              "MN",
+              "MS",
+              "MO",
+              "MT",
+              "NE",
+              "NV",
+              "NH",
+              "NJ",
+              "NM",
+              "NY",
+              "NC",
+              "ND",
+              "OH",
+              "OK",
+              "OR",
+              "PA",
+              "RI",
+              "SC",
+              "SD",
+              "TN",
+              "TX",
+              "UT",
+              "VT",
+              "VA",
+              "WA",
+              "WV",
+              "WI",
+              "WY"
+            ],
             "nullable": true
           },
-          "country": { "type": "string", "description": "Country code", "nullable": true },
+          "country": {
+            "type": "string",
+            "description": "Country code",
+            "nullable": true
+          },
           "ending": {
             "type": "string",
             "description": "Company ending",
             "enum": ["LLC", "Inc.", "Corporation", "Corp."],
             "nullable": true
           },
-          "industry": { "type": "string", "description": "Industry type", "nullable": true },
-          "number_of_shares": { "type": "number", "description": "Number of shares", "nullable": true },
-          "par_value": { "type": "number", "description": "Par value per share", "nullable": true },
-          "is_company_private": { "type": "boolean", "description": "Whether the company is private" },
-          "address": { "$ref": "#/components/schemas/Address", "description": "Company address", "nullable": true },
-          "timezone": { "type": "string", "description": "Company timezone", "nullable": true },
+          "industry": {
+            "type": "string",
+            "description": "Industry type",
+            "nullable": true
+          },
+          "number_of_shares": {
+            "type": "number",
+            "description": "Number of shares",
+            "nullable": true
+          },
+          "par_value": {
+            "type": "number",
+            "description": "Par value per share",
+            "nullable": true
+          },
+          "is_company_private": {
+            "type": "boolean",
+            "description": "Whether the company is private"
+          },
+          "address": {
+            "$ref": "#/components/schemas/Address",
+            "description": "Company address",
+            "nullable": true
+          },
+          "timezone": {
+            "type": "string",
+            "description": "Company timezone",
+            "nullable": true
+          },
           "shareholders": {
             "type": "array",
             "description": "List of shareholders",
@@ -1553,10 +2369,26 @@
             "items": { "$ref": "#/components/schemas/PersonResponse" },
             "nullable": true
           },
-          "created_at": { "type": "integer", "description": "Creation timestamp", "nullable": true },
-          "updated_at": { "type": "integer", "description": "Last update timestamp", "nullable": true },
-          "federal_tax_filing": { "type": "integer", "description": "Federal tax filing timestamp", "nullable": true },
-          "state_tax_filing": { "type": "integer", "description": "State tax filing timestamp", "nullable": true },
+          "created_at": {
+            "type": "integer",
+            "description": "Creation timestamp",
+            "nullable": true
+          },
+          "updated_at": {
+            "type": "integer",
+            "description": "Last update timestamp",
+            "nullable": true
+          },
+          "federal_tax_filing": {
+            "type": "integer",
+            "description": "Federal tax filing timestamp",
+            "nullable": true
+          },
+          "state_tax_filing": {
+            "type": "integer",
+            "description": "State tax filing timestamp",
+            "nullable": true
+          },
           "foreign_qualification_addresses": {
             "type": "array",
             "description": "Foreign qualification addresses",
@@ -1658,7 +2490,11 @@
         "type": "object",
         "required": ["success", "message", "error"],
         "properties": {
-          "success": { "type": "boolean", "description": "Indicates if the request was successful", "example": false },
+          "success": {
+            "type": "boolean",
+            "description": "Indicates if the request was successful",
+            "example": false
+          },
           "message": { "type": "string", "description": "Error message" },
           "error": {
             "type": "object",
@@ -1669,9 +2505,16 @@
                 "type": "string",
                 "description": "Error code",
                 "enum": [
-                  "API_KEY_REQUIRED", "INVALID_API_KEY", "ACCESS_DENIED", "RATE_LIMIT_EXCEEDED",
-                  "INVALID_REQUEST", "VALIDATION_FAILED", "COMPANY_NOT_FOUND", "PACKAGE_NOT_FOUND",
-                  "DUPLICATE_EXTERNAL_ID", "INTERNAL_ERROR"
+                  "API_KEY_REQUIRED",
+                  "INVALID_API_KEY",
+                  "ACCESS_DENIED",
+                  "RATE_LIMIT_EXCEEDED",
+                  "INVALID_REQUEST",
+                  "VALIDATION_FAILED",
+                  "COMPANY_NOT_FOUND",
+                  "PACKAGE_NOT_FOUND",
+                  "DUPLICATE_EXTERNAL_ID",
+                  "INTERNAL_ERROR"
                 ]
               },
               "details": {
@@ -1683,116 +2526,186 @@
         }
       },
       "BadRequestError": {
-        "allOf": [
-          { "$ref": "#/components/schemas/FormationErrorResponse" },
-          {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Invalid request data"
+          },
+          "error": {
             "type": "object",
-            "example": {
-              "success": false,
-              "message": "Invalid request data",
-              "error": {
-                "code": "INVALID_REQUEST",
-                "details": "Field 'name' is required"
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "INVALID_REQUEST"
+              },
+              "details": {
+                "type": "string",
+                "example": "Field 'name' is required"
               }
             }
           }
-        ]
+        }
       },
       "UnauthorizedError": {
-        "allOf": [
-          { "$ref": "#/components/schemas/FormationErrorResponse" },
-          {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "API key is required"
+          },
+          "error": {
             "type": "object",
-            "example": {
-              "success": false,
-              "message": "API key is required",
-              "error": {
-                "code": "API_KEY_REQUIRED",
-                "details": ""
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "API_KEY_REQUIRED"
+              },
+              "details": {
+                "type": "string",
+                "example": ""
               }
             }
           }
-        ]
+        }
       },
       "ForbiddenError": {
-        "allOf": [
-          { "$ref": "#/components/schemas/FormationErrorResponse" },
-          {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Access denied"
+          },
+          "error": {
             "type": "object",
-            "example": {
-              "success": false,
-              "message": "Access denied",
-              "error": {
-                "code": "ACCESS_DENIED",
-                "details": ""
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "ACCESS_DENIED"
+              },
+              "details": {
+                "type": "string",
+                "example": ""
               }
             }
           }
-        ]
+        }
       },
       "NotFoundError": {
-        "allOf": [
-          { "$ref": "#/components/schemas/FormationErrorResponse" },
-          {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Company not found"
+          },
+          "error": {
             "type": "object",
-            "example": {
-              "success": false,
-              "message": "Company not found",
-              "error": {
-                "code": "COMPANY_NOT_FOUND",
-                "details": ""
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "COMPANY_NOT_FOUND"
+              },
+              "details": {
+                "type": "string",
+                "example": ""
               }
             }
           }
-        ]
+        }
       },
       "ConflictError": {
-        "allOf": [
-          { "$ref": "#/components/schemas/FormationErrorResponse" },
-          {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "External ID already exists for this partner"
+          },
+          "error": {
             "type": "object",
-            "example": {
-              "success": false,
-              "message": "External ID already exists for this partner",
-              "error": {
-                "code": "DUPLICATE_EXTERNAL_ID",
-                "details": ""
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "DUPLICATE_EXTERNAL_ID"
+              },
+              "details": {
+                "type": "string",
+                "example": ""
               }
             }
           }
-        ]
+        }
       },
       "RateLimitError": {
-        "allOf": [
-          { "$ref": "#/components/schemas/FormationErrorResponse" },
-          {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Rate limit exceeded"
+          },
+          "error": {
             "type": "object",
-            "example": {
-              "success": false,
-              "message": "Rate limit exceeded",
-              "error": {
-                "code": "RATE_LIMIT_EXCEEDED",
-                "details": "Too many requests. Please try again later."
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "RATE_LIMIT_EXCEEDED"
+              },
+              "details": {
+                "type": "string",
+                "example": "Too many requests. Please try again later."
               }
             }
           }
-        ]
+        }
       },
       "InternalServerError": {
-        "allOf": [
-          { "$ref": "#/components/schemas/FormationErrorResponse" },
-          {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Internal server error"
+          },
+          "error": {
             "type": "object",
-            "example": {
-              "success": false,
-              "message": "Internal server error",
-              "error": {
-                "code": "INTERNAL_ERROR",
-                "details": "An unexpected error occurred."
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "INTERNAL_ERROR"
+              },
+              "details": {
+                "type": "string",
+                "example": "An unexpected error occurred."
               }
             }
           }
-        ]
+        }
       },
       "CreateContactRequest": {
         "type": "object",
@@ -1887,18 +2800,6 @@
             },
             "description": "BCC email addresses"
           },
-          "default_category_id": {
-            "type": "string",
-            "description": "Default category ID"
-          },
-          "default_business_id": {
-            "type": "string",
-            "description": "Default business ID"
-          },
-          "default_client_id": {
-            "type": "string",
-            "description": "Default client ID"
-          },
           "billing": {
             "$ref": "#/components/schemas/ContactBilling"
           },
@@ -1963,6 +2864,32 @@
       },
       "ContactResponse": {
         "type": "object",
+        "example": {
+          "id": "64b8f1a2e4b0c8d9f0123456",
+          "created_at": 1640995200,
+          "updated_at": 1640995200,
+          "type": "customer",
+          "status": "active",
+          "full_name": "John Doe",
+          "email": "john.doe@example.com",
+          "description": "Primary contact for the company",
+          "cc_emails": ["cc1@example.com", "cc2@example.com"],
+          "bcc_emails": ["bcc1@example.com", "bcc2@example.com"],
+          "billing": {
+            "email": "billing@example.com",
+            "phone": "1234567890",
+            "phone_code": "+1",
+            "iso_code": "US",
+            "country": "United States",
+            "address_1": "123 Main Street",
+            "address_2": "Suite 100",
+            "postal_code": "12345",
+            "district": "Downtown",
+            "state": "CA",
+            "province": "California",
+            "tax_id": "12-3456789"
+          }
+        },
         "properties": {
           "id": {
             "type": "string",
@@ -2011,20 +2938,357 @@
             },
             "description": "BCC email addresses"
           },
-          "default_category_id": {
-            "type": "string",
-            "description": "Default category ID"
-          },
-          "default_business_id": {
-            "type": "string",
-            "description": "Default business ID"
-          },
-          "default_client_id": {
-            "type": "string",
-            "description": "Default client ID"
-          },
           "billing": {
             "$ref": "#/components/schemas/ContactBilling"
+          }
+        }
+      },
+      "CreateFixedAssetRequest": {
+        "type": "object",
+        "required": [
+          "title",
+          "placed_in_service",
+          "cost",
+          "salvage_value",
+          "business_use",
+          "company_id"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title/name of the fixed asset",
+            "example": "Office Computer"
+          },
+          "placed_in_service": {
+            "type": "integer",
+            "description": "Timestamp when the asset was placed in service",
+            "example": 1640995200
+          },
+          "cost": {
+            "type": "number",
+            "description": "Original cost of the fixed asset",
+            "example": 1500.0
+          },
+          "salvage_value": {
+            "type": "number",
+            "description": "Estimated salvage value of the asset",
+            "example": 150.0
+          },
+          "business_use": {
+            "type": "number",
+            "description": "Percentage of business use (0-100)",
+            "example": 100.0
+          },
+          "company_id": {
+            "type": "string",
+            "description": "Company ID",
+            "example": "64b8f1a2e4b0c8d9f0123456"
+          }
+        }
+      },
+      "UpdateFixedAssetRequest": {
+        "type": "object",
+        "required": [
+          "title",
+          "placed_in_service",
+          "cost",
+          "salvage_value",
+          "business_use",
+          "company_id"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title/name of the fixed asset",
+            "example": "Office Computer"
+          },
+          "placed_in_service": {
+            "type": "integer",
+            "description": "Timestamp when the asset was placed in service",
+            "example": 1640995200
+          },
+          "cost": {
+            "type": "number",
+            "description": "Original cost of the fixed asset",
+            "example": 1500.0
+          },
+          "salvage_value": {
+            "type": "number",
+            "description": "Estimated salvage value of the asset",
+            "example": 150.0
+          },
+          "business_use": {
+            "type": "number",
+            "description": "Percentage of business use (0-100)",
+            "example": 100.0
+          },
+          "company_id": {
+            "type": "string",
+            "description": "Company ID",
+            "example": "64b8f1a2e4b0c8d9f0123456"
+          }
+        }
+      },
+      "FixedAssetResponse": {
+        "type": "object",
+        "example": {
+          "id": "64b8f1a2e4b0c8d9f0123456",
+          "created_at": 1640995200,
+          "updated_at": 1640995200,
+          "title": "Office Computer",
+          "placed_in_service": 1640995200,
+          "cost": 1500.00,
+          "salvage_value": 150.00,
+          "business_use": 100.0,
+          "fixed_asset_number": 1,
+          "fixed_asset_number_text": "AST-1"
+        },
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Fixed asset ID"
+          },
+          "created_at": {
+            "type": "integer",
+            "description": "Creation timestamp"
+          },
+          "updated_at": {
+            "type": "integer",
+            "description": "Last update timestamp"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title/name of the fixed asset"
+          },
+          "placed_in_service": {
+            "type": "integer",
+            "description": "Timestamp when the asset was placed in service"
+          },
+          "cost": {
+            "type": "number",
+            "description": "Original cost of the fixed asset"
+          },
+          "salvage_value": {
+            "type": "number",
+            "description": "Estimated salvage value of the asset"
+          },
+          "business_use": {
+            "type": "number",
+            "description": "Percentage of business use (0-100)"
+          },
+          "fixed_asset_number": {
+            "type": "integer",
+            "description": "Auto-generated fixed asset number"
+          },
+          "fixed_asset_number_text": {
+            "type": "string",
+            "description": "Formatted fixed asset number text"
+          }
+        }
+      },
+      "FormationBaseResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Indicates if the request was successful"
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message"
+          },
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "description": "Response data for successful requests"
+          }
+        }
+      },
+      "ContactCreateResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Contact created successfully"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ContactResponse"
+          }
+        }
+      },
+      "ContactGetResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Contact retrieved successfully"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ContactResponse"
+          }
+        }
+      },
+      "ContactListResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Contacts retrieved successfully"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "contacts": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ContactResponse"
+                }
+              },
+              "total": {
+                "type": "integer",
+                "description": "Total number of contacts"
+              }
+            }
+          }
+        }
+      },
+      "ContactUpdateResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Contact updated successfully"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ContactResponse"
+          }
+        }
+      },
+      "ContactDeleteResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Contact deleted successfully"
+          },
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "description": "No data returned for delete operation"
+          }
+        }
+      },
+      "FixedAssetCreateResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Fixed asset created successfully"
+          },
+          "data": {
+            "$ref": "#/components/schemas/FixedAssetResponse"
+          }
+        }
+      },
+      "FixedAssetGetResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Fixed asset retrieved successfully"
+          },
+          "data": {
+            "$ref": "#/components/schemas/FixedAssetResponse"
+          }
+        }
+      },
+      "FixedAssetListResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Fixed assets retrieved successfully"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "fixed_assets": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/FixedAssetResponse"
+                }
+              },
+              "total": {
+                "type": "integer",
+                "description": "Total number of fixed assets"
+              }
+            }
+          }
+        }
+      },
+      "FixedAssetUpdateResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Fixed asset updated successfully"
+          },
+          "data": {
+            "$ref": "#/components/schemas/FixedAssetResponse"
+          }
+        }
+      },
+              "FixedAssetDeleteResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Fixed asset deleted successfully"
+          },
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "description": "No data returned for delete operation"
           }
         }
       }
@@ -2041,4 +3305,4 @@
     "version_header": "X-API-Version",
     "latest_version_header": "X-API-Latest-Version"
   }
-} 
+}

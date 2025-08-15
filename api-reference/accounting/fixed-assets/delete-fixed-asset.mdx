@@ -1,0 +1,101 @@
+---
+title: "Delete Fixed Asset"
+description: "Delete a fixed asset"
+openapi: "DELETE /fixed-assets/{fixed_asset_id}"
+---
+
+# Delete Fixed Asset
+
+This endpoint allows you to delete a fixed asset from the system.
+
+## Headers
+
+| Parameter | Type   | Description                  |
+| --------- | ------ | ---------------------------- |
+| X-API-KEY | string | Formation API Key (required) |
+
+## Path Parameters
+
+| Parameter      | Type   | Description               |
+| -------------- | ------ | ------------------------- |
+| fixed_asset_id | string | Fixed Asset ID (required) |
+
+### Parameter Examples
+
+- **Fixed Asset ID**: `64b8f1a2e4b0c8d9f0123456`
+
+## Response
+
+```json
+{
+  "success": true,
+  "message": "Fixed asset deleted successfully",
+  "data": null
+}
+```
+
+### Response Parameters
+
+| Parameter | Type    | Description                                |
+| --------- | ------- | ------------------------------------------ |
+| success   | boolean | Indicates if the operation was successful  |
+| message   | string  | Additional information about the operation |
+| data      | null    | No data returned for delete operation      |
+
+## Error Responses
+
+### Invalid Request (400)
+
+```json
+{
+  "success": false,
+  "message": "Invalid request data",
+  "error": {
+    "code": "INVALID_REQUEST",
+    "details": "Invalid fixed asset ID format"
+  }
+}
+```
+
+### Unauthorized (401)
+
+```json
+{
+  "success": false,
+  "message": "API key is required",
+  "error": {
+    "code": "API_KEY_REQUIRED"
+  }
+}
+```
+
+### Fixed Asset Not Found (404)
+
+```json
+{
+  "success": false,
+  "message": "Fixed asset not found",
+  "error": {
+    "code": "FIXED_ASSET_NOT_FOUND"
+  }
+}
+```
+
+### Internal Server Error (500)
+
+```json
+{
+  "success": false,
+  "message": "Internal server error",
+  "error": {
+    "code": "INTERNAL_ERROR"
+  }
+}
+```
+
+## Notes
+
+- Once a fixed asset is deleted, it cannot be recovered
+- The fixed asset ID must be a valid ObjectID format
+- Deletion is permanent and will remove all associated data
+- No data is returned in the response for successful delete operations
