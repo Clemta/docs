@@ -2537,6 +2537,11 @@
             "type": "string",
             "example": "Invalid request data"
           },
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "example": null
+          },
           "error": {
             "type": "object",
             "properties": {
@@ -2562,6 +2567,11 @@
           "message": {
             "type": "string",
             "example": "API key is required"
+          },
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "example": null
           },
           "error": {
             "type": "object",
@@ -2589,6 +2599,11 @@
             "type": "string",
             "example": "Access denied"
           },
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "example": null
+          },
           "error": {
             "type": "object",
             "properties": {
@@ -2614,6 +2629,11 @@
           "message": {
             "type": "string",
             "example": "Company not found"
+          },
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "example": null
           },
           "error": {
             "type": "object",
@@ -2641,6 +2661,11 @@
             "type": "string",
             "example": "External ID already exists for this partner"
           },
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "example": null
+          },
           "error": {
             "type": "object",
             "properties": {
@@ -2666,6 +2691,11 @@
           "message": {
             "type": "string",
             "example": "Rate limit exceeded"
+          },
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "example": null
           },
           "error": {
             "type": "object",
@@ -2693,6 +2723,11 @@
             "type": "string",
             "example": "Internal server error"
           },
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "example": null
+          },
           "error": {
             "type": "object",
             "properties": {
@@ -2718,6 +2753,11 @@
           "message": {
             "type": "string",
             "example": "Contact not found"
+          },
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "example": null
           },
           "error": {
             "type": "object",
@@ -2745,6 +2785,11 @@
             "type": "string",
             "example": "Fixed asset not found"
           },
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "example": null
+          },
           "error": {
             "type": "object",
             "properties": {
@@ -2770,6 +2815,11 @@
           "message": {
             "type": "string",
             "example": "Package not found"
+          },
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "example": null
           },
           "error": {
             "type": "object",
