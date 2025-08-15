@@ -91,7 +91,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/BadRequestError"
                 }
               }
             }
@@ -101,7 +101,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/UnauthorizedError"
                 }
               }
             }
@@ -111,7 +111,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/ConflictError"
                 }
               }
             }
@@ -141,7 +141,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/RateLimitError"
                 }
               }
             }
@@ -151,7 +151,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/InternalServerError"
                 }
               }
             }
@@ -217,7 +217,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/BadRequestError"
                 }
               }
             }
@@ -227,7 +227,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/UnauthorizedError"
                 }
               }
             }
@@ -237,7 +237,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/ForbiddenError"
                 }
               }
             }
@@ -247,7 +247,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/NotFoundError"
                 }
               }
             }
@@ -277,7 +277,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/RateLimitError"
                 }
               }
             }
@@ -318,7 +318,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/BadRequestError"
                 }
               }
             }
@@ -328,7 +328,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/UnauthorizedError"
                 }
               }
             }
@@ -338,7 +338,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/NotFoundError"
                 }
               }
             }
@@ -348,7 +348,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/InternalServerError"
                 }
               }
             }
@@ -388,7 +388,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/BadRequestError"
                 }
               }
             }
@@ -398,7 +398,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/UnauthorizedError"
                 }
               }
             }
@@ -408,7 +408,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/NotFoundError"
                 }
               }
             }
@@ -418,7 +418,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/InternalServerError"
                 }
               }
             }
@@ -530,7 +530,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/BadRequestError"
                 }
               }
             }
@@ -540,7 +540,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/UnauthorizedError"
                 }
               }
             }
@@ -550,7 +550,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/NotFoundError"
                 }
               }
             }
@@ -560,7 +560,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/InternalServerError"
                 }
               }
             }
@@ -601,7 +601,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/BadRequestError"
                 }
               }
             }
@@ -611,7 +611,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/UnauthorizedError"
                 }
               }
             }
@@ -621,7 +621,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/ContactNotFoundError"
                 }
               }
             }
@@ -631,7 +631,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/InternalServerError"
                 }
               }
             }
@@ -680,7 +680,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/BadRequestError"
                 }
               }
             }
@@ -690,7 +690,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/UnauthorizedError"
                 }
               }
             }
@@ -700,7 +700,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/ContactNotFoundError"
                 }
               }
             }
@@ -710,7 +710,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/InternalServerError"
                 }
               }
             }
@@ -749,7 +749,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/BadRequestError"
                 }
               }
             }
@@ -759,7 +759,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/UnauthorizedError"
                 }
               }
             }
@@ -769,7 +769,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/ContactNotFoundError"
                 }
               }
             }
@@ -779,7 +779,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/InternalServerError"
                 }
               }
             }
@@ -819,7 +819,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/BadRequestError"
                 }
               }
             }
@@ -829,7 +829,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/UnauthorizedError"
                 }
               }
             }
@@ -839,7 +839,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/NotFoundError"
                 }
               }
             }
@@ -849,7 +849,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/InternalServerError"
                 }
               }
             }
@@ -1105,7 +1105,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/BadRequestError"
                 }
               }
             }
@@ -1115,7 +1115,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/UnauthorizedError"
                 }
               }
             }
@@ -1125,7 +1125,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/NotFoundError"
                 }
               }
             }
@@ -1135,7 +1135,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/InternalServerError"
                 }
               }
             }
@@ -1176,7 +1176,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/BadRequestError"
                 }
               }
             }
@@ -1186,7 +1186,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/UnauthorizedError"
                 }
               }
             }
@@ -1196,7 +1196,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/FixedAssetNotFoundError"
                 }
               }
             }
@@ -1206,7 +1206,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/InternalServerError"
                 }
               }
             }
@@ -1255,7 +1255,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/BadRequestError"
                 }
               }
             }
@@ -1265,7 +1265,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/UnauthorizedError"
                 }
               }
             }
@@ -1275,7 +1275,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/FixedAssetNotFoundError"
                 }
               }
             }
@@ -1285,7 +1285,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/InternalServerError"
                 }
               }
             }
@@ -1324,7 +1324,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/BadRequestError"
                 }
               }
             }
@@ -1334,7 +1334,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/UnauthorizedError"
                 }
               }
             }
@@ -1344,7 +1344,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/FixedAssetNotFoundError"
                 }
               }
             }
@@ -1354,7 +1354,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FormationErrorResponse"
+                  "$ref": "#/components/schemas/InternalServerError"
                 }
               }
             }
@@ -2514,7 +2514,8 @@
                   "COMPANY_NOT_FOUND",
                   "PACKAGE_NOT_FOUND",
                   "DUPLICATE_EXTERNAL_ID",
-                  "INTERNAL_ERROR"
+                  "INTERNAL_ERROR",
+                  "NOT_FOUND"
                 ]
               },
               "details": {
@@ -2702,6 +2703,84 @@
               "details": {
                 "type": "string",
                 "example": "An unexpected error occurred."
+              }
+            }
+          }
+        }
+      },
+      "ContactNotFoundError": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Contact not found"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "NOT_FOUND"
+              },
+              "details": {
+                "type": "string",
+                "example": ""
+              }
+            }
+          }
+        }
+      },
+      "FixedAssetNotFoundError": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Fixed asset not found"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "NOT_FOUND"
+              },
+              "details": {
+                "type": "string",
+                "example": ""
+              }
+            }
+          }
+        }
+      },
+      "PackageNotFoundError": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Package not found"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "example": "PACKAGE_NOT_FOUND"
+              },
+              "details": {
+                "type": "string",
+                "example": ""
               }
             }
           }
@@ -3274,7 +3353,7 @@
           }
         }
       },
-              "FixedAssetDeleteResponse": {
+      "FixedAssetDeleteResponse": {
         "type": "object",
         "properties": {
           "success": {
