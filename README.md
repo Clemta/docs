@@ -14,6 +14,7 @@ This documentation covers:
 - **Interactive API Reference** - Live testing environment with OpenAPI 3.0
 - **Authentication & Security** - API key management and security best practices
 - **Rate Limiting** - Usage guidelines and limits
+- **Model Context Protocol (MCP)** - Secure, standardized access for AI models and agents to connect with your accounting data
 - **Webhooks** - Real-time notifications (coming soon)
 - **Error Handling** - Comprehensive error codes and troubleshooting
 

@@ -1,0 +1,64 @@
+---
+title: "MCP Tools"
+description: "Explore the available tools in Clemta's MCP server, including authentication, company, and contact management."
+---
+
+# MCP Tools Reference
+
+Clemta MCP server provides tools for accessing user, company, and contact data.  
+Each tool is authenticated and returns standardized error responses.
+
+---
+
+## Authentication
+
+### `whoami`
+
+Returns detailed information about the authenticated user.
+
+---
+
+## Company Management
+
+### `view_companies`
+
+Retrieves all companies associated with the authenticated user.
+
+### `view_company`
+
+Retrieves detailed information about a specific company.
+
+---
+
+## Contact Management
+
+### `view_contacts`
+
+Lists all contacts for a specific company.
+
+### `view_contact`
+
+Retrieves detailed information about a specific contact.
+
+### `create_contact`
+
+Creates a new contact for a company.
+
+### `update_contact`
+
+Updates an existing contact for a company.
+
+### `delete_contact`
+
+Deletes (deactivates) a contact for a company.
+
+---
+
+## Error Handling
+
+All tools may return standardized error responses:
+
+- **Authentication errors** – invalid or missing credentials.
+- **Invalid parameters** – request contains unsupported or malformed values.
+- **Resource not found** – requested item does not exist.
+- **Permission denied** – insufficient access rights.
