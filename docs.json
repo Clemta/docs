@@ -27,6 +27,13 @@
             ]
           },
           {
+            "group": "Model Context Protocol",
+            "pages": [
+              "mcp",
+              "mcp-tools"
+            ]
+          },
+          {
             "group": "Formation API",
             "pages": [
               "api-reference/formation"

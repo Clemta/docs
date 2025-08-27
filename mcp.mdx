@@ -1,0 +1,108 @@
+---
+title: "Model Context Protocol (MCP)"
+description: "Use Clemta's MCP server to connect AI models and agents with your accounting data."
+---
+
+# Introduction
+
+Clemta’s MCP server provides a secure and standardized way for AI models and agents to connect with your accounting data.  
+It simplifies data access and management through ready-to-use tools.
+
+---
+
+## Overview
+
+- Built on the **authenticated remote MCP specification**
+- Hosted and managed by Clemta
+- Provides tools to interact with **company records, contacts, and resources**
+
+---
+
+## Connection Details
+
+Clemta’s MCP server uses **Server-Sent Events (SSE)** and **OAuth 2.1** with dynamic client registration.
+
+**SSE Endpoint:**
+
+```bash
+https://mcp.clemta.com/sse
+```
+
+---
+
+## Setup Guides
+
+### Claude
+
+#### Team & Enterprise (Claude.ai)
+
+1. Open **Settings** in the sidebar (web or desktop).
+2. Go to **Integrations** → **Add more**.
+3. Enter:
+   - **Integration name:** Clemta
+   - **Integration URL:** `https://mcp.clemta.com/sse`
+4. Enable the integration for new chats.
+
+#### Free & Pro (Claude Desktop App)
+
+1. Open the config file:
+
+   ```bash
+   ~/Library/Application Support/Claude/claude_desktop_config.json
+   ```
+
+2. Add this snippet, then restart Claude Desktop:
+
+   ```json
+   {
+     "mcpServers": {
+       "clemta": {
+         "command": "npx",
+         "args": ["-y", "mcp-remote", "https://mcp.clemta.com/sse"]
+       }
+     }
+   }
+   ```
+
+---
+
+### Cursor
+
+Open the [MCP Tools page](https://docs.cursor.com/en/welcome) in Cursor and configure Clemta’s MCP server with the SSE URL.
+
+---
+
+### Visual Studio Code
+
+1. Press **CTRL/CMD + P** and type `MCP: Add Server`.
+2. Select **Command (stdio)**.
+3. Enter the command:
+
+   ```bash
+   npx mcp-remote https://mcp.clemta.com/sse
+   ```
+
+4. Name the server **Clemta**.
+5. Start it via `MCP: List Servers` → **Clemta** → **Start Server**.
+
+---
+
+### Other MCP-Compatible Tools
+
+Use the following configuration:
+
+- **Command:** `npx`
+- **Arguments:** `-y mcp-remote https://mcp.clemta.com/sse`
+- **Environment:** none
+
+---
+
+## Authentication
+
+When connecting, Clemta prompts you to authenticate via **OAuth 2.1**, ensuring secure and authorized access to your data.
+
+---
+
+## Available Tools
+
+See the [MCP Tools Reference](/mcp-tools) for details on supported tools and functionality.
