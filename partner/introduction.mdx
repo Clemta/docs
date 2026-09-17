@@ -1,0 +1,67 @@
+---
+title: "Introduction"
+description: "Offer company formation and services under your own brand, programmatically."
+---
+
+The Partner API lets you offer company formation and services under your own
+brand, and track every order programmatically.
+
+## Base URL
+
+```
+https://api.clemta.com/v1
+```
+
+Test-mode keys (`clmt_test_`) run against a sandbox that creates nothing
+real. Live-mode keys (`clmt_live_`) run against real companies and billing.
+
+## Where to start
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/partner/authentication">
+    Bearer keys, environments, and the error shape.
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/partner/quickstart">
+    Your first authenticated call in a minute.
+  </Card>
+  <Card title="Filtering and expanding" icon="filter" href="/partner/list-queries">
+    Filters, cursor pagination, and expansions on list endpoints.
+  </Card>
+  <Card title="Idempotency" icon="arrows-rotate" href="/partner/idempotency">
+    Retry writes safely with an idempotency key.
+  </Card>
+</CardGroup>
+
+## Understand the platform
+
+<CardGroup cols={2}>
+  <Card title="How it fits together" icon="diagram-project" href="/partner/concepts">
+    The objects, the modes, and the one rule behind every design choice.
+  </Card>
+  <Card title="Company lifecycle" icon="building" href="/partner/company-lifecycle">
+    Statuses, stages, identity documents, and the events at each step.
+  </Card>
+  <Card title="Requirements" icon="clipboard-check" href="/partner/requirements">
+    Documents, forms, and the asks your client answers without a key.
+  </Card>
+  <Card title="Service orders" icon="cart-shopping" href="/partner/service-orders">
+    Ordering, fulfilment steps, recurring services, the form standard.
+  </Card>
+  <Card title="Files" icon="file" href="/partner/files">
+    Reading deliverables back, proxied through the API.
+  </Card>
+  <Card title="Whitelabel" icon="eye-slash" href="/partner/whitelabel">
+    Your customer never hears from Clemta. What you receive instead.
+  </Card>
+  <Card title="Webhooks" icon="bolt" href="/partner/webhooks">
+    Every event, delivered in order, signed per Standard Webhooks.
+  </Card>
+</CardGroup>
+
+## Conventions
+
+- Responses are JSON. Errors follow a single envelope with a machine-readable
+  `code`. See [Errors](/partner/errors).
+- Limits are published on every response. See [Rate Limiting](/partner/rate-limiting).
+- Every object names its own type in an `object` field, so it stays
+  identifiable when nested or delivered in an event.

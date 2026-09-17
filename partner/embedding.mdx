@@ -1,0 +1,99 @@
+---
+title: "Embedding hosted pages"
+description: "Frame the hosted upload and signing pages inside your own site with the embed SDK, a thin convenience over an iframe."
+---
+
+The pages Clemta hosts for your client (identity upload and document signing)
+carry your brand and stand on their own by default. When you would rather keep
+your client on your own site, you can frame a hosted page inside it. The **embed
+SDK** is a small, dependency-free helper that renders the frame, sizes it to its
+content, and hands you the completion signal. It changes nothing about the
+security model - it is a convenience over an `<iframe>`.
+
+## Two prerequisites
+
+Framing is off until you turn it on for a specific origin, so a leaked session
+URL cannot be embedded anywhere you did not intend.
+
+1. **Register the origin.** In your partner dashboard, under **Branding**, add
+   each site that will frame a page to your allowed origins - the exact https
+   origin, for example `https://app.yourbrand.com` (no path, no trailing slash).
+   Up to five.
+
+2. **Mint the session for that origin.** Pass `embed_origin` when you create the
+   session, matching one of your registered origins:
+
+   ```bash
+   curl -X POST https://api.clemta.com/v1/companies/cmp_.../verification-sessions \
+     -H "Authorization: Bearer clmt_live_..." \
+     -d '{"shareholder": "sh_...", "embed_origin": "https://app.yourbrand.com"}'
+   ```
+
+   The same field works on
+   [`POST /companies/{id}/signing-sessions`](/api-reference/create-signing-session). The
+   returned `url` is authorized to be framed on that one origin and nowhere
+   else. Omit `embed_origin` and the page refuses to be framed at all.
+
+## The embed SDK
+
+Your partner dashboard, under **Branding**, gives you a ready-made script tag
+that loads the SDK. Copy it into your page once, then mount a session into a
+container:
+
+```html
+<div id="clemta"></div>
+<!-- paste the embed SDK script tag from your dashboard here -->
+<script>
+  const session = ClemtaHosted.mount({
+    url: sessionUrl,          // the url from a verification or signing session
+    container: "#clemta",     // element or selector to render into
+    onComplete: () => {
+      // the upload or signature finished - refresh your view, close a modal
+      session.close();
+    },
+  });
+</script>
+```
+
+### `ClemtaHosted.mount(options)`
+
+| Option | Type | What it does |
+|---|---|---|
+| `url` | string, required | The session `url` from a verification or signing session. |
+| `container` | string or Element, required | Where to render the frame. A CSS selector or an element. |
+| `onReady` | function | Called when the hosted page has loaded. |
+| `onComplete` | function | Called when the upload or signature finishes. Receives `{ redirectUrl }` - set when the signing session carried a `redirect_url`. |
+| `onCanceled` | function | Called when your client backs out. |
+| `onError` | function | Called when the hosted page reports a problem. |
+| `title` | string | Accessible title for the frame. Defaults to "Secure document". |
+| `minHeight` | number | Minimum frame height in pixels before the page reports its own. Defaults to 620. |
+| `autoHeight` | boolean | Grow the frame to fit its content. Defaults to `true`. |
+
+`mount` returns a handle:
+
+- **`session.close()`** removes the frame and detaches its listener. Call it from
+  `onComplete`, or when you tear down your own view.
+- **`session.element`** is the `<iframe>` node, if you need to style it.
+
+### Completion and redirects
+
+A framed page cannot navigate your top window, so a signing `redirect_url` rides
+the completion signal instead. Provide `onComplete` and you are in control - read
+`redirectUrl` and navigate yourself, or just close the frame. Omit `onComplete`
+and, when a `redirect_url` was set, the SDK navigates the top window there for
+you.
+
+<Warning>
+The completion callback is a UX signal, not proof. The authoritative record of a
+finished upload or signature is always the webhook Clemta delivers to your
+backend - [`company.document.received`](/api-reference/webhooks/company-document-received)
+or [`requirement.fulfilled`](/api-reference/webhooks/requirement-fulfilled). Never grant access or
+mark anything done on `onComplete` alone.
+</Warning>
+
+## Without the SDK
+
+The SDK is optional. Put the session `url` in an `<iframe>` yourself and the page
+still works - it verifies, server-side, that the framing site is the origin the
+session was minted for. Doing it by hand means you own the frame sizing and the
+`postMessage` listener the SDK would otherwise handle for you.

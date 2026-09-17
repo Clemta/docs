@@ -1,0 +1,96 @@
+---
+title: "Quickstart"
+description: "Make your first Partner API call"
+---
+
+## 1. Get a key
+
+There is no public signup. Keys are issued from the partner dashboard once your
+application is approved. The raw value is shown once, at creation:
+
+```
+clmt_live_9f2aK4dQ8xR3mB1nT7cV
+```
+
+Store it before you leave the page. Manage keys from the partner dashboard at
+[partner.clemta.com](https://partner.clemta.com).
+
+## 2. Call the API
+
+Send the key as a bearer token. [`GET /me`](/api-reference/get-me) confirms who the key belongs to and
+which API version you are on:
+
+```bash
+curl https://api.clemta.com/v1/me \
+  -H "Authorization: Bearer clmt_live_9f2aK4dQ8xR3mB1nT7cV"
+```
+
+```json Response
+{
+  "object": "me",
+  "partner_id": "prt_0346sFPEvSkJvY8vt14NNw",
+  "livemode": true,
+  "key_last4": "T7cV",
+  "api_version": "2026-08-13"
+}
+```
+
+Use a `clmt_test_` key to run against the sandbox instead. It creates
+nothing real.
+
+## 3. Create a company
+
+One call creates the account, the company, and the services on it. Use a test
+key first. Nothing real is created.
+
+```bash
+curl -X POST https://api.clemta.com/v1/companies \
+  -H "Authorization: Bearer clmt_test_..." \
+  -H "Idempotency-Key: 5f1c2a..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Acme", "ending": "llc", "state": "DE", "entity_type": "llc",
+    "industry": "software",
+    "account": {"first_name": "Ada", "last_name": "Lovelace", "email": "ada@acme.example"},
+    "shareholders": [{"type": "individual", "first_name": "Ada", "last_name": "Lovelace",
+                      "email": "ada@acme.example",
+                      "relationship": {"title": "sole_owner", "percent_ownership": 100, "representative": true},
+                      "tax_id_type": "ssn", "tax_id": "123-45-6789",
+                      "address": {"country": "US", "line1": "1 Main St", "city": "Dover", "state": "DE", "postal_code": "19901"}}],
+    "services": ["ein"]
+  }'
+```
+
+The company comes back in `requires_information`: each individual owner still
+owes an identity document (`document.status` is `required`). Attach one inline
+with `passport` (a file id from [`POST /v1/files`](/api-reference/create-file)), or hand your client a hosted
+upload page - [`POST /v1/companies/{id}/verification-sessions`](/api-reference/create-verification-session) returns a `url`
+you forward, no key needed. Once every owner's document is received, the
+company moves on.
+
+## 4. Follow along
+
+Register a webhook endpoint from the partner dashboard, or poll:
+
+```bash
+curl "https://api.clemta.com/v1/events?limit=10" -H "Authorization: Bearer clmt_test_..."
+```
+
+In the sandbox, drive the lifecycle yourself:
+
+```bash
+curl -X POST https://api.clemta.com/v1/sandbox/companies/cmp_.../simulate \
+  -H "Authorization: Bearer clmt_test_..." \
+  -d '{"event": "company.status.changed", "status": "active"}'
+```
+
+Moving a test company to `active` fires [`company.status.changed`](/api-reference/webhooks/company-status-changed) and
+[`company.incorporated`](/api-reference/webhooks/company-incorporated), exactly as the real transition would. Many of the catalog's events are
+simulable this way ([`company.ein.assigned`](/api-reference/webhooks/company-ein-assigned), [`service_order.completed`](/api-reference/webhooks/service-order-completed),
+`tax_filing.*`, [`file.created`](/api-reference/webhooks/file-created), [`invoice.finalized`](/api-reference/webhooks/invoice-finalized)...). See [Modes and the sandbox](/partner/concepts#modes-and-the-sandbox).
+
+## 5. Next
+
+- [How it fits together](/partner/concepts): the objects and the lifecycle.
+- [Requirements](/partner/requirements): everything Clemta asks of you, and how your client answers.
+- [Webhooks](/partner/webhooks): ordered, signed delivery of every event.

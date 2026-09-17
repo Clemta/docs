@@ -1,0 +1,63 @@
+---
+title: "Versioning"
+description: "How the Partner API versions its contract by date"
+---
+
+The Partner API is versioned by date. A breaking change ships as a new dated
+version, and the version you integrated against keeps working unchanged.
+
+## Picking a version
+
+Every request resolves to exactly one version, in this order:
+
+1. The `Clemta-Version` header, if you send one.
+2. Your account default, pinned the first time you created a key.
+3. The latest version, if neither of the above applies.
+
+Send the header to pin a request explicitly:
+
+```
+Clemta-Version: 2026-08-13
+```
+
+The effective version is echoed back on every response in the same header, so
+you can always confirm which contract answered you.
+
+## What a version pins
+
+A dated version pins the request and response shapes and the set of error
+codes. When a new version renames or restructures a field, the old version
+still answers with the old shape. Your integration does not have to move until
+you choose to.
+
+An unknown version is rejected with `invalid_api_version`. Use a date the
+[API versions](/partner/versions) page lists, or omit the header to run on your
+account default.
+
+## Deprecation and sunset
+
+A version can be deprecated once a newer one supersedes it. It keeps answering
+until a published sunset date, but every response on it carries two headers:
+
+- `Deprecation` marks the version as deprecated.
+- `Sunset` is the date after which it may stop answering.
+
+You can detect this from traffic alone, without polling the docs. The
+[API versions](/partner/versions) page lists any deprecation schedule.
+Move to the current version before the sunset date to avoid disruption.
+
+## Webhooks are versioned too
+
+The events we deliver to your endpoint are versioned the same way. Each delivery
+is rendered at the webhook version set for your workspace, so a payload keeps its
+shape even as newer API versions restructure the same resource. The event's
+`data.object` therefore matches the version you integrated against, not
+necessarily the latest one. Set your webhook version in the dashboard. It
+defaults to the API version pinned on your account.
+
+## Downloading the spec
+
+Every version's full OpenAPI description is served for download, so you can
+generate a client or diff two versions. See
+[OpenAPI specs](/partner/openapi-specs) for the version-resolving and
+frozen dated URLs.

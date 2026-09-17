@@ -1,0 +1,41 @@
+{/* Reusable explainer for cursor pagination. Include on any list endpoint
+    page. The page block and the after/before/limit parameters are identical
+    across all list endpoints. */}
+
+List responses are cursor-paginated. Every list carries a `page` block. Walk
+forward by passing `end_cursor` as `after`, backward by passing
+`start_cursor` as `before`:
+
+```bash
+GET /v1/companies?limit=25
+GET /v1/companies?limit=25&after=WyIyMDI2LTA4LTEzVDE0OjAyOjExWiIsIm1lbV8wMzQ2c0ZQRXZd   # next page
+GET /v1/companies?limit=25&before=WyIyMDI2LTA4LTEyVDA5OjMwOjAwWiIsIm1lbV8weFF2TmNYZWJd # previous page
+```
+
+```json The page block
+{
+  "object": "list",
+  "page": {
+    "start_cursor": "WyIyMDI2LTA4LTEzVDE0OjAyOjExWiIsIm1lbV8wMzQ2c0ZQRXZd",
+    "end_cursor": "WyIyMDI2LTA4LTEyVDA5OjMwOjAwWiIsIm1lbV8weFF2TmNYZWJd",
+    "has_next_page": true,
+    "has_prev_page": false,
+    "limit": 25,
+    "total": 112
+  },
+  "items": []
+}
+```
+
+<AccordionGroup>
+  <Accordion title="Rules">
+    - Cursors are **opaque**. Never parse or construct one, and their internal
+      structure changes without notice.
+    - A cursor is only valid for the **same listing** (same sort) that minted
+      it. Anything else returns `invalid_request`.
+    - `after` and `before` cannot be combined.
+    - Paging is position-based, not offset-based: page 100 costs the same as
+      page 1, and rows created between requests never shift your window.
+    - `limit` is 1-100, default 25. Both cursors are `null` on an empty page.
+  </Accordion>
+</AccordionGroup>

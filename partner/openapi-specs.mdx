@@ -1,0 +1,32 @@
+---
+title: "OpenAPI specs"
+description: "Download the Partner API's OpenAPI description, per version."
+---
+
+{/* Code generated from the version registry (partner/apiversion) by versiondocsgen. DO NOT EDIT. Edit the registry and run go generate ./partner/... */}
+
+The full OpenAPI description is served live and unauthenticated, so you can generate a client or import it into Postman without a key. It comes in two forms.
+
+## The version-resolving URL
+
+```
+GET https://api.clemta.com/v1/openapi.json
+```
+
+Served without a key, so it has no account default to fall back on: pass `?version=YYYY-MM-DD` (or the `Clemta-Version` header) to pin a version, otherwise it serves the latest. Use this when you always want the description that matches the contract you call.
+
+## Frozen, dated URLs
+
+Each dated version is also served at its own stable path. These never change once published, so they are safe to vendor into a build.
+
+| Version | Status | Download |
+|---|---|---|
+| `2026-08-13` | Current | [`https://api.clemta.com/v1/openapi/2026-08-13.json`](https://api.clemta.com/v1/openapi/2026-08-13.json) |
+
+Download one with curl:
+
+```bash
+curl -o clemta-openapi.json https://api.clemta.com/v1/openapi/2026-08-13.json
+```
+
+See [API versions](/partner/versions) for each version's lifecycle status and [Versioning](/partner/versioning) for how pinning works.

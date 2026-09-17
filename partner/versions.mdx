@@ -1,0 +1,14 @@
+---
+title: "API versions"
+description: "Every dated version of the Partner API and its lifecycle status."
+---
+
+{/* Code generated from the version registry (partner/apiversion) by versiondocsgen. DO NOT EDIT. Edit the registry and run go generate ./partner/... */}
+
+Each row is a version you can pin with the `Clemta-Version` header. See [Versioning](/partner/versioning) for how pinning works and the [Changelog](/partner/changelog) for what changed in each.
+
+A deprecated version keeps answering until its sunset date, and every response on it carries `Deprecation` and `Sunset` headers, so the schedule is visible from traffic alone. Move to the successor version before the sunset date.
+
+| Version | Status | Deprecated | Sunset | Successor |
+|---|---|---|---|---|
+| `2026-08-13` | Current | - | - | - |

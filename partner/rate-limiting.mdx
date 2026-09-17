@@ -1,0 +1,101 @@
+---
+title: "Rate Limiting"
+description: "How the Partner API rate-limits requests and how to pace against it"
+---
+
+Every response carries its own limits, so a client can pace itself instead of
+discovering them by being refused. The headers follow the IETF
+`RateLimit` draft.
+
+## Headers
+
+<ResponseField name="RateLimit-Limit" type="integer">
+  The ceiling of the tightest policy that applies to this request.
+</ResponseField>
+
+<ResponseField name="RateLimit-Remaining" type="integer">
+  Requests left in the current window for that policy.
+</ResponseField>
+
+<ResponseField name="RateLimit-Reset" type="integer">
+  Seconds until that window resets.
+</ResponseField>
+
+<ResponseField name="RateLimit-Policy" type="string">
+  Every policy that applies, so a burst ceiling is discoverable without hitting
+  it, for example `"burst";q=30;w=1, "sustained";q=120;w=60`.
+</ResponseField>
+
+Each request is counted against the API key, so one partner's traffic never
+spends another's budget. A key carries a **burst** policy (per second) beside
+its **sustained** one (per minute): a per-minute quota alone lets a client
+spend the whole minute in one second, and that spike is what the burst limit smooths out.
+
+## When you are limited
+
+A refused request is answered `429` with the standard error envelope and a
+`Retry-After` header. The `detail` names which policy was hit and how long to
+wait - a burst clears in a second, the sustained window in a minute:
+
+```json
+{
+  "type": "https://docs.clemta.com/partner/errors#rate_limit",
+  "title": "Rate limited",
+  "status": 429,
+  "code": "rate_limit",
+  "detail": "burst rate limit reached: 30 requests per second. Retry in 1s"
+}
+```
+
+## Pacing
+
+- Read `RateLimit-Remaining` and slow down before it reaches zero.
+- On a `429`, wait for `Retry-After` seconds, then retry. Do not hammer.
+- Back off exponentially if `429`s persist.
+
+## Handling it in code
+
+Retry on `429`, honoring `Retry-After`, and give up after a few attempts so a
+sustained limit does not become an infinite loop.
+
+<CodeGroup>
+
+```typescript fetch.ts
+async function call(url: string, key: string, tries = 4): Promise<Response> {
+  for (let attempt = 0; attempt < tries; attempt++) {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${key}` },
+    });
+    if (res.status !== 429) return res;
+
+    const retryAfter = Number(res.headers.get("Retry-After") ?? 1);
+    const backoff = retryAfter * 1000 * Math.pow(2, attempt);
+    await new Promise((r) => setTimeout(r, backoff));
+  }
+  throw new Error("rate limited after all retries");
+}
+```
+
+```python requests.py
+import time
+import requests
+
+def call(url, key, tries=4):
+    for attempt in range(tries):
+        res = requests.get(url, headers={"Authorization": f"Bearer {key}"})
+        if res.status_code != 429:
+            return res
+        retry_after = int(res.headers.get("Retry-After", "1"))
+        time.sleep(retry_after * (2 ** attempt))
+    raise RuntimeError("rate limited after all retries")
+```
+
+```bash curl
+# curl retries on 429 and waits per the response, up to 4 times.
+curl --retry 4 --retry-max-time 30 \
+  --retry-all-errors \
+  https://api.clemta.com/v1/me \
+  -H "Authorization: Bearer clmt_live_9f2aK4dQ8xR3mB1nT7cV"
+```
+
+</CodeGroup>
