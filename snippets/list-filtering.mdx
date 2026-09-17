@@ -1,0 +1,40 @@
+{/* Reusable explainer for the list-query mini-language (filter / sort /
+    limit). Include on any list endpoint page. The endpoint's own parameter
+    table (auto-generated from the OpenAPI spec) documents WHICH fields are
+    filterable. This snippet documents HOW the syntax works. */}
+
+List endpoints share one query mini-language: append an operator to a
+filterable field in square brackets. A bare field means exact match.
+
+```bash
+GET /v1/companies?status=active
+GET /v1/companies?name[contains]=acme&created_at[gte]=2026-01-01
+GET /v1/companies?status[in]=active,in_progress&sort=-created_at&limit=25
+```
+
+<AccordionGroup>
+  <Accordion title="Operators">
+    | Operator | Meaning | Example |
+    |---|---|---|
+    | *(none)* / `[eq]` | exact match | `status=active` |
+    | `[neq]` | not equal | `status[neq]=cancelled` |
+    | `[gt]` `[gte]` `[lt]` `[lte]` | range (numbers, dates) | `created_at[gte]=2026-01-01` |
+    | `[in]` / `[nin]` | in / not in a comma-separated list | `status[in]=active,in_progress` |
+    | `[contains]` | case-insensitive substring, only on fields documented as searchable | `name[contains]=acme` |
+
+    A field sent more than once (`?status=a&status=b`) is rejected - pass
+    multiple values with `[in]` instead. A query holds at most 16 conditions,
+    a list at most 50 values, and a value at most 256 characters.
+  </Accordion>
+  <Accordion title="Sorting">
+    `sort`: comma-separated fields, minus prefix for descending:
+    `sort=-created_at,name`. Each endpoint's description lists its sortable
+    fields. Page size and cursors are covered under Pagination.
+  </Accordion>
+  <Accordion title="Errors">
+    Filtering, sorting or searching on an undeclared field returns
+    `invalid_request` with one entry per violation in the `errors` array. The
+    queryable surface of every endpoint is exactly its documented parameter
+    list, nothing more.
+  </Accordion>
+</AccordionGroup>

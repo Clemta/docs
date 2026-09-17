@@ -1,0 +1,88 @@
+---
+title: "Idempotency"
+description: "Retry a write safely by naming it with an Idempotency-Key."
+---
+
+A request that times out tells you nothing about whether it landed. Retrying
+risks a second company. Not retrying risks none. An idempotency key removes
+the dilemma: send the same key again and you are answered with the **original
+response** instead of the operation running twice.
+
+## Sending a key
+
+Put a unique value in the `Idempotency-Key` header on any `POST`, `PUT` or
+`DELETE`. A UUID is the usual choice. Generate it **before** the first attempt
+and reuse the same value for every retry of that one operation.
+
+```bash Request
+curl https://api.clemta.com/v1/companies \
+  -H "Authorization: Bearer clmt_live_9f2aK4dQ8xR3mB1nT7cV" \
+  -H "Idempotency-Key: 5f8d0d55-b1e1-4a5b-9c1f-6f4e2a2b7c31" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Acme Platforms Inc", "state": "DE"}'
+```
+
+`GET` requests need no key. They are already repeatable, and sending one has
+no effect.
+
+## What a replay looks like
+
+The replayed response is byte-identical to the first one, status included, and
+carries one extra header so your integration can tell the two apart:
+
+<ResponseField name="Idempotent-Replayed" type="boolean">
+  Present and `true` only on a replay. Absent on the request that did the work.
+</ResponseField>
+
+That means a `201 Created` retried under the same key comes back as `201`,
+with the same resource id, not a `200`, and not a second resource.
+
+## What a key is bound to
+
+A key stands for one operation, and the operation is identified by the
+**method, path, request body and `Clemta-Version`** taken together. Sending the
+same key with any of those changed is a client bug, so it is refused rather
+than answered with a response to a different question.
+
+<ResponseField name="idempotency_key_mismatch" type="409">
+  The key was already used for a different request. Use a fresh key.
+</ResponseField>
+
+<ResponseField name="idempotency_key_in_use" type="409">
+  An earlier request with this key is still running, so there is no response to
+  replay yet. Retry the same request with the same key after a short pause.
+</ResponseField>
+
+Keys are scoped to your account, so they never collide with another partner's.
+
+## What is remembered, and for how long
+
+Keys are remembered for **24 hours**, which covers any retry a client or its
+queue would still be making. After that the same key is treated as new.
+
+Both successes and rejections are settled outcomes and are replayed: retrying a
+`400` under the same key returns the same `400`. A `5xx` is **not** a settled
+outcome. The key is released, so a retry runs the request again, which is
+exactly what a retry is for.
+
+## Recommended usage
+
+<Steps>
+  <Step title="Generate the key once, per operation">
+    Mint it where you decide to do the work, not where you send the request.
+    A key generated inside the retry loop defeats the whole mechanism.
+  </Step>
+  <Step title="Persist it alongside the work">
+    If your process restarts mid-retry, the key has to survive with it,
+    otherwise the resumed attempt is a new operation as far as the API is
+    concerned.
+  </Step>
+  <Step title="Retry on timeouts, connection errors and 5xx">
+    These are precisely the cases where the outcome is unknown. Back off
+    exponentially, and keep the key.
+  </Step>
+  <Step title="Never reuse a key for a different operation">
+    Two companies means two keys. Reuse is answered with
+    `idempotency_key_mismatch`, not with a quiet success.
+  </Step>
+</Steps>

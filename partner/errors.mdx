@@ -1,0 +1,334 @@
+---
+title: "Errors"
+description: "Every error the Clemta Partner API returns, what it means, and how to fix it."
+---
+
+{/* Code generated from the partner error registry (partner/fault) by errdocsgen. DO NOT EDIT. Edit the registry and run go generate ./partner/... */}
+
+Every error the Clemta Partner API returns is a JSON body carrying a stable machine-readable `code`. Branch on `code` (never on `detail`, whose wording may change). The `type` field of every response links straight back to its section on this page. Validation failures additionally carry an `errors` array naming every violating field.
+
+| Code | Status | Meaning |
+|---|---|---|
+| [`api_key_invalid`](#api_key_invalid) | `401` | Invalid API key |
+| [`api_key_expired`](#api_key_expired) | `401` | Expired API key |
+| [`insufficient_scope`](#insufficient_scope) | `403` | Insufficient scope |
+| [`ip_address_not_allowed`](#ip_address_not_allowed) | `403` | Address not allowed |
+| [`invalid_request`](#invalid_request) | `400` | Invalid request |
+| [`invalid_api_version`](#invalid_api_version) | `400` | Invalid API version |
+| [`method_not_allowed`](#method_not_allowed) | `405` | Method not allowed |
+| [`test_mode_only`](#test_mode_only) | `403` | Test mode only |
+| [`request_too_large`](#request_too_large) | `413` | Request too large |
+| [`idempotency_key_mismatch`](#idempotency_key_mismatch) | `409` | Idempotency key mismatch |
+| [`idempotency_key_in_use`](#idempotency_key_in_use) | `409` | Idempotency key in use |
+| [`resource_missing`](#resource_missing) | `404` | Not found |
+| [`resource_already_exists`](#resource_already_exists) | `409` | Conflict |
+| [`entitlement_required`](#entitlement_required) | `403` | Entitlement required |
+| [`billing_account_inactive`](#billing_account_inactive) | `403` | Billing account inactive |
+| [`rate_limit`](#rate_limit) | `429` | Rate limited |
+| [`api_error`](#api_error) | `500` | Internal error |
+
+## api_key_invalid
+
+**HTTP 401, Invalid API key**
+
+The `Authorization: Bearer` header is missing, malformed, or carries a key that does not exist or was revoked.
+
+**How to fix:** Send your key as `Authorization: Bearer clmt_live_` (or `clmt_test_`). Check for stray whitespace or a truncated value. If the key was revoked, create a new one from Settings, API keys.
+
+```json Example response
+{
+  "type": "https://docs.clemta.com/partner/errors#api_key_invalid",
+  "title": "Invalid API key",
+  "status": 401,
+  "code": "api_key_invalid",
+  "detail": "invalid API key"
+}
+```
+
+## api_key_expired
+
+**HTTP 401, Expired API key**
+
+The key was rotated and its 24-hour grace window has ended.
+
+**How to fix:** Switch to the successor key issued at rotation. A rotated key cannot be revived, so if the successor was lost, rotate again from the dashboard to mint a fresh one.
+
+```json Example response
+{
+  "type": "https://docs.clemta.com/partner/errors#api_key_expired",
+  "title": "Expired API key",
+  "status": 401,
+  "code": "api_key_expired",
+  "detail": "this API key was rotated and its grace window has ended"
+}
+```
+
+## insufficient_scope
+
+**HTTP 403, Insufficient scope**
+
+The presented key is restricted and does not carry the scope this endpoint requires.
+
+**How to fix:** Use a key that carries the required scope, or create one from Settings, API keys with the scopes you need. A full-access key reaches every endpoint.
+
+```json Example response
+{
+  "type": "https://docs.clemta.com/partner/errors#insufficient_scope",
+  "title": "Insufficient scope",
+  "status": 403,
+  "code": "insufficient_scope",
+  "detail": "this API key is not permitted to perform this action"
+}
+```
+
+## ip_address_not_allowed
+
+**HTTP 403, Address not allowed**
+
+This key is restricted to a set of IP ranges, and the request came from an address outside them.
+
+**How to fix:** Call from an allowed address, or update the key's IP allowlist from Settings, API keys. Clearing the allowlist lets the key work from anywhere again.
+
+```json Example response
+{
+  "type": "https://docs.clemta.com/partner/errors#ip_address_not_allowed",
+  "title": "Address not allowed",
+  "status": 403,
+  "code": "ip_address_not_allowed",
+  "detail": "this API key is not permitted from your address"
+}
+```
+
+## invalid_request
+
+**HTTP 400, Invalid request**
+
+The request body or parameters do not match the API contract, whether through malformed JSON, missing required fields, or values the schema rejects. The `errors` array lists every violating field, not just the first.
+
+**How to fix:** Compare your request against the OpenAPI spec (served at `/v1/openapi.json`). Each entry in `errors` names the field and the reason.
+
+```json Example response
+{
+  "type": "https://docs.clemta.com/partner/errors#invalid_request",
+  "title": "Invalid request",
+  "status": 400,
+  "code": "invalid_request",
+  "detail": "the request body is not valid JSON"
+}
+```
+
+## invalid_api_version
+
+**HTTP 400, Invalid API version**
+
+The `Clemta-Version` header names a version that does not exist.
+
+**How to fix:** Use a published date version (see the API versions page) or omit the header to run on your account's pinned default.
+
+```json Example response
+{
+  "type": "https://docs.clemta.com/partner/errors#invalid_api_version",
+  "title": "Invalid API version",
+  "status": 400,
+  "code": "invalid_api_version",
+  "detail": "unknown API version \"1999-01-01\""
+}
+```
+
+## method_not_allowed
+
+**HTTP 405, Method not allowed**
+
+The route exists but does not accept this HTTP method.
+
+**How to fix:** Check the method against the endpoint reference. Sending the wrong one is usually a copied snippet rather than a wrong URL.
+
+```json Example response
+{
+  "type": "https://docs.clemta.com/partner/errors#method_not_allowed",
+  "title": "Method not allowed",
+  "status": 405,
+  "code": "method_not_allowed",
+  "detail": "this endpoint does not accept DELETE"
+}
+```
+
+## test_mode_only
+
+**HTTP 403, Test mode only**
+
+This endpoint simulates a testing scenario and is reachable only with a test key (`clmt_test_`). A live key cannot call it, the same way it cannot in production.
+
+**How to fix:** Call this with your test key. Use it to rehearse how your integration handles an event before it happens for real.
+
+```json Example response
+{
+  "type": "https://docs.clemta.com/partner/errors#test_mode_only",
+  "title": "Test mode only",
+  "status": 403,
+  "code": "test_mode_only",
+  "detail": "this endpoint is available to test keys only"
+}
+```
+
+## request_too_large
+
+**HTTP 413, Request too large**
+
+The request body exceeds the allowed size for this endpoint.
+
+**How to fix:** Reduce the request body. Upload large files through the dedicated file endpoints instead.
+
+```json Example response
+{
+  "type": "https://docs.clemta.com/partner/errors#request_too_large",
+  "title": "Request too large",
+  "status": 413,
+  "code": "request_too_large",
+  "detail": "the request body is larger than this endpoint accepts"
+}
+```
+
+## idempotency_key_mismatch
+
+**HTTP 409, Idempotency key mismatch**
+
+This `Idempotency-Key` was already used for a different request. A key stands for one operation, so replaying the first response here would answer a question that was never asked.
+
+**How to fix:** Generate a fresh key per operation, typically a UUID, and reuse it only when retrying that same operation. Note the method, path, body and `Clemta-Version` all form part of what a key is bound to.
+
+```json Example response
+{
+  "type": "https://docs.clemta.com/partner/errors#idempotency_key_mismatch",
+  "title": "Idempotency key mismatch",
+  "status": 409,
+  "code": "idempotency_key_mismatch",
+  "detail": "this Idempotency-Key was already used for a different request"
+}
+```
+
+## idempotency_key_in_use
+
+**HTTP 409, Idempotency key in use**
+
+An earlier request with this `Idempotency-Key` is still running. There is no recorded response to replay yet, and running the operation a second time is what the key exists to prevent.
+
+**How to fix:** Retry the same request with the same key after a short pause. Once the first one finishes, the retry is answered with its response.
+
+```json Example response
+{
+  "type": "https://docs.clemta.com/partner/errors#idempotency_key_in_use",
+  "title": "Idempotency key in use",
+  "status": 409,
+  "code": "idempotency_key_in_use",
+  "detail": "a request with this Idempotency-Key is still in progress"
+}
+```
+
+## resource_missing
+
+**HTTP 404, Not found**
+
+No resource exists at this identifier or route, or it is not one of yours. The two are deliberately indistinguishable, so an id space cannot be probed.
+
+**How to fix:** Check the identifier (Clemta ids are prefixed, for example `cmp_` or `acct_`) and the path. A resource that is not yours answers 404, never 403.
+
+```json Example response
+{
+  "type": "https://docs.clemta.com/partner/errors#resource_missing",
+  "title": "Not found",
+  "status": 404,
+  "code": "resource_missing",
+  "detail": "no such company"
+}
+```
+
+## resource_already_exists
+
+**HTTP 409, Conflict**
+
+The request is well-formed but conflicts with something that already exists, for example an `external_id` already used by one of your accounts or companies, or an account with an email already on file.
+
+**How to fix:** Read the `detail` field for the specific conflict, resolve it (for example use a different `external_id`), and retry.
+
+```json Example response
+{
+  "type": "https://docs.clemta.com/partner/errors#resource_already_exists",
+  "title": "Conflict",
+  "status": 409,
+  "code": "resource_already_exists",
+  "detail": "this external_id is already in use by one of your companies"
+}
+```
+
+## entitlement_required
+
+**HTTP 403, Entitlement required**
+
+The action spends a right the company does not hold - for example submitting a tax filing when no filing entitlement remains on the company.
+
+**How to fix:** Order the matching entitlement product against the company (for example `federal_tax_filing` or `state_compliance_filing`), then retry. The company's remaining rights are on its `entitlements` field.
+
+```json Example response
+{
+  "type": "https://docs.clemta.com/partner/errors#entitlement_required",
+  "title": "Entitlement required",
+  "status": 403,
+  "code": "entitlement_required",
+  "detail": "no federal filing entitlement remains on this company"
+}
+```
+
+## billing_account_inactive
+
+**HTTP 403, Billing account inactive**
+
+A live sale was refused because your billing account cannot be charged - there is no payment method on file, or the account is past due.
+
+**How to fix:** Add or update your payment method from the Billing page of your partner dashboard, then retry.
+
+```json Example response
+{
+  "type": "https://docs.clemta.com/partner/errors#billing_account_inactive",
+  "title": "Billing account inactive",
+  "status": 403,
+  "code": "billing_account_inactive",
+  "detail": "your billing account cannot be charged - add a payment method before selling"
+}
+```
+
+## rate_limit
+
+**HTTP 429, Rate limited**
+
+Too many requests from this API key or address in the current window.
+
+**How to fix:** Honor the `Retry-After` response header and back off exponentially. The `RateLimit-Remaining` header on every response lets you pace yourself before you are rejected.
+
+```json Example response
+{
+  "type": "https://docs.clemta.com/partner/errors#rate_limit",
+  "title": "Rate limited",
+  "status": 429,
+  "code": "rate_limit",
+  "detail": "too many requests, retry after the window resets"
+}
+```
+
+## api_error
+
+**HTTP 500, Internal error**
+
+Something failed on Clemta's side. The request may or may not have taken effect.
+
+**How to fix:** Retry with backoff. If it persists, contact support with the `request_id` from the response body, which is what lets us find the cause.
+
+```json Example response
+{
+  "type": "https://docs.clemta.com/partner/errors#api_error",
+  "title": "Internal error",
+  "status": 500,
+  "code": "api_error",
+  "detail": "internal error"
+}
+```

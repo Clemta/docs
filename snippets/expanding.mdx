@@ -1,0 +1,20 @@
+{/* Reusable explainer for expand[] parameters. Include on any endpoint page
+    that supports expansion. List that endpoint's expandable properties right
+    below the include, using <Expandable> so the list opens on click. */}
+
+Many objects let you request related resources inline instead of making a
+second call, using the `expand[]` query parameter. Unexpanded responses keep
+the payload small. Each expansion is loaded only when you ask for it.
+
+```bash
+# One relation
+GET /v1/companies/cmp_0346sFPEvSkJvY8vt14NNw?expand[]=account
+
+# Several relations
+GET /v1/companies/cmp_0346sFPEvSkJvY8vt14NNw?expand[]=account&expand[]=service_orders
+```
+
+Requesting a property that is not expandable on that endpoint returns an
+`invalid_request` error naming the offending path in its `errors` array,
+expandable properties are a fixed, per-endpoint list, always documented on
+the endpoint's page.

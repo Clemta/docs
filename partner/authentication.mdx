@@ -1,0 +1,65 @@
+---
+title: "Authentication"
+description: "How to authenticate requests to the Clemta Partner API"
+---
+
+The Partner API authenticates with a bearer key. Send it in the
+`Authorization` header on every request:
+
+```
+Authorization: Bearer clmt_live_9f2aK4dQ8xR3mB1nT7cV
+```
+
+## Keys
+
+Keys are issued from the partner dashboard, not through public signup. Two
+prefixes tell the environments apart:
+
+- `clmt_live_`: live mode, against real companies and billing.
+- `clmt_test_`: test mode, against a sandbox that creates nothing real.
+
+The raw key is shown once, at creation, and never again. Store it before you
+leave the response. If it leaks, rotate it from the dashboard.
+
+## Errors
+
+A missing, malformed, or revoked key is answered `401` with the standard error
+envelope (see [Errors](/partner/errors)):
+
+```json
+{
+  "type": "https://docs.clemta.com/partner/errors#api_key_invalid",
+  "title": "Invalid API key",
+  "status": 401,
+  "code": "api_key_invalid",
+  "detail": "the Authorization header is missing or malformed",
+  "request_id": "req_0348iOz07EPWoBXa6JZO0Z"
+}
+```
+
+Branch on `code`, never on `detail`. The wording may change.
+
+## Example
+
+<CodeGroup>
+
+```bash curl
+curl https://api.clemta.com/v1/me \
+  -H "Authorization: Bearer clmt_live_9f2aK4dQ8xR3mB1nT7cV"
+```
+
+```typescript fetch
+await fetch("https://api.clemta.com/v1/me", {
+  headers: { Authorization: "Bearer clmt_live_9f2aK4dQ8xR3mB1nT7cV" },
+});
+```
+
+```python requests
+import requests
+requests.get(
+    "https://api.clemta.com/v1/me",
+    headers={"Authorization": "Bearer clmt_live_9f2aK4dQ8xR3mB1nT7cV"},
+)
+```
+
+</CodeGroup>

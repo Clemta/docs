@@ -1,0 +1,260 @@
+---
+title: "Webhooks"
+description: "Subscribe to events, verify each delivery came from Clemta, and reconcile anything you missed by polling."
+---
+
+A webhook is a request Clemta sends to you: when something happens to a company
+you created, we POST the event to an endpoint you registered. It is the push
+counterpart to polling [`GET /events`](/api-reference/list-events) - same
+events, delivered instead of fetched.
+
+Respond `2xx` to acknowledge. Anything else (or a timeout) is treated as a
+failure and the delivery is retried.
+
+## Events we deliver
+
+Each event names its `type` and carries the affected resource as `data.object`,
+already in the shape that resource has on the API. Its `object` field names what
+it is, so one handler can switch on `type` and read `data.object` without
+guessing. The full catalog:
+
+| Event | When |
+|---|---|
+| [`company.created`](/api-reference/webhooks/company-created) | A company you created was accepted. |
+| [`company.status.changed`](/api-reference/webhooks/company-status-changed) | A company moved between formation states (`in_progress`, `active`, `cancelled`). Branch on its status, not on this type. |
+| [`company.verified`](/api-reference/webhooks/company-verified) | Every owner's identity document is in. Fires once, before incorporation, and never regresses. |
+| [`company.incorporated`](/api-reference/webhooks/company-incorporated) | The state accepted the filing and the company is formed. Fires once, when the company is incorporated. |
+| [`company.onboarding.completed`](/api-reference/webhooks/company-onboarding-completed) | A `pre_existing` company finished onboarding - the counterpart to [`company.incorporated`](/api-reference/webhooks/company-incorporated) for a company formed before it arrived. Fires once. |
+| [`company.name.changed`](/api-reference/webhooks/company-name-changed) | The company's legal name changed (typically to clear a state conflict). Payload carries the new name. |
+| [`company.ein.assigned`](/api-reference/webhooks/company-ein-assigned) | The IRS issued the EIN. Fires once. The payload carries `ein`. |
+| [`company.document.received`](/api-reference/webhooks/company-document-received) | An owner uploaded their identity document. |
+| [`company.entitlements.changed`](/api-reference/webhooks/company-entitlements-changed) | The company's remaining rights moved - a tax-filing credit added (by an order or by Clemta) or consumed (a filing opened). Payload: the company. |
+| [`company.updated`](/api-reference/webhooks/company-updated) | The company's identity changed - entity type, state, name suffix, industry, shares, formation date, address, or the owner roster. Payload: the company as it stands. |
+| [`company.dissolved`](/api-reference/webhooks/company-dissolved) | A dissolution order completed - the company is terminally closed. Recurring services stop renewing and open requirements close. Fires once. Payload: the company. |
+| [`tax_filing.created`](/api-reference/webhooks/tax-filing-created) | A federal or state filing was opened on the company. One right consumed. Payload: the tax filing. |
+| [`tax_filing.status.changed`](/api-reference/webhooks/tax-filing-status-changed) | A filing's `status` or `progress` moved. Payload: the tax filing as of the change. |
+| [`service_order.status.changed`](/api-reference/webhooks/service-order-status-changed) | A service order was created or moved through fulfilment, including cancellation. Branch on its status. |
+| [`service_order.completed`](/api-reference/webhooks/service-order-completed) | The order reached its final step. Fires once, when the order is fulfilled. |
+| [`service_order.updated`](/api-reference/webhooks/service-order-updated) | An order's options or price changed without your call - today, a reversed options upgrade, whose billed difference is credited back. Payload: the order. |
+| [`service_order.quoted`](/api-reference/webhooks/service-order-quoted) | A `quote_pending` order was priced. The payload carries the order with its `quote` - accept before `quote.expires_at`, nothing bills until you do. |
+| [`service_order.renewal_canceled`](/api-reference/webhooks/service-order-renewal-canceled) | Your renewal-cancellation request was approved. The service runs to `renewal_ends_at` and is not billed past it (an arrears-billed product bills its running period once). |
+| [`service_order.renewal_cancel_denied`](/api-reference/webhooks/service-order-renewal-cancel-denied) | Your renewal-cancellation request was denied. The order keeps renewing. |
+| [`requirement.created`](/api-reference/webhooks/requirement-created) | Something is needed from you or your client. |
+| [`requirement.fulfilled`](/api-reference/webhooks/requirement-fulfilled) | A requirement was resolved. Payload carries its response. |
+| [`requirement.canceled`](/api-reference/webhooks/requirement-canceled) | An open requirement closed without being fulfilled - a declined signature, or a withdrawn ask. `cancel_reason` says why. |
+| [`requirement.signature.viewed`](/api-reference/webhooks/requirement-signature-viewed) | A signer opened a signature document (once per signer). Progress only - not signed yet. |
+| [`requirement.signature.signed`](/api-reference/webhooks/requirement-signature-signed) | A signer signed (once per signer). The requirement resolves with [`requirement.fulfilled`](/api-reference/webhooks/requirement-fulfilled) when the last signs. |
+| [`file.created`](/api-reference/webhooks/file-created) | A document was published on one of your companies. Download its bytes from the file's content endpoint. |
+| [`calendar.reminder`](/api-reference/webhooks/calendar-reminder) | A compliance deadline is approaching (once per reminder point). No mail is sent to your client - relay it under your own brand. Payload: the calendar event with `due_at` and the `remind_at` that fired. |
+| [`invoice.finalized`](/api-reference/webhooks/invoice-finalized) | A month-end wholesale invoice was issued. |
+
+## Delivery and retries
+
+- Deliveries are **retried with jittered exponential backoff over multiple
+  days** until your endpoint answers `2xx`.
+- The same event may arrive **more than once** - dedupe on `webhook-id` (the
+  event `id`), which is stable across retries.
+- Events reach each endpoint **in the order they occurred**: a newer event waits
+  until every older one for that endpoint has been acknowledged (or given up on
+  after its retries). So [`company.created`](/api-reference/webhooks/company-created) always lands before the
+  [`requirement.created`](/api-reference/webhooks/requirement-created) that followed it. While your endpoint rejects an event,
+  later events for that endpoint queue behind it - fix or acknowledge the first,
+  and the rest flow. To keep that order honest even for events created at
+  nearly the same instant, a fresh delivery starts a couple of seconds after its event.
+- A `Retry-After` header on a `429` or `503` pushes our next attempt back.
+- Answer **`410 Gone`** to unsubscribe: the endpoint is disabled and its queued
+  deliveries are cancelled.
+- An endpoint that **fails continuously for days** is disabled automatically,
+  and the workspace owner is emailed. No events are lost - replay what you missed
+  from [`GET /events`](/api-reference/list-events) (see
+  [Reconciling by polling](#reconciling-by-polling)).
+- Redirects are **not followed** - a `3xx` counts as a failure. If your URL
+  moved, update the endpoint.
+
+## Verifying a delivery
+
+Deliveries are signed per the [Standard Webhooks](https://www.standardwebhooks.com)
+specification, and every delivery carries **both** signature schemes the spec
+defines: a symmetric `v1` HMAC signature and an asymmetric `v1a` ed25519
+signature, space-delimited in one header. Verify whichever suits you - the HMAC
+with your endpoint secret, or the ed25519 signature with the endpoint's public
+key, which needs no shared secret at all. The shortest path is an off-the-shelf
+[standardwebhooks library](https://github.com/standard-webhooks/standard-webhooks):
+hand it your key material, the three `webhook-*` headers, and the **raw** request
+body, and it does everything below.
+
+Every endpoint has its **own signing secret** (`whsec_...`), shown once when you
+create the endpoint, and its **own keypair**, whose public half (`whpk_...`) is
+readable on the endpoint resource at any time. A valid signature proves the
+delivery came from Clemta and was meant for that endpoint - a delivery for one
+endpoint cannot be verified as another's.
+
+Each delivery carries three headers:
+
+```
+Clemta-Webhook-Id: evt_0346sFPEvSkJvY8vt14NNw
+Clemta-Webhook-Timestamp: 1755561600
+Clemta-Webhook-Signature: v1,K5oZfzN95Z9UVu1EsfQmfVNQhnkZ2pj9o9NDN/H/pI4= v1a,fQ3k...signature...Cg==
+```
+
+Each is **also** sent under its bare Standard Webhooks name (`webhook-id`,
+`webhook-timestamp`, `webhook-signature`) with the same value - that is what
+off-the-shelf libraries look up, so both naming styles verify.
+
+- `Clemta-Webhook-Id` is the event id - stable across retries, your idempotency
+  key.
+- `Clemta-Webhook-Timestamp` is the unix time of **this attempt** (a retry is
+  re-signed fresh, so it stays inside your tolerance window).
+- `Clemta-Webhook-Signature` is a **space-delimited list** of signatures, each
+  prefixed with its scheme. Skip entries whose prefix you do not verify and
+  match any one that you do:
+  - `v1,` + base64 of `HMAC-SHA256(key, "<id>.<timestamp>.<body>")`, where the
+    key is your secret **base64-decoded after the `whsec_` prefix**, over the
+    **exact** raw request body. During a secret rotation there are two `v1`
+    entries - old and new secret both verify until the overlap ends.
+  - `v1a,` + base64 of the **ed25519 signature** over the identical
+    `"<id>.<timestamp>.<body>"` string, verifiable with the endpoint's
+    `public_key` (base64-decoded after the `whpk_` prefix). Secret rotations
+    never touch it.
+
+To verify by hand, recompute the HMAC over `<id>.<timestamp>.<rawBody>`, compare
+in constant time against each `v1,` entry, and reject if the timestamp is not
+recent (a few minutes' tolerance stops a captured signature being replayed
+later):
+
+```javascript
+import { createHmac, timingSafeEqual } from "node:crypto";
+
+function verify(rawBody, headers, secret, toleranceSec = 300) {
+  const id = headers["clemta-webhook-id"];
+  const t = Number(headers["clemta-webhook-timestamp"]);
+  if (!id || !t || Math.abs(Date.now() / 1000 - t) > toleranceSec) return false;
+
+  const key = Buffer.from(secret.replace(/^whsec_/, ""), "base64");
+  const expected = createHmac("sha256", key)
+    .update(`${id}.${t}.${rawBody}`)
+    .digest("base64");
+  // During a rotation there can be more than one signature; match any v1.
+  return headers["clemta-webhook-signature"]
+    .split(" ")
+    .filter((p) => p.startsWith("v1,"))
+    .map((p) => p.slice(3))
+    .some(
+      (c) =>
+        c.length === expected.length &&
+        timingSafeEqual(Buffer.from(c), Buffer.from(expected))
+    );
+}
+```
+
+Verify against the **raw** body, before any JSON parsing reformats it - the
+signature is over the exact bytes we sent.
+
+### Verifying without a shared secret (`v1a`)
+
+If you would rather not hold a symmetric secret - say the verifying service is
+one you do not fully trust with material that can also **sign** - verify the
+`v1a` entry instead. It is an ed25519 signature over the same
+`<id>.<timestamp>.<body>` string, and the endpoint's `public_key` can only
+verify, never forge:
+
+```javascript
+import { verify as edVerify, createPublicKey } from "node:crypto";
+
+function verifyAsymmetric(rawBody, headers, publicKey, toleranceSec = 300) {
+  const id = headers["clemta-webhook-id"];
+  const t = Number(headers["clemta-webhook-timestamp"]);
+  if (!id || !t || Math.abs(Date.now() / 1000 - t) > toleranceSec) return false;
+
+  const raw = Buffer.from(publicKey.replace(/^whpk_/, ""), "base64");
+  const key = createPublicKey({
+    key: Buffer.concat([
+      Buffer.from("302a300506032b6570032100", "hex"), // SPKI header for a raw ed25519 key
+      raw,
+    ]),
+    format: "der",
+    type: "spki",
+  });
+  const message = Buffer.from(`${id}.${t}.${rawBody}`);
+  return headers["clemta-webhook-signature"]
+    .split(" ")
+    .filter((p) => p.startsWith("v1a,"))
+    .map((p) => Buffer.from(p.slice(4), "base64"))
+    .some((sig) => edVerify(null, message, key, sig));
+}
+```
+
+The `public_key` is on the endpoint resource in your dashboard, readable any
+time - unlike the secret it is not sensitive, so you can fetch it again whenever
+you adopt this scheme. Endpoints created before asymmetric signing shipped carry
+no keypair and sign `v1` only - recreate the endpoint to get one.
+
+## Rotating a secret
+
+Roll an endpoint's secret from the **Webhooks page of your partner dashboard**.
+It is a sensitive action, so the dashboard asks you to confirm it with a
+one-time code emailed to you before the roll goes through.
+
+A roll runs with an **overlap**: for a window, deliveries are signed under both
+the old and the new secret, so the signature header carries two space-delimited
+`v1,` values and either verifies. Move your endpoint to the new secret during the
+overlap, and the old one retires on its own - no delivery is lost mid-rotation.
+
+## Payload versioning
+
+A delivery is rendered at the **webhook version** set for your workspace, not
+necessarily the latest. So `data.object` keeps the shape you integrated against
+even as newer API versions restructure the same resource. See
+[Versioning](/partner/versioning) for how this relates to the version your API
+calls resolve to.
+
+## Managing endpoints
+
+Endpoints are managed from the Webhooks page of your partner dashboard:
+
+- **Create** an endpoint - the signing secret is shown once, so store it then.
+- **Roll** its secret - confirmed by email, with the overlap above.
+- **Disable** an endpoint - deliveries stop.
+
+The signing rule above is the whole contract. Nothing else about an endpoint
+changes how you verify.
+
+## Reconciling by polling
+
+Webhooks and [`GET /events`](/api-reference/list-events) read the same
+stream: every webhook is fanned out from the event log, so an event can never
+exist as a delivery only. Events never expire, which makes the endpoint good for
+two jobs:
+
+- **A safety net beside webhooks** - a periodic sweep that catches anything your
+  endpoint missed (an outage longer than the retry horizon, an endpoint disabled
+  for a while).
+- **A full replacement for webhooks** - if you would rather not run a public
+  endpoint, poll the stream on an interval and you receive everything, pulled
+  instead of pushed.
+
+The recipe is the same for both:
+
+1. Remember when your last sweep ran.
+2. Ask for everything since **a few minutes before** that:
+   `GET /events?created_at[gte]=<last_sweep - 5m>&sort=created_at`, following the
+   cursor (`after=<end_cursor>`) until `has_next_page` is false.
+3. Process each event **idempotently, keyed by its `id`** - the same value the
+   `webhook-id` header carries, so one dedupe set covers both channels.
+
+The overlap in step 2 is not paranoia. Two events can become visible in an order
+that briefly differs from their `created_at` order, so a sweep that starts
+exactly where the last one ended could permanently skip an event that landed
+late. Re-reading a few minutes of already-seen events costs nothing once
+processing is idempotent, and closes that gap completely.
+
+Narrow the sweep when you only care about part of the stream:
+`?type=company.status.changed`, several types at once with
+`?type[in]=company.created,company.incorporated`, or one company with
+`?company_id=cmp_...`.
+
+One thing polling is **not** for: detecting changes by re-listing resources.
+List endpoints answer "what is the current state", and an updated company does
+not resurface in any list - the events stream is the only change feed. Poll
+[`GET /events`](/api-reference/list-events) for what happened, then fetch the resource by id if you need its
+latest shape.

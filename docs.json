@@ -8,76 +8,246 @@
     "dark": "#2563EB"
   },
   "api": {
-    "openapi": "api-reference/openapi.json",
-    "playground": {"display": "interactive"}
+    "playground": {
+      "display": "interactive"
+    }
   },
   "favicon": "favicon.svg",
   "navigation": {
-    "tabs": [
+    "products": [
       {
-        "tab": "Guides",
-        "groups": [
+        "product": "Partner API",
+        "description": "Offer company formation and services through Clemta, programmatically.",
+        "icon": "handshake",
+        "tabs": [
           {
-            "group": "Get Started",
-            "pages": [
-              "index",
-              "quickstart",
-              "api-reference/rate-limiting",
-              "api-reference/authentication"
+            "tab": "Guides",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "partner/introduction",
+                  "partner/quickstart",
+                  "partner/authentication",
+                  "partner/concepts"
+                ]
+              },
+              {
+                "group": "The platform",
+                "pages": [
+                  "partner/company-lifecycle",
+                  "partner/requirements",
+                  "partner/service-orders",
+                  "partner/tax-filings",
+                  "partner/files",
+                  "partner/whitelabel",
+                  "partner/embedding"
+                ]
+              },
+              {
+                "group": "Building on the API",
+                "pages": [
+                  "partner/list-queries",
+                  "partner/idempotency",
+                  "partner/rate-limiting",
+                  "partner/webhooks",
+                  "partner/errors"
+                ]
+              },
+              {
+                "group": "Versioning",
+                "pages": [
+                  "partner/versioning",
+                  "partner/versions",
+                  "partner/changelog",
+                  "partner/openapi-specs"
+                ]
+              }
             ]
           },
           {
-            "group": "Formation API",
-            "pages": [
-              "api-reference/formation"
-            ]
-          },
-          {
-            "group": "Accounting API",
-            "pages": [
-              "api-reference/contacts",
-              "api-reference/fixed-assets"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API Reference",
-        "groups": [
-          {
-            "group": "Formation API Endpoints",
-            "pages": [
-              "api-reference/formation/initiate-formation",
-              "api-reference/formation/retrieve-formation",
-              "api-reference/formation/cancel-formation"
-            ]
-          },
-          {
-            "group": "Contacts API",
-            "pages": [
-              "api-reference/accounting/contacts/create-contact",
-              "api-reference/accounting/contacts/list-contacts",
-              "api-reference/accounting/contacts/get-contact",
-              "api-reference/accounting/contacts/update-contact",
-              "api-reference/accounting/contacts/delete-contact"
-            ]
-          },
-          {
-            "group": "Fixed Assets API",
-            "pages": [
-              "api-reference/accounting/fixed-assets/create-fixed-asset",
-              "api-reference/accounting/fixed-assets/list-fixed-assets",
-              "api-reference/accounting/fixed-assets/get-fixed-asset",
-              "api-reference/accounting/fixed-assets/update-fixed-asset",
-              "api-reference/accounting/fixed-assets/delete-fixed-asset"
-            ]
-          },
-          {
-            "group": "API Documentation",
-            "pages": [
-              "api-reference/formation",
-              "api-reference/rate-limiting",
-              "api-reference/authentication"
+            "tab": "API Reference",
+            "openapi": "partner/openapi.yaml",
+            "groups": [
+              {
+                "group": "Identity",
+                "pages": [
+                  "GET /me"
+                ]
+              },
+              {
+                "group": "Accounts",
+                "pages": [
+                  "POST /accounts",
+                  "GET /accounts",
+                  "GET /accounts/{accountID}",
+                  "POST /accounts/{accountID}"
+                ]
+              },
+              {
+                "group": "Companies",
+                "pages": [
+                  "POST /companies",
+                  "GET /companies",
+                  "GET /companies/{companyID}",
+                  "POST /companies/{companyID}"
+                ]
+              },
+              {
+                "group": "Officers & directors",
+                "pages": [
+                  "GET /companies/{companyID}/officers",
+                  "POST /companies/{companyID}/officers",
+                  "POST /companies/{companyID}/officers/{officerID}",
+                  "DELETE /companies/{companyID}/officers/{officerID}"
+                ]
+              },
+              {
+                "group": "Products and pricing",
+                "pages": [
+                  "GET /products",
+                  "GET /products/{productKey}/price-preview",
+                  "POST /companies/price-preview",
+                  "GET /companies/{companyID}/products/{productKey}/price-preview"
+                ]
+              },
+              {
+                "group": "Service orders",
+                "pages": [
+                  "POST /companies/{companyID}/service-orders",
+                  "GET /companies/{companyID}/service-orders",
+                  "GET /companies/{companyID}/service-orders/{orderID}",
+                  "POST /companies/{companyID}/service-orders/{orderID}",
+                  "DELETE /companies/{companyID}/service-orders/{orderID}"
+                ]
+              },
+              {
+                "group": "Tax filings",
+                "pages": [
+                  "POST /companies/{companyID}/tax-filings",
+                  "GET /companies/{companyID}/tax-filings",
+                  "GET /companies/{companyID}/tax-filings/{filingID}",
+                  "POST /companies/{companyID}/tax-filings/{filingID}",
+                  "POST /companies/{companyID}/tax-filings/{filingID}/submit"
+                ]
+              },
+              {
+                "group": "Fixed assets",
+                "pages": [
+                  "GET /companies/{companyID}/fixed-assets",
+                  "POST /companies/{companyID}/fixed-assets",
+                  "GET /companies/{companyID}/fixed-assets/{fixedAssetID}",
+                  "POST /companies/{companyID}/fixed-assets/{fixedAssetID}",
+                  "DELETE /companies/{companyID}/fixed-assets/{fixedAssetID}"
+                ]
+              },
+              {
+                "group": "Requirements",
+                "pages": [
+                  "GET /requirements",
+                  "GET /requirements/{requirementID}",
+                  "POST /requirements/{requirementID}/fulfill"
+                ]
+              },
+              {
+                "group": "Verification and signing",
+                "pages": [
+                  "POST /companies/{companyID}/verification-sessions",
+                  "POST /companies/{companyID}/signing-sessions",
+                  "POST /companies/{companyID}/signature-signers"
+                ]
+              },
+              {
+                "group": "Files",
+                "pages": [
+                  "POST /files",
+                  "GET /files",
+                  "GET /files/{fileID}",
+                  "GET /files/{fileID}/contents",
+                  "GET /companies/{companyID}/files"
+                ]
+              },
+              {
+                "group": "File links",
+                "pages": [
+                  "POST /file-links",
+                  "GET /file-links",
+                  "GET /file-links/{linkID}",
+                  "POST /file-links/{linkID}",
+                  "GET /file-links/{token}/contents"
+                ]
+              },
+              {
+                "group": "Calendar",
+                "pages": [
+                  "GET /companies/{companyID}/calendar"
+                ]
+              },
+              {
+                "group": "Status tracking",
+                "pages": [
+                  "POST /companies/{companyID}/status-tokens",
+                  "GET /companies/{companyID}/status-tokens",
+                  "DELETE /companies/{companyID}/status-tokens/{tokenID}",
+                  "GET /status/{token}"
+                ]
+              },
+              {
+                "group": "Events",
+                "pages": [
+                  "GET /events"
+                ]
+              },
+              {
+                "group": "Hosted links",
+                "pages": [
+                  "GET /requirement-links/{token}",
+                  "PUT /requirement-links/{token}/document",
+                  "GET /signing-links/{token}"
+                ]
+              },
+              {
+                "group": "Sandbox",
+                "pages": [
+                  "POST /sandbox/companies/{companyID}/simulate",
+                  "GET /clock",
+                  "POST /clock",
+                  "POST /clock/advance",
+                  "DELETE /clock"
+                ]
+              },
+              {
+                "group": "Webhook events",
+                "pages": [
+                  "webhook company.created",
+                  "webhook company.status.changed",
+                  "webhook company.verified",
+                  "webhook company.incorporated",
+                  "webhook company.onboarding.completed",
+                  "webhook company.name.changed",
+                  "webhook company.ein.assigned",
+                  "webhook company.document.received",
+                  "webhook company.dissolved",
+                  "webhook company.updated",
+                  "webhook company.entitlements.changed",
+                  "webhook tax_filing.created",
+                  "webhook tax_filing.status.changed",
+                  "webhook service_order.status.changed",
+                  "webhook service_order.completed",
+                  "webhook service_order.updated",
+                  "webhook service_order.quoted",
+                  "webhook service_order.renewal_canceled",
+                  "webhook service_order.renewal_cancel_denied",
+                  "webhook requirement.created",
+                  "webhook requirement.fulfilled",
+                  "webhook requirement.canceled",
+                  "webhook requirement.signature.viewed",
+                  "webhook requirement.signature.signed",
+                  "webhook file.created",
+                  "webhook calendar.reminder",
+                  "webhook invoice.finalized"
+                ]
+              }
             ]
           }
         ]
@@ -86,14 +256,14 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Blog",
-          "href": "https://clemta.com/blog",
-          "icon": "newspaper"
+          "anchor": "Partner Dashboard",
+          "href": "https://partner.clemta.com",
+          "icon": "gauge"
         },
         {
-          "anchor": "About Us",
-          "href": "https://clemta.com/about-clemta",
-          "icon": "building-columns"
+          "anchor": "Clemta.com",
+          "href": "https://clemta.com",
+          "icon": "globe"
         }
       ]
     }
@@ -103,21 +273,15 @@
     "dark": "/logo/dark.svg"
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:admin@clemta.com"
-      }
-    ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://app.clemta.com"
+      "label": "Partner Dashboard",
+      "href": "https://partner.clemta.com"
     }
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/clemta_us",
+      "x": "https://x.com/clemta",
       "github": "https://github.com/clemta",
       "linkedin": "https://linkedin.com/company/clemta-support"
     }
