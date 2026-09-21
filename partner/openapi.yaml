@@ -1055,6 +1055,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FileList'
+        '404':
+          $ref: '#/components/responses/NotFound'
       x-mint:
         href: /api-reference/list-company-files
   /companies/{companyID}/tax-filings:
@@ -1260,6 +1262,54 @@ paths:
           $ref: '#/components/responses/RateLimited'
       x-mint:
         href: /api-reference/list-company-calendar
+    post:
+      tags:
+        - Calendar
+      operationId: createCompanyCalendarEvent
+      summary: Add a calendar event
+      description: Adds your own event to the company's calendar, beside the compliance deadlines. It carries your own title and note, and fires a `calendar.reminder` webhook at each `remind_before_days` point. Works on test-mode companies too - your events are yours, not read through from the compliance calendar.
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCalendarEventBody'
+      responses:
+        '201':
+          description: The created event.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarEvent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+      x-mint:
+        href: /api-reference/create-company-calendar-event
+  /companies/{companyID}/calendar/{eventID}:
+    delete:
+      tags:
+        - Calendar
+      operationId: deleteCompanyCalendarEvent
+      summary: Delete a calendar event
+      description: Removes one of your own calendar events. Compliance deadlines are read through from the company and cannot be deleted - only events you added.
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/CalendarEventId'
+      responses:
+        '204':
+          description: The event was deleted.
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+      x-mint:
+        href: /api-reference/delete-company-calendar-event
   /files/{fileID}:
     get:
       tags:
@@ -1275,6 +1325,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/File'
+        '404':
+          $ref: '#/components/responses/NotFound'
       x-mint:
         href: /api-reference/get-file
   /file-links:
@@ -1438,6 +1490,8 @@ paths:
               schema:
                 type: string
                 format: binary
+        '404':
+          $ref: '#/components/responses/NotFound'
       x-mint:
         href: /api-reference/get-file-content
   /requirements:
@@ -1471,6 +1525,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RequirementList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
       x-mint:
         href: /api-reference/list-requirements
   /requirements/{requirementID}:
@@ -1489,6 +1545,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Requirement'
+        '404':
+          $ref: '#/components/responses/NotFound'
       x-mint:
         href: /api-reference/get-requirement
   /requirements/{requirementID}/fulfill:
@@ -1513,6 +1571,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Requirement'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
       x-mint:
         href: /api-reference/fulfill-requirement
   /companies/{companyID}/verification-sessions:
@@ -2676,6 +2738,15 @@ components:
         type: string
         pattern: ^txf_[0-9A-Za-z]{22}$
       example: txf_0346sFPEvSkJvY8vt14NNw
+    CalendarEventId:
+      name: eventID
+      in: path
+      required: true
+      description: ID of the calendar event.
+      schema:
+        type: string
+        pattern: ^cal_[0-9A-Za-z]{22}$
+      example: cal_0346sFPEvSkJvY8vt14NNw
     FileId:
       name: fileID
       in: path
@@ -2906,7 +2977,7 @@ components:
           description: The customer's email. Stored as contact data only - the customer never receives any message from Clemta.
         phone:
           type: string
-          description: The customer's phone number, optional, stored as contact data.
+          description: The customer's phone number.
         metadata:
           type: object
           additionalProperties: true
@@ -2967,7 +3038,7 @@ components:
           minLength: 7
           maxLength: 20
           pattern: ^[0-9+()\s.-]+$
-          description: The customer's phone number, optional. Digits with optional `+`, spaces, and `()`.-` separators.
+          description: The customer's phone number. Digits with an optional `+`, spaces, and `()`.-` separators.
         metadata:
           type: object
           additionalProperties: true
@@ -3564,23 +3635,14 @@ components:
           type: string
           enum:
             - sole_owner
-            - ceo
-            - coo
-            - cfo
-            - cto
-            - cmo
-            - cio
-            - hr_director
-            - sales_director
             - product_manager
             - project_manager
             - software_engineer
             - data_analyst
             - ux_designer
             - ui_designer
-            - operations_manager
             - other
-          description: The owner's role, as an API token - the platform's position list. Use `other` with `custom_title` for any role outside it.
+          description: The owner's role, as an API token - the platform's owner position list. Officer-sounding roles (CEO, CFO, ...) are not owner titles; they belong on the officer roster. Use `other` with `custom_title` for any role outside this list.
         custom_title:
           type: string
           maxLength: 120
@@ -3593,7 +3655,7 @@ components:
           description: Must be above 0 for an individual or company owner.
         representative:
           type: boolean
-          description: The primary owner authorized to act for the company. Exactly one owner must be.
+          description: The primary owner authorized to act for the company. With more than one owner, mark exactly one as the representative. A single owner is taken as the representative automatically, so this can be omitted then.
         director:
           type: boolean
     Document:
@@ -3608,7 +3670,7 @@ components:
             - required
             - received
             - not_required
-          description: not_required for a company owner. required until the individual uploads it, then received.
+          description: '`required` until the owner''s identity document is uploaded, then `received`. For a company owner the document is its authorized representative''s. `not_required` only for an option pool - a share bucket with nobody behind it.'
     Shareholder:
       type: object
       required:
@@ -3674,7 +3736,7 @@ components:
         - treasurer
         - cfo
         - vice_president
-      description: A position on the company's management roster. The catalogue is fixed per entity type. An LLC holds `member`, `managing_member` or `manager`. A C-Corp holds `director`, `president`, `ceo`, `secretary`, `treasurer`, `cfo` or `vice_president`. A director is simply an officer holding the `director` role.
+      description: A position on the company's management roster. The catalogue is fixed per entity type. An LLC holds `member`, `managing_member` or `manager`. A C-Corp holds `director`, `president`, `ceo`, `secretary`, `treasurer`, `cfo` or `vice_president`. A director is simply an officer holding the `director` role. `member` and `managing_member` are owner-only - only a shareholder can hold them. A C-Corp must keep at least one director, and a manager-managed LLC at least one manager. For any wording outside these positions use the free-text `title`.
     CompanyOfficer:
       type: object
       description: 'One row of the company''s management roster: a person and the positions they hold. A director is an officer holding the `director` role - there is no separate directors list. An officer who is also an owner carries the `shareholder` id of the owner they are. A non-owner officer (a hired director or officer who holds no shares) carries none.'
@@ -3974,7 +4036,7 @@ components:
         phone_country:
           type: string
           pattern: ^[A-Za-z]{2}$
-          description: The phone's ISO 3166 alpha-2 country code, e.g. `us`. Optional.
+          description: The phone's ISO 3166 alpha-2 country code, e.g. `us`.
         tax_id:
           type: string
           maxLength: 32
@@ -4010,7 +4072,7 @@ components:
           description: Contact, and - when it matches a shareholder's email - the key that seats this officer as that owner.
         title:
           type: string
-          description: An optional free-text position label kept alongside the roles.
+          description: A free-text position label kept alongside the roles.
         roles:
           type: array
           minItems: 1
@@ -5085,9 +5147,22 @@ components:
         title:
           type: string
           example: Annual Report Filing
+        category:
+          type: string
+          enum:
+            - registered_agent_renewal
+            - state_annual_compliance
+            - annual_report
+            - estimated_tax_q1
+            - estimated_tax_q2
+            - estimated_tax_q3
+            - estimated_tax_q4
+            - client_event
+            - other
+          description: What kind of deadline this is, as a stable token - so you can group, icon and word your own reminder without parsing the free-text title. `client_event` is one your client added; `other` is a deadline whose kind is not yet classified.
         description:
           type: string
-          description: What is due and what happens if it is missed.
+          description: Present only on a client-added event. Standard compliance deadlines carry no description - use `category` to word your own; the platform's own copy is never exposed.
         due_at:
           type: string
           format: date-time
@@ -5100,9 +5175,13 @@ components:
           type: boolean
           description: True when the item is a date rather than a moment.
         remind_at:
-          type: string
-          format: date-time
-          description: 'On a `calendar.reminder` event only: the reminder point that fired. Absent on calendar reads.'
+          type: array
+          items:
+            type: string
+            format: date-time
+          description: Every reminder point for this deadline, soonest first. Present on both calendar reads and `calendar.reminder` webhooks - so you can render an upcoming-reminders view from the read alone. On a webhook, the envelope `timestamp` is the reminder point that fired.
+        variables:
+          $ref: '#/components/schemas/CalendarEventVariables'
         livemode:
           type: boolean
     TaxFilingCorpInfo:
@@ -5172,7 +5251,7 @@ components:
         phone_country:
           type: string
           pattern: ^[A-Za-z]{2}$
-          description: The phone's ISO 3166 alpha-2 country code, e.g. `us`. Optional.
+          description: The phone's ISO 3166 alpha-2 country code, e.g. `us`.
         email:
           type: string
           format: email
@@ -5415,6 +5494,33 @@ components:
             - required_when_1099
             - unsupported_state
           description: Why the field is needed. `required` is always needed, `required_for_federal` and `required_for_state` are needed for that filing type, `required_when_1099` is needed once the filing reports 1099 payments, and `unsupported_state` means the company's state is not filable.
+    CalendarEventVariables:
+      type: object
+      description: Whitelabel-safe facts about this deadline and its company, ready to drop into your own reminder over any channel - email, SMS, a chat message. These are the same neutral values the platform fills its own reminder mail template with. The platform's branded copy, links and sender are never exposed, so you word and send the message yourself.
+      properties:
+        company_name:
+          type: string
+          example: Hall Young
+        company_ending:
+          type: string
+          example: L.L.C.
+        company_state:
+          type: string
+          description: The full state name the company was formed in.
+          example: Wyoming
+        company_type:
+          type: string
+          enum:
+            - llc
+            - c_corp
+        formation_month:
+          type: string
+          description: The month the company was formed, as an English month name. Empty until the company is incorporated.
+          example: September
+        days_remaining:
+          type: integer
+          description: Whole days from now until due_at at the moment this was produced, negative once the deadline has passed. On a `calendar.reminder` webhook it is the count at the reminder point that fired.
+          example: 41
     EventData:
       type: object
       required:
@@ -5731,6 +5837,40 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CalendarEvent'
+    CreateCalendarEventBody:
+      type: object
+      description: A calendar event to add to a company, beside the compliance deadlines. Your own event - a filing you track, a client meeting, an internal deadline - in a clean, self-contained shape. You choose how many days before to be reminded; a `calendar.reminder` webhook fires at each point so you notify your client on your own channel.
+      required:
+        - title
+        - due_at
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: Beneficial ownership update
+        description:
+          type: string
+          maxLength: 2000
+          description: Your own note for the event. Shown back on reads and reminder webhooks - the platform never adds copy of its own.
+        due_at:
+          type: string
+          format: date-time
+          description: When the event is due.
+        end_at:
+          type: string
+          format: date-time
+          description: The end of the window, when the event spans one. Must not be before due_at.
+        all_day:
+          type: boolean
+          description: True when the event is a date rather than a moment.
+        remind_before_days:
+          type: array
+          items:
+            type: integer
+            minimum: 0
+            maximum: 365
+          description: Days before due_at to be reminded, each firing one `calendar.reminder` webhook. Exposed back as absolute remind_at moments. Omit for an event with no reminders.
     FileLink:
       type: object
       description: 'A file link shares one file''s contents with someone who holds no API key: the `url` serves the bytes without authentication until the link expires. Create one to hand a deliverable to your client or a downstream system. Only shareable files can be linked - an identity document can never be turned into a URL.'
