@@ -60,7 +60,7 @@ The API validates every field server-side:
 - **Owners are optional at create.** Omit `shareholders`, or send `[]`, and
   supply them later before formation begins (see [Updating a
   company](#updating-a-company)). A company still needs its complete owner set,
-  each individual owner's identity document included, before Clemta forms it.
+  each owner's identity document included, before Clemta forms it.
 
 <Info>
   **An LLC's owners are its members.** The request field is `shareholders` for
@@ -78,7 +78,7 @@ sequenceDiagram
   participant C as Client
   P->>API: POST /companies {owners, services[]}
   API-->>P: 201 company (status: requires_information)
-  API-->>P: webhook company.created + requirement.created (per individual owner)
+  API-->>P: webhook company.created + requirement.created (per owner)
   P->>API: POST /companies/{id}/verification-sessions {shareholder}
   API-->>P: { url } for that owner's upload
   P->>C: hand off the upload url
@@ -173,7 +173,7 @@ stateDiagram-v2
 
 | status | Meaning |
 |---|---|
-| `requires_information` | Waiting on you: identity documents for individual owners are outstanding. Formation has not started. |
+| `requires_information` | Waiting on you: identity documents for its owners are outstanding. Formation has not started. |
 | `in_progress` | Clemta is forming it. Watch `stage` for where. |
 | `active` | Incorporated. [`company.incorporated`](/api-reference/webhooks/company-incorporated) fired once, when `incorporated_at` was first set. The EIN follows as [`company.ein.assigned`](/api-reference/webhooks/company-ein-assigned). |
 | `cancelled` | Stopped or refunded. |
@@ -215,17 +215,18 @@ company reaches its milestone as [`company.onboarding.completed`](/api-reference
 and on `status`/`stage` for state.
 
 `verification` (`pending` / `verified`) is the owners' identity check. It is
-`pending` while any individual owner's document is outstanding and becomes
+`pending` while any owner's document is outstanding and becomes
 `verified` the moment the last one lands and formation begins - the same
 instant `status` leaves `requires_information`. `company.verified` fires once
 there, well before incorporation, and the value never regresses.
 
 ## Identity documents
 
-Every individual owner needs an identity document before the company can be
-formed. At creation a `document` requirement opens per individual owner
+Every owner needs an identity document before the company can be formed - an
+individual owner's own, a company owner's authorized representative's. At
+creation a `document` requirement opens per owner
 ([`requirement.created`](/api-reference/webhooks/requirement-created)), and that owner's `document.status` starts at
-`required`.
+`required`. An option pool, a share bucket with nobody behind it, needs none.
 
 If you already hold an owner's document, attach it at create instead: upload it
 through the [Files API](/partner/files) (purpose `identity_document`) and pass

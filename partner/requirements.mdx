@@ -27,7 +27,7 @@ flowchart TD
 
 | type | Opened when | Fulfilled with |
 |---|---|---|
-| `document` | A company is created (one per individual owner), or Clemta asks for a document. The `purpose` on the requirement says which file policy the upload is held to. | An uploaded file, by id: `document` (or `documents` for several pages) on `POST .../fulfill`. Or hand your client a verification session. |
+| `document` | A company is created (one per owner), or Clemta asks for a document. The `purpose` on the requirement says which file policy the upload is held to. | An uploaded file, by id: `document` (or `documents` for several pages) on `POST .../fulfill`. Or hand your client a verification session. |
 | `form` | A service order reaches a step that needs input. | `POST .../fulfill` with `values[]`. A file field's value is a file id uploaded first ([`POST /v1/files`](/api-reference/create-file), purpose `additional_document`). |
 | `name_change` | The state rejected the company name. | `POST .../fulfill` with `values: [{key: "name", value: "..."}]`. |
 | `information` | Clemta needs something only you or your client know. | `POST .../fulfill` with `values[]`. |

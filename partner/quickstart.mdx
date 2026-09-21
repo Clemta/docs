@@ -61,7 +61,7 @@ curl -X POST https://api.clemta.com/v1/companies \
   }'
 ```
 
-The company comes back in `requires_information`: each individual owner still
+The company comes back in `requires_information`: each owner still
 owes an identity document (`document.status` is `required`). Attach one inline
 with `passport` (a file id from [`POST /v1/files`](/api-reference/create-file)), or hand your client a hosted
 upload page - [`POST /v1/companies/{id}/verification-sessions`](/api-reference/create-verification-session) returns a `url`

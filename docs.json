@@ -51,6 +51,7 @@
                   "partner/idempotency",
                   "partner/rate-limiting",
                   "partner/webhooks",
+                  "partner/local-development",
                   "partner/errors"
                 ]
               },
@@ -185,6 +186,7 @@
               },
               {
                 "group": "Status tracking",
+                "tag": "Beta",
                 "pages": [
                   "POST /companies/{companyID}/status-tokens",
                   "GET /companies/{companyID}/status-tokens",

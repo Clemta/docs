@@ -1,0 +1,157 @@
+---
+title: "Local development"
+description: "Receive, trigger, and verify webhooks against a service running on your own machine - no formation required."
+---
+
+Webhooks are a request Clemta sends to a URL you register, so a handler running
+on `localhost` is not reachable on its own, and nothing happens until a company
+actually moves. Two tools remove both problems: a **tunnel** gives your local
+handler a public URL, and the **sandbox** lets you fire any event on demand. The
+whole loop runs in [test mode](/partner/concepts#modes-and-the-sandbox) with a
+`clmt_test_` key, so nothing you do here touches a live company.
+
+## The loop
+
+<Steps>
+  <Step title="Expose your handler with a tunnel">
+    Run your webhook handler locally, then point a tunnel at its port to get a
+    public HTTPS URL. Any tunnel works (for example `ngrok` or `cloudflared`).
+
+    ```bash
+    # your handler listens on :4000
+    ngrok http 4000
+    # -> Forwarding  https://a1b2c3d4.ngrok-free.app -> http://localhost:4000
+    ```
+
+    Webhook URLs must be **HTTPS** - tunnels give you one. Keep the tunnel
+    running: a free tunnel's URL changes each restart, so re-register the
+    endpoint when it does.
+  </Step>
+
+  <Step title="Register the tunnel URL as a test endpoint">
+    On the Webhooks page of your partner dashboard, in **test mode**, create an
+    endpoint pointing at the tunnel URL and store the signing secret
+    (`whsec_...`) it shows once. Endpoints are registered per mode, so a test
+    endpoint receives test events only - your live traffic is never affected.
+  </Step>
+
+  <Step title="Create a test company">
+    ```bash
+    curl -X POST https://api.clemta.com/v1/companies \
+      -H "Authorization: Bearer clmt_test_..." \
+      -H "Content-Type: application/json" \
+      -d '{"external_id":"dev-1","name":"Dev Co","state":"DE","entity_type":"llc",
+           "account":{"external_id":"cust-1","email":"founder@dev.test"}}'
+    # -> { "object":"company", "id":"cmp_...", ... }
+    ```
+
+    Creating it already fires [`company.created`](/api-reference/webhooks/company-created)
+    to your endpoint.
+  </Step>
+
+  <Step title="Fire the events you want">
+    A test company never advances on its own - you drive it with
+    [`POST /sandbox/companies/{id}/simulate`](/api-reference/create-sandbox-simulation),
+    which applies the change exactly as a real one would and delivers the
+    resulting events to your endpoint.
+
+    ```bash
+    # move it to active: fires company.status.changed AND company.incorporated
+    curl -X POST https://api.clemta.com/v1/sandbox/companies/cmp_.../simulate \
+      -H "Authorization: Bearer clmt_test_..." \
+      -d '{"event": "company.status.changed", "status": "active"}'
+
+    # assign an EIN: fires company.ein.assigned once
+    curl -X POST https://api.clemta.com/v1/sandbox/companies/cmp_.../simulate \
+      -H "Authorization: Bearer clmt_test_..." \
+      -d '{"event": "company.ein.assigned", "ein": "12-3456789"}'
+    ```
+
+    Most of the [catalog](/partner/webhooks#events-we-deliver) is simulable this
+    way, so you can replay any handler path without waiting on a real formation.
+    See [Modes and the sandbox](/partner/concepts#modes-and-the-sandbox) for the
+    full event table.
+  </Step>
+
+  <Step title="Verify the delivery">
+    Every delivery is signed. The shortest path is the
+    [standardwebhooks library](https://github.com/standard-webhooks/standard-webhooks):
+    hand it the secret, the three `webhook-*` headers, and the **raw** request
+    body.
+
+    <CodeGroup>
+    ```js Node
+    import { Webhook } from "standardwebhooks";
+
+    const wh = new Webhook(process.env.CLEMTA_WEBHOOK_SECRET); // whsec_...
+    app.post("/webhooks/clemta", express.raw({ type: "*/*" }), (req, res) => {
+      let event;
+      try {
+        event = wh.verify(req.body, {          // req.body is the RAW bytes
+          "webhook-id": req.header("webhook-id"),
+          "webhook-timestamp": req.header("webhook-timestamp"),
+          "webhook-signature": req.header("webhook-signature"),
+        });
+      } catch {
+        return res.sendStatus(400);            // bad signature
+      }
+      // dedupe on event.id, then handle event.type / event.data.object
+      res.sendStatus(200);
+    });
+    ```
+
+    ```python Python
+    from standardwebhooks import Webhook
+
+    wh = Webhook(os.environ["CLEMTA_WEBHOOK_SECRET"])  # whsec_...
+
+    @app.post("/webhooks/clemta")
+    async def handle(request):
+        body = await request.body()            # the RAW bytes
+        try:
+            event = wh.verify(body, dict(request.headers))
+        except Exception:
+            return Response(status_code=400)
+        # dedupe on event["id"], then handle event["type"] / event["data"]["object"]
+        return Response(status_code=200)
+    ```
+    </CodeGroup>
+
+    See [Verifying a delivery](/partner/webhooks#verifying-a-delivery) for the
+    exact signature format and the keyless `v1a` scheme.
+  </Step>
+</Steps>
+
+## Without a public endpoint
+
+You do not need a tunnel to develop against events at all. Every webhook is
+fanned out from the same log [`GET /events`](/api-reference/list-events) reads,
+so you can skip the endpoint and poll instead - simulate an event, then pull it:
+
+```bash
+curl "https://api.clemta.com/v1/events?limit=10&sort=-created_at" \
+  -H "Authorization: Bearer clmt_test_..."
+```
+
+This is the whole [reconciling-by-polling](/partner/webhooks#reconciling-by-polling)
+recipe, and it is the fastest way to inspect a payload while you are still
+shaping your handler.
+
+## Common snags
+
+<Warning>
+Verify against the **raw** request body, byte for byte. A framework that parses
+JSON and re-serializes it changes the bytes and every signature fails - read the
+body as text or bytes before any JSON middleware touches it.
+</Warning>
+
+- **Respond `2xx` quickly.** Acknowledge first, do the work after. A slow handler
+  reads as a failed delivery and is [retried](/partner/webhooks#delivery-and-retries).
+- **Re-register when the tunnel URL changes.** A free tunnel rotates its URL on
+  restart; the old endpoint then delivers into nothing.
+- **Test and live never mix.** A `clmt_test_` key only drives test companies and
+  only reaches test endpoints. Switching to `clmt_live_` is the same code against
+  real formations - and there a company advances on its own, so `simulate` is
+  gone (it answers an error to a live key, exactly as in production).
+- **`Clemta-Webhook-Id` is your idempotency key.** Retries and a poll sweep can
+  both deliver the same event; dedupe on that id and a duplicate is free.
