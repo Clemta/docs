@@ -27,15 +27,15 @@ A **[`calendar.reminder`](/api-reference/webhooks/calendar-reminder)** webhook f
 sequenceDiagram
   participant P as Partner
   participant C as Clemta
-  P->>C: POST /service-orders {federal_tax_filing}
+  P->>C: POST /companies/{id}/service-orders {federal_tax_filing}
   C-->>P: right granted (+1)
-  P->>C: POST /tax-filings {type: federal}
+  P->>C: POST /companies/{id}/tax-filings {type: federal}
   C-->>P: 201 draft, no right spent yet
   loop fill sections
-    P->>C: POST /tax-filings/{id} {section}
+    P->>C: POST /companies/{id}/tax-filings/{id} {section}
     C-->>P: missing[] shrinks, submittable flips to true
   end
-  P->>C: POST /tax-filings/{id}/submit
+  P->>C: POST /companies/{id}/tax-filings/{id}/submit
   C-->>P: 200 in_review, one right spent
 ```
 
@@ -74,7 +74,7 @@ curl -X POST https://api.clemta.com/v1/companies/cmp_.../tax-filings/txf_... \
   -d '{"corp_info": {...}, "contact": {...}, "owners": [...]}'
 ```
 
-The sections are `corp_info`, `contact`, `additional_questions`, `owners`, `revenue_expenses` (federal), `balance_sheet` (state), `officers`, and `directors`. `fixed_assets` is read-only on a filing - it is drawn from the company's register, so manage it with the fixed-assets API (`/companies/{id}/fixed-assets`), not here. Read the current state, `missing`, and `submittable` any time with `GET /tax-filings/{id}`.
+The sections are `corp_info`, `contact`, `additional_questions`, `owners`, `revenue_expenses` (federal), `balance_sheet` (state), `officers`, and `directors`. `fixed_assets` is read-only on a filing - it is drawn from the company's register, so manage it with the fixed-assets API (`/companies/{id}/fixed-assets`), not here. Read the current state, `missing`, and `submittable` any time with `GET /companies/{id}/tax-filings/{id}`.
 
 ## 4. Submit
 
