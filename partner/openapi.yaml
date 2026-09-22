@@ -23,24 +23,24 @@ tags:
   - name: Accounts
     description: Create and read customer accounts - the incorporators companies are created under.
   - name: Companies
-    description: Create and read client companies.
+    description: Create and read customer companies.
   - name: Service orders
     description: Order services against a company and follow their fulfilment.
   - name: Products
     description: The catalog you can offer, at your wholesale prices.
   - name: Tax filings
-    description: Federal and state tax filings on your companies, opened by your client against the company's entitlements and worked by Clemta. Read-only. Follow them with the tax_filing.* events.
+    description: Federal and state tax filings on your companies, opened by your customer against the company's entitlements and worked by Clemta. Read-only. Follow them with the tax_filing.* events.
   - name: Files
-    description: Documents Clemta publishes on your companies - formation deliverables, filed forms, letters. Read-only. Client KYC uploads are write-only and never listed.
+    description: Documents Clemta publishes on your companies - formation deliverables, filed forms, letters. Read-only. Customer KYC uploads are write-only and never listed.
   - name: Requirements
-    description: Everything needed from you or your client - identity documents, service-order forms, Clemta's asks - as one resolvable resource. Fulfill over the API or hand your client a hosted link.
+    description: Everything needed from you or your customer - identity documents, service-order forms, Clemta's asks - as one resolvable resource. Fulfill over the API or hand your customer a hosted link.
   - name: Status tracking
     description: End-customer status links - keyless, read-only access to a company's live status.
   - name: Events
     description: Poll the partner event stream.
   - name: Webhooks
     description: |-
-      Events we deliver to your endpoint, and how to verify them. Each webhook below is a request WE send to you. Respond 2xx to acknowledge. Deliveries are signed and retried with exponential backoff over multiple days until acknowledged. Answer `410 Gone` to have the endpoint disabled and deliveries stopped. A `Retry-After` header on a `429` or `503` pushes the next attempt back. An endpoint that fails continuously for days is disabled automatically and the workspace owner is emailed - no events are lost, the stream stays available on `GET /v1/events`.
+      Events we deliver to your endpoint, and how to verify them. Each webhook below is a request WE send to you. Respond 2xx to acknowledge. Deliveries are signed and retried up to 20 times with exponential backoff, from 15 seconds up to 6 hours apart, until acknowledged. Answer `410 Gone` to have the endpoint disabled and deliveries stopped. A `Retry-After` header on a `429` or `503` pushes the next attempt back. An endpoint that fails continuously for three days is disabled automatically and the workspace owner is emailed - no events are lost, the stream stays available on `GET /v1/events`.
 
       ## Verifying a delivery
 
@@ -50,7 +50,7 @@ tags:
 
       - `Clemta-Webhook-Id` - the event id. Stable across retries: use it as an idempotency key so a redelivered event is processed once.
       - `Clemta-Webhook-Timestamp` - unix seconds of THIS attempt (a retry carries a fresh one).
-      - `Clemta-Webhook-Signature` - a space-delimited list of `v1,<base64>` signatures. More than one while a secret rotation's overlap window is open, one per active secret.
+      - `Clemta-Webhook-Signature` - a space-delimited list of signatures, each prefixed with its scheme: `v1,<base64>` (HMAC) and `v1a,<base64>` (ed25519). More than one `v1` entry while a secret rotation's overlap window is open, one per active secret.
 
       Each is also sent under its bare Standard Webhooks name (`webhook-id`, `webhook-timestamp`, `webhook-signature`) with the same value, which is what off-the-shelf standardwebhooks libraries look up.
 
@@ -222,8 +222,8 @@ paths:
       tags:
         - Companies
       operationId: createCompany
-      summary: Create a client company
-      description: Creates a client user and a company shell attributed to you. The client receives no messages from Clemta. Pass `Idempotency-Key` to make retries safe.
+      summary: Create a customer company
+      description: Creates a customer and a company shell attributed to you. The customer receives no messages from Clemta. Pass `Idempotency-Key` to make retries safe.
       parameters:
         - $ref: '#/components/parameters/ClemtaVersion'
         - $ref: '#/components/parameters/ClemtaAccount'
@@ -666,7 +666,7 @@ paths:
         - Status tracking
       operationId: createStatusToken
       summary: Create an end-customer status link
-      description: Mints a read-only status link for the company and returns its URL. Hand the URL to your client. Anyone holding it can read the company's live status - progress only, no documents, no personal data, no prices - by calling GET /status/{token}, so you can drive a progress view in your own product without sharing your API key. Multiple links per company are allowed, each individually revocable. The URL is shown once.
+      description: Mints a read-only status link for the company and returns its URL. Hand the URL to your customer. Anyone holding it can read the company's live status - progress only, no documents, no personal data, no prices - by calling GET /status/{token}, so you can drive a progress view in your own product without sharing your API key. Multiple links per company are allowed, each individually revocable. The URL is shown once.
       parameters:
         - $ref: '#/components/parameters/CompanyId'
         - $ref: '#/components/parameters/ClemtaVersion'
@@ -934,7 +934,7 @@ paths:
         - Sandbox
       operationId: advanceClock
       summary: Advance your simulation clock
-      description: Moves the mode's simulated time forward to `to` and runs the time-driven machinery up to it. Every renewal period that comes due before that moment bills, so a monthly order advanced a year bills twelve periods at once. Advancing changes nothing about how new records stamp their own times. It only decides how far "due" has looked.
+      description: Moves the mode's simulated time forward to `to` and runs the time-driven machinery up to it. Every renewal period that comes due before that moment bills, so a monthly order advanced a year bills twelve periods at once. A clock only moves forward, and at most five years in one call. Advancing changes nothing about how new records stamp their own times. It only decides how far "due" has looked.
       parameters:
         - $ref: '#/components/parameters/ClemtaVersion'
       requestBody:
@@ -977,7 +977,7 @@ paths:
         - Files
       operationId: createFile
       summary: Upload a file
-      description: 'Upload a file to attach elsewhere by id. Send `multipart/form-data` with a `file` part and a `purpose`. `identity_document` uploads are an owner''s passport or government ID: attach one to a `document` requirement (`document` on fulfill) or directly at company create (`shareholders[].passport`). `additional_document` uploads answer a form''s file field: pass the file id as that field''s value on fulfill. Uploads are single-use and write-only - the response carries no download URL and the contents can never be read back through the API. PDF, JPEG or PNG, 10MB max, and images at most 8000px per side. Content is verified against the declared type.'
+      description: 'Upload a file to attach elsewhere by id. Send `multipart/form-data` with a `file` part and a `purpose`. `identity_document` uploads are an owner''s passport or government ID: attach one to a `document` requirement (`document` on fulfill) or directly at company create (`shareholders[].passport`). `additional_document` uploads answer a form''s file field: pass the file id as that field''s value on fulfill. Uploads are single-use and write-only - the response carries no download URL and the contents can never be read back through the API. Each purpose sets its own accepted types, size ceiling and file count (PDF, JPEG or PNG and 10MB for documents, smaller for branding images). Content is verified against the declared type.'
       requestBody:
         required: true
         content:
@@ -1112,7 +1112,7 @@ paths:
         - Tax filings
       operationId: listCompanyTaxFilings
       summary: List a company's tax filings
-      description: Every federal and state filing opened on the company, newest year first, with its review status and progress. Filings are opened from the client's against the company's `entitlements`. Read them here.
+      description: Every federal and state filing opened on the company, newest year first, with its review status and progress. Each filing is opened by you or your customer against the company's `entitlements`. Read them here.
       parameters:
         - $ref: '#/components/parameters/CompanyId'
       responses:
@@ -1246,7 +1246,7 @@ paths:
         - Calendar
       operationId: listCompanyCalendar
       summary: List a company's compliance calendar
-      description: The company's upcoming compliance items - annual report and tax deadlines - soonest first. A `calendar.reminder` webhook fires ahead of each one, so you can notify your client under your own brand. Test-mode companies carry no calendar and answer an empty list.
+      description: The company's upcoming compliance items - annual report and tax deadlines - soonest first. A `calendar.reminder` webhook fires ahead of each one, so you can notify your customer under your own brand. Test-mode companies carry no calendar and answer an empty list.
       parameters:
         - $ref: '#/components/parameters/CompanyId'
       responses:
@@ -1335,7 +1335,7 @@ paths:
         - Files
       operationId: createFileLink
       summary: Create a file link
-      description: 'Mints a public URL over one of your files: anyone holding the URL can read the contents without authentication, until the link expires. Only shareable files can be linked - Clemta deliverables and branding uploads. A client identity document is refused.'
+      description: 'Mints a public URL over one of your files: anyone holding the URL can read the contents without authentication, until the link expires. Only shareable files can be linked - Clemta deliverables and branding uploads. A customer identity document is refused.'
       requestBody:
         required: true
         content:
@@ -1583,7 +1583,7 @@ paths:
         - Requirements
       operationId: createVerificationSession
       summary: Create a hosted verification session
-      description: Mints a fresh URL for the hosted identity-document page, for one owner of this company. Live mode only - the hosted page collects a real identity document. Test companies rehearse verification through the sandbox simulate endpoint instead. Requires the verification page to be configured first (your display name and privacy policy - the page presents them to your client). Refused when the owner's document is already received.
+      description: Mints a fresh URL for the hosted identity-document page, for one owner of this company. Live mode only - the hosted page collects a real identity document. Test companies rehearse verification through the sandbox simulate endpoint instead. Requires the verification page to be configured first (your display name and privacy policy - the page presents them to your customer). Refused when the owner's document is already received.
       parameters:
         - $ref: '#/components/parameters/CompanyId'
       requestBody:
@@ -2046,7 +2046,7 @@ webhooks:
         - Webhooks
       operationId: onCompanyIncorporated
       summary: A company was incorporated
-      description: Sent once, when the state accepts the filing and the company becomes active - the milestone to tell your client about. `company.status.changed` fires as well. This event exists so the moment is a single, unmistakable signal. The request body is the `event` resource. Verify the `Clemta-Webhook-Signature` header before trusting the payload, and respond with any 2xx to acknowledge - a non-2xx or a timeout is retried with backoff.
+      description: Sent once, when the state accepts the filing and the company becomes active - the milestone to tell your customer about. `company.status.changed` fires as well. This event exists so the moment is a single, unmistakable signal. The request body is the `event` resource. Verify the `Clemta-Webhook-Signature` header before trusting the payload, and respond with any 2xx to acknowledge - a non-2xx or a timeout is retried with backoff.
       requestBody:
         required: true
         content:
@@ -2082,7 +2082,7 @@ webhooks:
         - Webhooks
       operationId: onCompanyNameChanged
       summary: A company's legal name changed
-      description: Sent when Clemta changes the company's legal name - typically to clear a conflict with the state. The payload carries the new name. Update your own records and tell your client. The request body is the `event` resource. Verify the `Clemta-Webhook-Signature` header before trusting the payload, and respond with any 2xx to acknowledge - a non-2xx or a timeout is retried with backoff.
+      description: Sent when Clemta changes the company's legal name - typically to clear a conflict with the state. The payload carries the new name. Update your own records and tell your customer. The request body is the `event` resource. Verify the `Clemta-Webhook-Signature` header before trusting the payload, and respond with any 2xx to acknowledge - a non-2xx or a timeout is retried with backoff.
       requestBody:
         required: true
         content:
@@ -2333,8 +2333,8 @@ webhooks:
       tags:
         - Webhooks
       operationId: onRequirementCreated
-      summary: Something is needed from you or your client
-      description: 'Sent when a requirement opens: an owner''s identity document, a service-order form, or something Clemta asked for (a company-name change, extra information). The request body is the `event` resource whose `data.object` is the requirement. Fulfill it over the API or hand your client a hosted link. Verify the `Clemta-Webhook-Signature` header before trusting the payload, and respond with any 2xx to acknowledge.'
+      summary: Something is needed from you or your customer
+      description: 'Sent when a requirement opens: an owner''s identity document, a service-order form, or something Clemta asked for (a company-name change, extra information). The request body is the `event` resource whose `data.object` is the requirement. Fulfill it over the API or hand your customer a hosted link. Verify the `Clemta-Webhook-Signature` header before trusting the payload, and respond with any 2xx to acknowledge.'
       requestBody:
         required: true
         content:
@@ -2352,7 +2352,7 @@ webhooks:
         - Webhooks
       operationId: onRequirementFulfilled
       summary: A requirement was fulfilled
-      description: Sent when an open requirement resolves - by your API call or by your client through a hosted link. The request body is the `event` resource whose `data.object` is the requirement with its response. Verify the `Clemta-Webhook-Signature` header before trusting the payload, and respond with any 2xx to acknowledge.
+      description: Sent when an open requirement resolves - by your API call or by your customer through a hosted link. The request body is the `event` resource whose `data.object` is the requirement with its response. Verify the `Clemta-Webhook-Signature` header before trusting the payload, and respond with any 2xx to acknowledge.
       requestBody:
         required: true
         content:
@@ -2370,7 +2370,7 @@ webhooks:
         - Webhooks
       operationId: onRequirementCanceled
       summary: A requirement was canceled
-      description: Sent when an open requirement closes WITHOUT being fulfilled - a signer declining a signature request, or Clemta withdrawing the ask. The request body is the `event` resource whose `data.object` is the requirement. Its `cancel_reason` says why, in words safe to show your client. Verify the `Clemta-Webhook-Signature` header before trusting the payload, and respond with any 2xx to acknowledge.
+      description: Sent when an open requirement closes WITHOUT being fulfilled - a signer declining a signature request, or Clemta withdrawing the ask. The request body is the `event` resource whose `data.object` is the requirement. Its `cancel_reason` says why, in words safe to show your customer. Verify the `Clemta-Webhook-Signature` header before trusting the payload, and respond with any 2xx to acknowledge.
       requestBody:
         required: true
         content:
@@ -2442,7 +2442,7 @@ webhooks:
         - Webhooks
       operationId: onCalendarReminder
       summary: A compliance deadline is approaching
-      description: Sent ahead of a company's compliance calendar deadline, once per reminder point. No mail is sent to your client - relay the reminder under your own brand. `data.object` is the calendar event with `due_at` and the `remind_at` that fired. Verify the `Clemta-Webhook-Signature` header before trusting the payload, and respond with any 2xx to acknowledge.
+      description: Sent ahead of a company's compliance calendar deadline, once per reminder point. No mail is sent to your customer - relay the reminder under your own brand. `data.object` is the calendar event with `due_at` and the `remind_at` that fired. Verify the `Clemta-Webhook-Signature` header before trusting the payload, and respond with any 2xx to acknowledge.
       requestBody:
         required: true
         content:
@@ -2495,7 +2495,7 @@ components:
       description: Comma-separated fields to sort by, a minus prefix for descending (for example `-created_at`). Each endpoint's sortable fields are in its description. An unsupported one is rejected with a suggestion.
       schema:
         type: string
-        example: '-created_at,name'
+        example: -created_at,name
     Limit:
       name: limit
       in: query
@@ -3387,7 +3387,7 @@ components:
             - requires_action
             - completed
             - canceled
-          description: 'Fulfilment status, derived from where Clemta has the order: `received` until fulfilment starts (a cancellable state), `quote_pending` while a priced-by-quote product waits for the price and your acceptance (also cancellable - cancelling declines the quote), `in_progress` while Clemta works, `requires_action` while the current step waits on a form from you or your client (an open `form` requirement says which), `completed` once the final step is reached - terminal, `completed_at` is set and `service_order.completed` fires once - and `canceled`.'
+          description: 'Fulfilment status, derived from where Clemta has the order: `received` until fulfilment starts (a cancellable state), `quote_pending` while a priced-by-quote product waits for the price and your acceptance (also cancellable - cancelling declines the quote), `in_progress` while Clemta works, `requires_action` while the current step waits on a form from you or your customer (an open `form` requirement says which), `completed` once the final step is reached - terminal, `completed_at` is set and `service_order.completed` fires once - and `canceled`.'
         options:
           type: object
           additionalProperties:
@@ -3397,7 +3397,7 @@ components:
             llc_members: multi_member
         form_required:
           type: boolean
-          description: True when fulfilment needs a form from the client (e.g. an ITIN or BOI service). Known once the order reaches fulfilment.
+          description: True when fulfilment needs a form from the customer (e.g. an ITIN or BOI service). Known once the order reaches fulfilment.
         workflow_status:
           type: string
           description: The live fulfilment step (e.g. "Application In Progress", "Signature Request"). Present once the order is being fulfilled.
@@ -3472,6 +3472,10 @@ components:
         name:
           type: string
           description: The signer's display name.
+        person:
+          type: string
+          pattern: ^(sh|off)_[0-9A-Za-z]{22}$
+          description: The company shareholder (`sh_`) or officer (`off_`) this signer is, when the signer was picked from the company roster. Absent for a signer added as an outside party.
         status:
           type: string
           enum:
@@ -3531,7 +3535,7 @@ components:
           format: int64
     Requirement:
       type: object
-      description: 'One thing needed from you or your client: an owner''s identity document, a service-order form, or something Clemta asked for (a company-name change, extra information). Fulfill it over the API, or mint a hosted link and hand fulfillment to your client.'
+      description: 'One thing needed from you or your customer: an owner''s identity document, a service-order form, or something Clemta asked for (a company-name change, extra information). Fulfill it over the API, or mint a hosted link and hand fulfillment to your customer.'
       required:
         - object
         - id
@@ -3601,10 +3605,10 @@ components:
           description: For a signature requirement - every party that must sign, with each one's progress. The requirement resolves only when they have all signed.
         message:
           type: string
-          description: Why it was opened, in words you can show your client.
+          description: Why it was opened, in words you can show your customer.
         cancel_reason:
           type: string
-          description: 'On a canceled requirement - why it closed without being fulfilled: a signer''s decline reason, or Clemta withdrawing the ask. Safe to show your client.'
+          description: 'On a canceled requirement - why it closed without being fulfilled: a signer''s decline reason, or Clemta withdrawing the ask. Safe to show your customer.'
         form:
           $ref: '#/components/schemas/ServiceOrderForm'
           description: 'For an OPEN `form` requirement: the fields to collect, read live from the fulfilment workflow.'
@@ -4581,7 +4585,7 @@ components:
           description: Products an order for this one attaches automatically at no extra charge - each appears as its own order marked `included_in`, with its own status and events. The formation's bundle (registered agent, business address, EIN, bank application) is the live case.
         description:
           type: string
-          description: What the product is, expected timelines, and any disclaimers - shown to you verbatim. Carry the disclaimers into your own client-facing copy (e.g. a business mailing address is not proof of physical presence, bank approval is the institution's decision).
+          description: What the product is, expected timelines, and any disclaimers - shown to you verbatim. Carry the disclaimers into your own customer-facing copy (e.g. a business mailing address is not proof of physical presence, bank approval is the institution's decision).
         quote:
           type: boolean
           description: 'Priced per order: the order opens unbilled in `quote_pending`, Clemta reviews the work and sets the price (`service_order.quoted`), and billing happens when you accept it. `unit_amount` on this product is indicative only.'
@@ -5044,146 +5048,6 @@ components:
         created_at:
           type: string
           format: date-time
-    TaxFiling:
-      type: object
-      description: One federal or state tax filing on a company. Open it over the API, fill the form, and submit it - or your client can open and fill it themselves. The filing entitlement is spent at submit. Follow progress with `tax_filing.created` / `tax_filing.status.changed`.
-      required:
-        - object
-        - id
-        - company
-        - year
-        - type
-        - status
-        - livemode
-        - created_at
-      properties:
-        object:
-          type: string
-          enum:
-            - tax_filing
-          description: Entity name.
-        id:
-          type: string
-          pattern: ^txf_[0-9A-Za-z]{22}$
-          example: txf_0346sFPEvSkJvY8vt14NNw
-        company:
-          type: string
-          pattern: ^cmp_[0-9A-Za-z]{22}$
-        year:
-          type: integer
-          format: int64
-          description: The filing year.
-          example: 2025
-        type:
-          type: string
-          enum:
-            - federal
-            - state
-        status:
-          type: string
-          enum:
-            - draft
-            - in_review
-            - accepted
-            - rejected
-          description: 'Review outcome: `draft` while the client fills it in, `in_review` once submitted to Clemta, then `accepted` or `rejected`.'
-        progress:
-          type: string
-          enum:
-            - draft
-            - in_progress
-            - additional_info
-            - signature_requested
-            - return_ready
-            - completed
-          description: Where Clemta has the return. `additional_info` and `signature_requested` need the client. `return_ready` means the return is available in the company's documents. `completed` is filed.
-        form:
-          $ref: '#/components/schemas/TaxFilingForm'
-          description: The questionnaire as currently stored. Present on the detail read and on write answers, absent on the list.
-        form_1099_count:
-          type: integer
-          description: How many IRS-1099 files are attached to the filing, however they were attached them. Present on the detail read and on write answers.
-        submittable:
-          type: boolean
-          description: True when the filing is a draft with every required section in place. Present on the detail read and on write answers.
-        missing:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaxFilingGap'
-          description: What still keeps the filing from being submitted, field by field. Empty when `submittable` is true. Present on the detail read and on write answers.
-        livemode:
-          type: boolean
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-    CalendarEvent:
-      type: object
-      description: One compliance calendar item on a company - an annual report deadline, a franchise tax date. Read them from the calendar endpoint, and receive a `calendar.reminder` webhook ahead of each one. No mail is sent to your client. The notification channel is yours.
-      required:
-        - object
-        - id
-        - company
-        - title
-        - due_at
-        - livemode
-      properties:
-        object:
-          type: string
-          enum:
-            - calendar_event
-          description: Entity name.
-        id:
-          type: string
-          pattern: ^cal_[0-9A-Za-z]{22}$
-          example: cal_0346sFPEvSkJvY8vt14NNw
-          description: The calendar entry's identifier, stable across reads.
-        company:
-          type: string
-          pattern: ^cmp_[0-9A-Za-z]{22}$
-          description: The company the deadline is on.
-        title:
-          type: string
-          example: Annual Report Filing
-        category:
-          type: string
-          enum:
-            - registered_agent_renewal
-            - state_annual_compliance
-            - annual_report
-            - estimated_tax_q1
-            - estimated_tax_q2
-            - estimated_tax_q3
-            - estimated_tax_q4
-            - client_event
-            - other
-          description: What kind of deadline this is, as a stable token - so you can group, icon and word your own reminder without parsing the free-text title. `client_event` is one your client added; `other` is a deadline whose kind is not yet classified.
-        description:
-          type: string
-          description: Present only on a client-added event. Standard compliance deadlines carry no description - use `category` to word your own. The platform's own copy is never exposed.
-        due_at:
-          type: string
-          format: date-time
-          description: When the item is due.
-        end_at:
-          type: string
-          format: date-time
-          description: The end of the window, when the item spans one.
-        all_day:
-          type: boolean
-          description: True when the item is a date rather than a moment.
-        remind_at:
-          type: array
-          items:
-            type: string
-            format: date-time
-          description: Every reminder point for this deadline, soonest first. Present on both calendar reads and `calendar.reminder` webhooks - so you can render an upcoming-reminders view from the read alone. On a webhook, the envelope `timestamp` is the reminder point that fired.
-        variables:
-          $ref: '#/components/schemas/CalendarEventVariables'
-        livemode:
-          type: boolean
     TaxFilingCorpInfo:
       type: object
       additionalProperties: false
@@ -5494,6 +5358,81 @@ components:
             - required_when_1099
             - unsupported_state
           description: Why the field is needed. `required` is always needed, `required_for_federal` and `required_for_state` are needed for that filing type, `required_when_1099` is needed once the filing reports 1099 payments, and `unsupported_state` means the company's state is not filable.
+    TaxFiling:
+      type: object
+      description: One federal or state tax filing on a company. Open it over the API, fill the form, and submit it - or your customer can open and fill it themselves. The filing entitlement is spent at submit. Follow progress with `tax_filing.created` / `tax_filing.status.changed`.
+      required:
+        - object
+        - id
+        - company
+        - year
+        - type
+        - status
+        - livemode
+        - created_at
+      properties:
+        object:
+          type: string
+          enum:
+            - tax_filing
+          description: Entity name.
+        id:
+          type: string
+          pattern: ^txf_[0-9A-Za-z]{22}$
+          example: txf_0346sFPEvSkJvY8vt14NNw
+        company:
+          type: string
+          pattern: ^cmp_[0-9A-Za-z]{22}$
+        year:
+          type: integer
+          format: int64
+          description: The filing year.
+          example: 2025
+        type:
+          type: string
+          enum:
+            - federal
+            - state
+        status:
+          type: string
+          enum:
+            - draft
+            - in_review
+            - accepted
+            - rejected
+          description: 'Review outcome: `draft` while the customer fills it in, `in_review` once submitted to Clemta, then `accepted` or `rejected`.'
+        progress:
+          type: string
+          enum:
+            - draft
+            - in_progress
+            - additional_info
+            - signature_requested
+            - return_ready
+            - completed
+          description: Where Clemta has the return. `additional_info` and `signature_requested` need the customer. `return_ready` means the return is available in the company's documents. `completed` is filed.
+        form:
+          $ref: '#/components/schemas/TaxFilingForm'
+          description: The questionnaire as currently stored. Present on the detail read and on write answers, absent on the list.
+        form_1099_count:
+          type: integer
+          description: How many IRS-1099 files are attached to the filing, however they were attached them. Present on the detail read and on write answers.
+        submittable:
+          type: boolean
+          description: True when the filing is a draft with every required section in place. Present on the detail read and on write answers.
+        missing:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxFilingGap'
+          description: What still keeps the filing from being submitted, field by field. Empty when `submittable` is true. Present on the detail read and on write answers.
+        livemode:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     CalendarEventVariables:
       type: object
       description: Whitelabel-safe facts about this deadline and its company, ready to drop into your own reminder over any channel - email, SMS, a chat message. These are the same neutral values the platform fills its own reminder mail template with. The platform's branded copy, links and sender are never exposed, so you word and send the message yourself.
@@ -5521,6 +5460,71 @@ components:
           type: integer
           description: Whole days from now until due_at at the moment this was produced, negative once the deadline has passed. On a `calendar.reminder` webhook it is the count at the reminder point that fired.
           example: 41
+    CalendarEvent:
+      type: object
+      description: One compliance calendar item on a company - an annual report deadline, a franchise tax date. Read them from the calendar endpoint, and receive a `calendar.reminder` webhook ahead of each one. No mail is sent to your customer. The notification channel is yours.
+      required:
+        - object
+        - id
+        - company
+        - title
+        - due_at
+        - livemode
+      properties:
+        object:
+          type: string
+          enum:
+            - calendar_event
+          description: Entity name.
+        id:
+          type: string
+          pattern: ^cal_[0-9A-Za-z]{22}$
+          example: cal_0346sFPEvSkJvY8vt14NNw
+          description: The calendar entry's identifier, stable across reads.
+        company:
+          type: string
+          pattern: ^cmp_[0-9A-Za-z]{22}$
+          description: The company the deadline is on.
+        title:
+          type: string
+          example: Annual Report Filing
+        category:
+          type: string
+          enum:
+            - registered_agent_renewal
+            - state_annual_compliance
+            - annual_report
+            - estimated_tax_q1
+            - estimated_tax_q2
+            - estimated_tax_q3
+            - estimated_tax_q4
+            - client_event
+            - other
+          description: What kind of deadline this is, as a stable token - so you can group, icon and word your own reminder without parsing the free-text title. `client_event` is one your customer added; `other` is a deadline whose kind is not yet classified.
+        description:
+          type: string
+          description: Present only on a customer-added event. Standard compliance deadlines carry no description - use `category` to word your own. The platform's own copy is never exposed.
+        due_at:
+          type: string
+          format: date-time
+          description: When the item is due.
+        end_at:
+          type: string
+          format: date-time
+          description: The end of the window, when the item spans one.
+        all_day:
+          type: boolean
+          description: True when the item is a date rather than a moment.
+        remind_at:
+          type: array
+          items:
+            type: string
+            format: date-time
+          description: Every reminder point for this deadline, soonest first. Present on both calendar reads and `calendar.reminder` webhooks - so you can render an upcoming-reminders view from the read alone. On a webhook, the envelope `timestamp` is the reminder point that fired.
+        variables:
+          $ref: '#/components/schemas/CalendarEventVariables'
+        livemode:
+          type: boolean
     EventData:
       type: object
       required:
@@ -5839,7 +5843,7 @@ components:
             $ref: '#/components/schemas/CalendarEvent'
     CreateCalendarEventBody:
       type: object
-      description: A calendar event to add to a company, beside the compliance deadlines. Your own event - a filing you track, a client meeting, an internal deadline - in a clean, self-contained shape. You choose how many days before to be reminded. A `calendar.reminder` webhook fires at each point so you notify your client on your own channel.
+      description: A calendar event to add to a company, beside the compliance deadlines. Your own event - a filing you track, a customer meeting, an internal deadline - in a clean, self-contained shape. You choose how many days before to be reminded. A `calendar.reminder` webhook fires at each point so you notify your customer on your own channel.
       required:
         - title
         - due_at
@@ -5873,7 +5877,7 @@ components:
           description: Days before due_at to be reminded, each firing one `calendar.reminder` webhook. Exposed back as absolute remind_at moments. Omit for an event with no reminders.
     FileLink:
       type: object
-      description: 'A file link shares one file''s contents with someone who holds no API key: the `url` serves the bytes without authentication until the link expires. Create one to hand a deliverable to your client or a downstream system. Only shareable files can be linked - an identity document can never be turned into a URL.'
+      description: 'A file link shares one file''s contents with someone who holds no API key: the `url` serves the bytes without authentication until the link expires. Create one to hand a deliverable to your customer or a downstream system. Only shareable files can be linked - an identity document can never be turned into a URL.'
       required:
         - object
         - id
@@ -6013,7 +6017,7 @@ components:
           description: 'Frame this session inside your own site: the exact https origin (for example `https://app.yourbrand.com`) the page will be embedded on. The origin must first be registered under your hosted page''s `embed_origins`. Omit it for an ordinary full-page session - the page then refuses to be framed anywhere.'
     VerificationSession:
       type: object
-      description: A short-lived hosted-upload session for one owner's identity document. Create one when you need a URL to hand (or redirect) your client to. The page carries your brand and your legal links from the verification page configuration. Sessions are repeatable - mint another when one expires.
+      description: A short-lived hosted-upload session for one owner's identity document. Create one when you need a URL to hand (or redirect) your customer to. The page carries your brand and your legal links from the verification page configuration. Sessions are repeatable - mint another when one expires.
       required:
         - object
         - company
@@ -6034,7 +6038,7 @@ components:
           pattern: ^sh_[0-9A-Za-z]{22}$
         url:
           type: string
-          description: Where to send your client. The URL is the credential - it authorizes exactly this owner's document upload, nothing else - so treat it like a secret and pass it over a secure channel.
+          description: Where to send your customer. The URL is the credential - it authorizes exactly this owner's document upload, nothing else - so treat it like a secret and pass it over a secure channel.
         expires_at:
           type: string
           format: date-time
@@ -6058,14 +6062,14 @@ components:
           type: string
           format: uri
           maxLength: 2048
-          description: Where the signing page sends your client AFTER the signature completes - your own dashboard, a thank-you page. https only. Omitted, the page shows its neutral done state and the client closes it.
+          description: Where the signing page sends your customer AFTER the signature completes - your own dashboard, a thank-you page. https only. Omitted, the page shows its neutral done state and the customer closes it.
         embed_origin:
           type: string
           maxLength: 255
           description: 'Frame this session inside your own site: the exact https origin (for example `https://app.yourbrand.com`) the page will be embedded on. The origin must first be registered under your hosted page''s `embed_origins`. Omit it for an ordinary full-page session - the page then refuses to be framed anywhere.'
     SigningSession:
       type: object
-      description: A short-lived hosted signing session for one signature requirement. Create one when Clemta opens a signature ask (you hear requirement.created) and hand the URL to your client - they sign inside your branded hosted page, and nobody is emailed automatically - you control delivery. Sessions are repeatable. Mint another when one expires. When the document is signed the requirement resolves and you hear requirement.fulfilled.
+      description: A short-lived hosted signing session for one signature requirement. Create one when Clemta opens a signature ask (you hear requirement.created) and hand the URL to your customer - they sign inside your branded hosted page, and nobody is emailed automatically - you control delivery. Sessions are repeatable. Mint another when one expires. When the document is signed the requirement resolves and you hear requirement.fulfilled.
       required:
         - object
         - company
@@ -6086,7 +6090,7 @@ components:
           pattern: ^rqmt_[0-9A-Za-z]{22}$
         url:
           type: string
-          description: Where to send your client. The URL is the credential - treat it like a secret and pass it over a secure channel.
+          description: Where to send your customer. The URL is the credential - treat it like a secret and pass it over a secure channel.
         expires_at:
           type: string
           format: date-time
@@ -6278,7 +6282,7 @@ components:
           type: string
     SigningContext:
       type: object
-      description: 'What the hosted signing page renders, read through the link''s own token: the ask, your hosted-page branding, and the embedded signing session. Names only, no identifiers - the holder is your client rather than you.'
+      description: 'What the hosted signing page renders, read through the link''s own token: the ask, your hosted-page branding, and the embedded signing session. Names only, no identifiers - the holder is your customer rather than you.'
       required:
         - object
         - status
@@ -6314,9 +6318,12 @@ components:
         embed_origin:
           type: string
           description: The one origin allowed to frame this page, when the session was minted for embedding. The hosted page treats this as the authority and refuses to run framed anywhere else. Absent on ordinary sessions.
+        others_pending:
+          type: boolean
+          description: True when this signer has completed their part but the document is not fully executed yet - other signers still have to sign. The page can then say the signature is recorded rather than that the whole document is done. It never names or counts the other signers.
     RequirementContext:
       type: object
-      description: What a hosted page shows, read through the link's own token - names only, no identifiers, since the holder is your client rather than you.
+      description: What a hosted page shows, read through the link's own token - names only, no identifiers, since the holder is your customer rather than you.
       required:
         - object
         - type

@@ -1,0 +1,60 @@
+---
+title: "Billing"
+description: "How you are charged: one billing account, wholesale prices, a charge per order, and one invoice a month."
+keywords: ['invoice', 'statement', 'payment method', 'wholesale', 'credit', 'past due', 'ledger']
+---
+
+You have one billing account, and everything you sell is billed to it. There is
+no subscription and nothing to commit to up front. You pay wholesale prices,
+once a month, for what you ordered.
+
+## What creates a charge
+
+| Moment | What lands on your ledger |
+|---|---|
+| A service order is created, or a company is created with `services[]` | One charge at the product's wholesale price. |
+| A recurring product renews | One charge per period, at the price captured on the order. A later price change never touches a running service. |
+| A quoted product is accepted | The quoted amount, at acceptance. Nothing before. |
+| An order in `received` is cancelled | A credit for the full charge. |
+| An options upgrade | The price difference. |
+
+A test key is never billed. Those moments still record on your test ledger, so
+you can rehearse them, but nothing in test mode is invoiced or counts toward a
+limit.
+
+## One invoice a month
+
+At the end of each month, the charges and credits of that period roll into one
+statement. Once reviewed, it is issued as an invoice and collected
+automatically from the payment method on file. You hear it as
+[`invoice.finalized`](/api-reference/webhooks/invoice-finalized).
+
+The Billing page of your partner dashboard shows every invoice, each statement
+with its line-by-line breakdown, and a running usage ledger you can filter by
+company or product.
+
+## Payment method
+
+Invoices are collected automatically, so a payment method has to be on file
+before you can sell in live mode. Without one, a live order is refused with
+[`billing_account_inactive`](/partner/errors#billing_account_inactive). Add or
+replace a card from the Billing page.
+
+If an invoice goes unpaid, the account moves to `past_due`. Nothing is
+removed and nothing stops running, but new live sales pause until the
+invoice is settled.
+
+## Spending limits
+
+Some accounts carry a limit on unbilled charges, shown on your Billing page.
+When the month's charges reach it, new live sales are refused until the next
+invoice is paid. Prepaid accounts work the other way around: you top up in
+advance and sell against the balance.
+
+## Prices
+
+[`GET /products`](/api-reference/list-products) lists every product at your
+wholesale price, in the currency's smallest unit. Preview what a company or a
+product would cost before ordering with the price-preview endpoints. Your price
+sheet, and any negotiated rates on it, live on the Pricing page of the
+dashboard.

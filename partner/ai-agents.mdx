@@ -1,0 +1,84 @@
+---
+title: "Build with an AI agent"
+description: "Let a coding agent write the integration, and let your team ask an agent about the companies behind it."
+keywords: ['ai', 'agent', 'skills', 'mcp', 'claude code', 'cursor', 'copilot', 'llms.txt', 'operations']
+---
+
+import AgentSkills from "/snippets/skills-partner-api.mdx";
+import DocsMcp from "/snippets/docs-mcp.mdx";
+
+Agents help on two sides of the Partner API. A coding agent writes and debugs
+the integration, if it has the contract. Everything below hands it over, and
+none of it needs a key. Once companies are in Clemta, your team can ask an
+agent about them instead of opening a dashboard. That part is at the
+[end of this page](#not-just-for-code).
+
+## Skills
+
+<AgentSkills />
+
+## Docs search
+
+A search server for these docs runs at `https://docs.clemta.com/mcp`. Connect
+it and the agent looks things up here as it works. It searches the docs and
+does not call the API.
+
+<DocsMcp />
+
+The **Connect** entries in the menu at the top of every page do the same in
+one click.
+
+## Markdown, llms.txt, and the spec
+
+- Add `.md` to any page URL for its Markdown:
+  `https://docs.clemta.com/partner/webhooks.md`.
+- [`/llms.txt`](https://docs.clemta.com/llms.txt) lists every page.
+  [`/llms-full.txt`](https://docs.clemta.com/llms-full.txt) is the whole site
+  in one file.
+- The OpenAPI description is served from the API without a key:
+  `https://api.clemta.com/v1/openapi.json`. See
+  [OpenAPI specs](/partner/openapi-specs) for the dated URLs.
+
+Any of these can go in a `CLAUDE.md`, `AGENTS.md`, or `.cursorrules` file.
+
+## A starting prompt
+
+With a skill or the docs server connected:
+
+```text
+Integrate the Clemta Partner API. Use my clmt_test_ key from CLEMTA_API_KEY.
+Create a company for a customer, expose a webhook handler that verifies
+signatures, and move the test company to active with the sandbox so I can see
+company.incorporated arrive.
+```
+
+## When an agent holds a key
+
+- The key sets the mode. A `clmt_test_` key never reaches live objects, and
+  `/sandbox/*` refuses live keys. Give an agent a live key only when it should
+  act on real companies.
+- Keep keys in an environment variable or the agent's secret store. Never put
+  one in a prompt, a skill file, or a committed file.
+- Send an `Idempotency-Key` on every write. An agent that retries a timed-out
+  `POST /companies` without one forms two companies.
+- When a request fails with `invalid_request`, the `errors` array names every
+  field. Pass that list to the agent. A blind retry fails the same way.
+
+## Not just for code
+
+Once a company is in Clemta, your team can ask about it in plain words. An
+operations lead connects Claude, Cursor, or any MCP client to the
+[Clemta MCP server](/ai/clemta-mcp) with a Partner API key and asks: which
+companies are waiting on a document, what stage an order is at, when a filing
+is due. The answers come from the same objects your integration works with.
+The server is in development.
+
+## Where the skills come from
+
+The skills are written from these guides and stay in step with them:
+[Quickstart](/partner/quickstart), [How it fits together](/partner/concepts),
+[Idempotency](/partner/idempotency), [Versioning](/partner/versioning),
+[Errors](/partner/errors), [Webhooks](/partner/webhooks), and
+[Local development](/partner/local-development).
+
+For everything agent-related across Clemta, see [AI agents](/ai/introduction).

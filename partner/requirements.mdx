@@ -1,22 +1,22 @@
 ---
 title: "Requirements"
-description: "One resource for everything Clemta needs from you or your client, and how your client answers without ever holding an API key."
+description: "One resource for everything Clemta needs from you or your customer, and how your customer answers without ever holding an API key."
 ---
 
 A **requirement** is a resolvable ask. When Clemta needs input to move a
 company forward - an owner's identity document, the answers for a service-order
 step, a new company name after a conflict, or extra information - it opens a
 requirement and sends [`requirement.created`](/api-reference/webhooks/requirement-created). You resolve it, or hand it to your
-client to resolve, and the process continues ([`requirement.fulfilled`](/api-reference/webhooks/requirement-fulfilled)).
+customer to resolve, and the process continues ([`requirement.fulfilled`](/api-reference/webhooks/requirement-fulfilled)).
 
 ```mermaid
 flowchart TD
   O[Clemta opens a requirement<br/>requirement.created] --> R{type}
-  R -->|document| D[Attach an uploaded file id,<br/>or hand your client a verification session]
+  R -->|document| D[Attach an uploaded file id,<br/>or hand your customer a verification session]
   R -->|form| F[POST /fulfill with values]
   R -->|name_change| N[POST /fulfill with a name value]
   R -->|information| I[POST /fulfill with values]
-  R -->|signature| G[Hand your client a signing session]
+  R -->|signature| G[Hand your customer a signing session]
   D & F & N & I --> V{valid?}
   V -->|no| E[400 invalid_request<br/>errors names each field]
   V -->|yes| S[resolved<br/>requirement.fulfilled]
@@ -27,14 +27,14 @@ flowchart TD
 
 | type | Opened when | Fulfilled with |
 |---|---|---|
-| `document` | A company is created (one per owner), or Clemta asks for a document. The `purpose` on the requirement says which file policy the upload is held to. | An uploaded file, by id: `document` (or `documents` for several pages) on `POST .../fulfill`. Or hand your client a verification session. |
+| `document` | A company is created (one per owner), or Clemta asks for a document. The `purpose` on the requirement says which file policy the upload is held to. | An uploaded file, by id: `document` (or `documents` for several pages) on `POST .../fulfill`. Or hand your customer a verification session. |
 | `form` | A service order reaches a step that needs input. | `POST .../fulfill` with `values[]`. A file field's value is a file id uploaded first ([`POST /v1/files`](/api-reference/create-file), purpose `additional_document`). |
 | `name_change` | The state rejected the company name. | `POST .../fulfill` with `values: [{key: "name", value: "..."}]`. |
-| `information` | Clemta needs something only you or your client know. | `POST .../fulfill` with `values[]`. |
-| `signature` | A document needs signing. | Your client signs through a signing session. It resolves once every signer has signed. |
+| `information` | Clemta needs something only you or your customer know. | `POST .../fulfill` with `values[]`. |
+| `signature` | A document needs signing. | Your customer signs through a signing session. It resolves once every signer has signed. |
 
 `requested_by` is `system` (opened automatically) or `operations` (Clemta
-asked). `message` says why, in words you can show your client.
+asked). `message` says why, in words you can show your customer.
 
 ## Status
 
@@ -42,7 +42,7 @@ asked). `message` says why, in words you can show your client.
 Clemta withdrew the ask). Fulfillment is atomic and single-shot: a second
 fulfill of the same requirement answers `invalid_request` ("this requirement is
 not open"). A canceled requirement carries a `cancel_reason` you can show your
-client.
+customer.
 
 ## Fulfilling a form
 
@@ -75,20 +75,25 @@ The file is single-use. You can also attach a document at company create -
 opens for that owner, and when every owner arrives with a document the company
 is handed to fulfillment immediately.
 
-## Handing a requirement to your client
+## Handing a requirement to your customer
 
-Your client can resolve a requirement **without an API key**:
+Your customer can resolve a requirement **without an API key**:
 
 - **Document requirements:** [`POST /companies/{id}/verification-sessions`](/api-reference/create-verification-session) with
   the owner's `shareholder` id returns a `url` - a hosted upload page. Hand or
-  redirect your client to it. Live mode only, and the verification page must be
+  redirect your customer to it. Live mode only, and the verification page must be
   configured first (your display name and privacy policy).
 - **Signature requirements:** [`POST /companies/{id}/signing-sessions`](/api-reference/create-signing-session) with the
   `requirement` id returns a `url` to your branded signing page. When the
   document is signed the requirement resolves and you hear
   [`requirement.fulfilled`](/api-reference/webhooks/requirement-fulfilled).
+  A signer has to be one of the company's owners or officers. To let an
+  outside party sign, ask Clemta to allow external signers on that
+  requirement. A signer named without an email gets one later through
+  [`POST /companies/{id}/signature-signers`](/api-reference/supply-signer-email).
+  Clemta sends no email for a signing session. Delivering the link is yours.
 
-Sessions are repeatable - mint another when one expires. The client can also
+Sessions are repeatable - mint another when one expires. The customer can also
 read what is asked, keyless: [`GET /requirement-links/{token}`](/api-reference/get-requirement-link-context) returns names
 only, no ids.
 
@@ -102,7 +107,7 @@ they open.
 
 ## The hosted verification page
 
-An identity document is the one ask your end client usually answers, so the
+An identity document is the one ask your customer usually answers, so the
 verification session `url` points at a neutral, branded page - no Clemta name in
 the address bar. The page shows whose document is asked and accepts the upload.
 The same token also accepts a direct [`PUT /requirement-links/{token}/document`](/api-reference/put-requirement-link-document)

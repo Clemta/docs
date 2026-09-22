@@ -1,6 +1,7 @@
 ---
 title: "Authentication"
-description: "How to authenticate requests to the Clemta Partner API"
+description: "API keys: the four kinds, what a restricted key can do, rotation, IP allowlists, and the error shape."
+keywords: ['api key', 'bearer', 'scopes', 'restricted key', 'rotate', 'ip allowlist', 'test mode']
 ---
 
 The Partner API authenticates with a bearer key. Send it in the
@@ -12,14 +13,66 @@ Authorization: Bearer clmt_live_9f2aK4dQ8xR3mB1nT7cV
 
 ## Keys
 
-Keys are issued from the partner dashboard, not through public signup. Two
-prefixes tell the environments apart:
+Keys are issued from the [partner dashboard](/partner/dashboard), not through
+public signup. The prefix tells you the mode and the reach of a key at a
+glance:
 
-- `clmt_live_`: live mode, against real companies and billing.
-- `clmt_test_`: test mode, against a sandbox that creates nothing real.
+| Prefix | Mode | Reach |
+|---|---|---|
+| `clmt_live_` | Live: real companies, real billing. | Everything. |
+| `clmt_test_` | Test: a sandbox that creates nothing real. | Everything. |
+| `clmt_rk_live_` | Live. | Only the scopes it was created with. |
+| `clmt_rk_test_` | Test. | Only the scopes it was created with. |
 
 The raw key is shown once, at creation, and never again. Store it before you
-leave the response. If it leaks, rotate it from the dashboard.
+leave the page. Any member of your workspace can create a test key. Live keys
+are created by the workspace owner.
+
+## Restricted keys
+
+A key created with scopes is restricted to them. A scope is a resource and an
+action, `resource:action`. Write includes read.
+
+| Scope | Reaches |
+|---|---|
+| `companies:read` / `companies:write` | Companies and everything on them: service orders, requirements, verification and signing sessions, status tokens, files and file links, tax filings, calendar, fixed assets, officers, the sandbox and the test clock. |
+| `accounts:read` / `accounts:write` | Accounts. |
+| `events:read` | `GET /events`. |
+| `*:read` / `*:write` | Every resource, at that action. |
+
+A restricted key that reaches for something outside its scopes is refused with
+[`insufficient_scope`](/partner/errors#insufficient_scope). A few endpoints
+need no scope at all and answer any valid key: [`GET /me`](/api-reference/get-me),
+[`GET /products`](/api-reference/list-products), and the price previews.
+
+Webhook endpoints are managed from the dashboard only, so no scope covers
+them.
+
+## Rotating a key
+
+Rotate from the dashboard when a key may have leaked, or on a schedule.
+Rotation issues a new key and keeps the old one working for a grace window.
+The window is 24 hours by default and can be anything up to 7 days, so you can
+move your services over one at a time. Set it to zero to cut the old key off
+at once. After the window, the old key answers
+[`api_key_expired`](/partner/errors#api_key_expired).
+
+Revoking a key stops it immediately, with no grace.
+
+## IP allowlist
+
+A key can be limited to a set of IP addresses or CIDR ranges, up to 100. A
+request from anywhere else is refused with
+[`ip_address_not_allowed`](/partner/errors#ip_address_not_allowed). An empty
+list means the key works from anywhere. The allowlist is set per key, by the
+workspace owner.
+
+## Confirming sensitive actions
+
+Rotating or revoking a key, changing an allowlist, and rolling a webhook
+secret each ask for a six-digit code emailed to you. A code lasts ten minutes
+and five wrong attempts void it. One confirmation covers further sensitive
+actions for the next five minutes.
 
 ## Errors
 

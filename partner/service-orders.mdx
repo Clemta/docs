@@ -8,7 +8,8 @@ description: "Order products on a company and follow fulfilment: status, options
 [`GET /products`](/api-reference/list-products) is your catalog: every product you may offer, at **your**
 wholesale price (your negotiated rate, or the catalog default), with its
 billing cadence and whether it auto-attaches to formations, existing
-companies, or both. You order by `product_key`:
+companies, or both. Prices are integers in the currency's smallest unit,
+cents for USD. You order by `product_key`:
 
 ```bash
 curl -X POST https://api.clemta.com/v1/companies/cmp_.../service-orders \
@@ -17,7 +18,7 @@ curl -X POST https://api.clemta.com/v1/companies/cmp_.../service-orders \
 ```
 
 The moment the order is created, one charge at that price is billed - that is
-the billable event. A product is idempotent per company: attaching it twice
+the billable event (see [Billing](/partner/billing)). A product is idempotent per company: attaching it twice
 returns the existing order and charges nothing. Passing `services[]` on [`POST /companies`](/api-reference/create-company) attaches
 products the same way, billed alongside the formation.
 
@@ -53,7 +54,7 @@ product. Branch on `status`:
 | `received` | Created and billed. Fulfilment not started. A cancellable state. | - |
 | `quote_pending` | A priced-by-quote product is waiting for its price and your acceptance. Cancellable. | see [Products priced by quote](#products-priced-by-quote) |
 | `in_progress` | Clemta is working the order. | wait for [`service_order.status.changed`](/api-reference/webhooks/service-order-status-changed) |
-| `requires_action` | Fulfilment is waiting on a form from you or your client. An open `form` requirement names the fields. | fulfil the requirement |
+| `requires_action` | Fulfilment is waiting on a form from you or your customer. An open `form` requirement names the fields. | fulfil the requirement |
 | `completed` | Fulfilment is done. Terminal: `completed_at` is set once, [`service_order.completed`](/api-reference/webhooks/service-order-completed) fires once. | - |
 | `canceled` | Cancelled before fulfilment. Terminal. | - |
 
@@ -122,10 +123,10 @@ the full flow:
 | field | values | meaning |
 |---|---|---|
 | `status` | `draft` -> `in_review` -> `accepted` / `rejected` | review outcome |
-| `progress` | `draft`, `in_progress`, `additional_info`, `signature_requested`, `return_ready`, `completed` | where Clemta has the return. `additional_info` and `signature_requested` need the client, `return_ready` means the return is in the company's files |
+| `progress` | `draft`, `in_progress`, `additional_info`, `signature_requested`, `return_ready`, `completed` | where Clemta has the return. `additional_info` and `signature_requested` need the customer, `return_ready` means the return is in the company's files |
 
 Clemta may also grant rights directly. That reaches you the same way, as
-`company.entitlements.changed`. A client cannot start a filing without a right
+`company.entitlements.changed`. A customer cannot start a filing without a right
 - order the entitlement product for them to grant one.
 
 ## Product options (variants)
@@ -281,7 +282,7 @@ how many months and transactions there are. Such products carry
 
 1. **Order it as usual.** The order opens at `status: quote_pending` with a
    `quote` object in `pending` state. Nothing is billed. Clemta reviews the
-   records, and requirements may ask your client for bank statements at this
+   records, and requirements may ask your customer for bank statements at this
    stage.
 2. **Clemta sets the price.** You hear [`service_order.quoted`](/api-reference/webhooks/service-order-quoted), and the order's
    `quote` now carries `unit_amount` and `expires_at` - the price stands for

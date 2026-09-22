@@ -1,15 +1,47 @@
 ---
 title: "Clemta Developer Docs"
-description: "APIs and guides for building on Clemta."
+description: "APIs, tools, and agent surfaces for building on Clemta."
+mode: "custom"
 ---
 
-Build on Clemta programmatically.
+<div className="px-6 pt-20 pb-12 lg:pt-28 max-w-3xl mx-auto text-center">
+  <h1 className="text-4xl lg:text-5xl font-medium text-gray-900 dark:text-zinc-50 tracking-tight">
+    Build on Clemta
+  </h1>
+  <p className="mt-4 text-lg text-gray-500 dark:text-zinc-400 max-w-xl mx-auto">
+    APIs and tools for working with Clemta from your code or from an AI
+    agent. More arrive here as they ship.
+  </p>
+</div>
 
-<CardGroup cols={2}>
-  <Card title="Partner API" icon="handshake" href="/partner/introduction">
-    Offer company formation and services under your own brand, and track every
-    order through fulfilment.
-  </Card>
-</CardGroup>
+<div className="max-w-4xl mx-auto px-6 pb-8">
+  <Columns cols={2}>
+    <Card title="Partner API" icon="handshake" href="/partner/introduction" arrow>
+      Create companies for your customers, order services, answer requirements,
+      and follow every step through signed webhooks. You are invoiced at
+      wholesale prices. Your customer deals only with you.
+    </Card>
+    <Card title="AI agents" icon="robot" href="/ai/introduction" arrow>
+      Use Clemta from Claude, Cursor, or any MCP client, and give the coding
+      agent that builds your integration the docs in a form it can read.
+    </Card>
+  </Columns>
+</div>
 
-More APIs land here as they ship.
+<div className="max-w-4xl mx-auto px-6 pb-20">
+  <p className="text-sm font-medium text-gray-500 dark:text-zinc-400 mb-4">Jump in</p>
+  <Columns cols={4}>
+    <Card title="Quickstart" icon="rocket" href="/partner/quickstart">
+      Your first call in a minute.
+    </Card>
+    <Card title="API reference" icon="code" href="/api-reference/get-me">
+      Every endpoint and webhook event.
+    </Card>
+    <Card title="Partner API skills" icon="wand-magic-sparkles" href="/partner/ai-agents">
+      Install the skills and let an agent build it.
+    </Card>
+    <Card title="Local development" icon="laptop-code" href="/partner/local-development">
+      Webhooks against your own machine.
+    </Card>
+  </Columns>
+</div>

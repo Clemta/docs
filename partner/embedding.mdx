@@ -3,9 +3,9 @@ title: "Embedding hosted pages"
 description: "Frame the hosted upload and signing pages inside your own site with the embed SDK, a thin convenience over an iframe."
 ---
 
-The pages Clemta hosts for your client (identity upload and document signing)
+The pages Clemta hosts for your customer (identity upload and document signing)
 carry your brand and stand on their own by default. When you would rather keep
-your client on your own site, you can frame a hosted page inside it. The **embed
+your customer on your own site, you can frame a hosted page inside it. The **embed
 SDK** is a small, dependency-free helper that renders the frame, sizes it to its
 content, and hands you the completion signal. It changes nothing about the
 security model - it is a convenience over an `<iframe>`.
@@ -63,7 +63,7 @@ container:
 | `container` | string or Element, required | Where to render the frame. A CSS selector or an element. |
 | `onReady` | function | Called when the hosted page has loaded. |
 | `onComplete` | function | Called when the upload or signature finishes. Receives `{ redirectUrl }` - set when the signing session carried a `redirect_url`. |
-| `onCanceled` | function | Called when your client backs out. |
+| `onCanceled` | function | Called when your customer backs out. |
 | `onError` | function | Called when the hosted page reports a problem. |
 | `title` | string | Accessible title for the frame. Defaults to "Secure document". |
 | `minHeight` | number | Minimum frame height in pixels before the page reports its own. Defaults to 620. |

@@ -2,6 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "almond",
   "name": "Clemta",
+  "description": "APIs, tools, and agent surfaces for building on Clemta.",
   "colors": {
     "primary": "#2563EB",
     "light": "#2563EB",
@@ -10,7 +11,52 @@
   "api": {
     "playground": {
       "display": "interactive"
+    },
+    "examples": {
+      "languages": [
+        "curl",
+        "javascript",
+        "python",
+        "go"
+      ],
+      "defaults": "required"
     }
+  },
+  "seo": {
+    "indexing": "navigable",
+    "metatags": {
+      "og:site_name": "Clemta Developer Docs",
+      "twitter:card": "summary_large_image"
+    }
+  },
+  "metadata": {
+    "timestamp": true
+  },
+  "search": {
+    "prompt": "Search the docs"
+  },
+  "styling": {
+    "eyebrows": "breadcrumbs"
+  },
+  "errors": {
+    "404": {
+      "redirect": true
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "claude",
+      "chatgpt",
+      "cursor",
+      "vscode",
+      "mcp",
+      "download-spec"
+    ]
+  },
+  "markdown": {
+    "instructions": "Use a clmt_test_ key while developing. It never touches live data. Send a UUID Idempotency-Key on every POST, PUT and DELETE, generated once per operation and reused on retries. Pin Clemta-Version: 2026-08-13 on every request. Branch on the error code field, never on detail. Retry only timeouts, 5xx and 429, and honor Retry-After. Test companies never advance on their own. Drive them with POST /sandbox/companies/{id}/simulate. OpenAPI: https://api.clemta.com/v1/openapi.json. Skills: npx skills add https://docs.clemta.com. Docs search MCP: https://docs.clemta.com/mcp. Guide: https://docs.clemta.com/partner/ai-agents.md."
   },
   "favicon": "favicon.svg",
   "navigation": {
@@ -28,7 +74,9 @@
                 "pages": [
                   "partner/introduction",
                   "partner/quickstart",
+                  "partner/ai-agents",
                   "partner/authentication",
+                  "partner/dashboard",
                   "partner/concepts"
                 ]
               },
@@ -38,6 +86,7 @@
                   "partner/company-lifecycle",
                   "partner/requirements",
                   "partner/service-orders",
+                  "partner/billing",
                   "partner/tax-filings",
                   "partner/files",
                   "partner/whitelabel",
@@ -52,6 +101,7 @@
                   "partner/rate-limiting",
                   "partner/webhooks",
                   "partner/local-development",
+                  "partner/sandbox",
                   "partner/errors"
                 ]
               },
@@ -253,17 +303,43 @@
             ]
           }
         ]
+      },
+      {
+        "product": "AI agents",
+        "description": "Use Clemta from any MCP client, and give coding agents the docs.",
+        "icon": "robot",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "ai/introduction"
+            ]
+          },
+          {
+            "group": "Connect",
+            "pages": [
+              "ai/clemta-mcp"
+            ]
+          },
+          {
+            "group": "Build",
+            "pages": [
+              "ai/coding-agents",
+              "ai/partner-api"
+            ]
+          }
+        ]
       }
     ],
     "global": {
       "anchors": [
         {
-          "anchor": "Partner Dashboard",
-          "href": "https://partner.clemta.com",
-          "icon": "gauge"
+          "anchor": "AI agents",
+          "href": "https://docs.clemta.com/ai/introduction",
+          "icon": "robot"
         },
         {
-          "anchor": "Clemta.com",
+          "anchor": "clemta.com",
           "href": "https://clemta.com",
           "icon": "globe"
         }
@@ -286,6 +362,46 @@
       "x": "https://x.com/clemta",
       "github": "https://github.com/clemta",
       "linkedin": "https://linkedin.com/company/clemta-support"
-    }
+    },
+    "links": [
+      {
+        "header": "Developers",
+        "items": [
+          {
+            "label": "Quickstart",
+            "href": "https://docs.clemta.com/partner/quickstart"
+          },
+          {
+            "label": "API reference",
+            "href": "https://docs.clemta.com/api-reference/get-me"
+          },
+          {
+            "label": "OpenAPI specs",
+            "href": "https://docs.clemta.com/partner/openapi-specs"
+          },
+          {
+            "label": "AI agents",
+            "href": "https://docs.clemta.com/ai/introduction"
+          }
+        ]
+      },
+      {
+        "header": "Clemta",
+        "items": [
+          {
+            "label": "clemta.com",
+            "href": "https://clemta.com"
+          },
+          {
+            "label": "Partner dashboard",
+            "href": "https://partner.clemta.com"
+          },
+          {
+            "label": "Support",
+            "href": "mailto:tech@clemta.com"
+          }
+        ]
+      }
+    ]
   }
 }

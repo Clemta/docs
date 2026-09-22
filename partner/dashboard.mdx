@@ -1,0 +1,83 @@
+---
+title: "Partner dashboard"
+description: "What lives at partner.clemta.com: your application, team, keys, webhooks, logs, billing, pricing, branding, and version settings."
+keywords: ['dashboard', 'apply', 'team', 'roles', 'webhook endpoint', 'roll secret', 'logs', 'branding', 'hosted page', 'embed origins']
+---
+
+Everything that is not an API call happens at
+[partner.clemta.com](https://partner.clemta.com). This page is the map.
+
+## Applying
+
+Sign in, create a workspace, and submit the wholesale application: your legal
+name, website, country, and the programs you want to offer. Keys are issued
+once the application is approved. A declined application can be revised and
+resubmitted.
+
+## Team
+
+A workspace has one owner and any number of members.
+
+| | Owner | Member |
+|---|---|---|
+| Create test keys | Yes | Yes |
+| Create, rotate, revoke live keys | Yes | No |
+| Set a key's IP allowlist | Yes | No |
+| Register and disable webhook endpoints | Yes | No |
+| Change version settings and branding | Yes | No |
+| Accept or decline the price sheet | Yes | No |
+
+Invite people from the Team page. Ownership can be transferred to another
+member.
+
+## API keys
+
+Create keys, restrict them to scopes, rotate them with a grace window, revoke
+them, and set an IP allowlist. Every key shows when it was last used. See
+[Authentication](/partner/authentication) for what each kind of key can do.
+
+## Webhooks
+
+Register an endpoint per mode with its URL, and optionally the event types and
+an API version to pin its payloads to. The signing secret is shown once, and
+the public key is readable any time. From here you also roll the secret,
+disable an endpoint, and browse the last 30 days of deliveries to retry a
+failed one. See [Webhooks](/partner/webhooks) for the signature and delivery
+rules.
+
+## Logs
+
+Every request to the API and to the dashboard is kept for 30 days with its
+method, path, status, error code, key, and IP. Search by `request_id` when
+something needs a second look. The same id is in every error response.
+
+## Billing
+
+Your billing account, invoices, monthly statements with their line items, and
+the usage ledger. Add or replace a payment method here. See
+[Billing](/partner/billing).
+
+## Pricing
+
+Your wholesale price sheet: every product, its cadence, and any negotiated
+rate. When Clemta changes the sheet, it comes back for your review. Accepting
+or declining is the owner's call.
+
+## Branding
+
+The pages Clemta hosts for your customers, identity upload and document signing,
+carry only what you set here. A display name and a privacy policy URL are
+required before any hosted session can be created. Add a support email, a
+terms URL, a logo and an icon (uploaded through the
+[Files API](/partner/files) as `business_logo` and `business_icon`), and an
+accent color.
+
+To frame those pages inside your own site, list the origins allowed to do so,
+up to five. See [Embedding hosted pages](/partner/embedding).
+
+## Settings
+
+Two version pins live here. One is the API version your requests resolve to
+when they send no `Clemta-Version` header. The other is the version webhook
+payloads are rendered at when an endpoint has no pin of its own. See
+[Versioning](/partner/versioning).
