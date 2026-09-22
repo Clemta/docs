@@ -39,19 +39,20 @@ guessing. The full catalog:
 | [`service_order.quoted`](/api-reference/webhooks/service-order-quoted) | A `quote_pending` order was priced. The payload carries the order with its `quote` - accept before `quote.expires_at`, nothing bills until you do. |
 | [`service_order.renewal_canceled`](/api-reference/webhooks/service-order-renewal-canceled) | Your renewal-cancellation request was approved. The service runs to `renewal_ends_at` and is not billed past it (an arrears-billed product bills its running period once). |
 | [`service_order.renewal_cancel_denied`](/api-reference/webhooks/service-order-renewal-cancel-denied) | Your renewal-cancellation request was denied. The order keeps renewing. |
-| [`requirement.created`](/api-reference/webhooks/requirement-created) | Something is needed from you or your client. |
+| [`requirement.created`](/api-reference/webhooks/requirement-created) | Something is needed from you or your customer. |
 | [`requirement.fulfilled`](/api-reference/webhooks/requirement-fulfilled) | A requirement was resolved. Payload carries its response. |
 | [`requirement.canceled`](/api-reference/webhooks/requirement-canceled) | An open requirement closed without being fulfilled - a declined signature, or a withdrawn ask. `cancel_reason` says why. |
 | [`requirement.signature.viewed`](/api-reference/webhooks/requirement-signature-viewed) | A signer opened a signature document (once per signer). Progress only - not signed yet. |
 | [`requirement.signature.signed`](/api-reference/webhooks/requirement-signature-signed) | A signer signed (once per signer). The requirement resolves with [`requirement.fulfilled`](/api-reference/webhooks/requirement-fulfilled) when the last signs. |
 | [`file.created`](/api-reference/webhooks/file-created) | A document was published on one of your companies. Download its bytes from the file's content endpoint. |
-| [`calendar.reminder`](/api-reference/webhooks/calendar-reminder) | A compliance deadline is approaching (once per reminder point). No mail is sent to your client - relay it under your own brand. Payload: the calendar event with `due_at` and the `remind_at` that fired. |
+| [`calendar.reminder`](/api-reference/webhooks/calendar-reminder) | A compliance deadline is approaching (once per reminder point). No mail is sent to your customer - relay it under your own brand. Payload: the calendar event with `due_at` and the `remind_at` that fired. |
 | [`invoice.finalized`](/api-reference/webhooks/invoice-finalized) | A month-end wholesale invoice was issued. |
 
 ## Delivery and retries
 
-- Deliveries are **retried with jittered exponential backoff over multiple
-  days** until your endpoint answers `2xx`.
+- A failed delivery is **retried up to 20 times with jittered exponential
+  backoff**, from 15 seconds up to 6 hours between attempts, so it keeps
+  trying for days until your endpoint answers `2xx`.
 - The same event may arrive **more than once** - dedupe on `webhook-id` (the
   event `id`), which is stable across retries.
 - Events reach each endpoint **in the order they occurred**: a newer event waits
@@ -64,8 +65,8 @@ guessing. The full catalog:
 - A `Retry-After` header on a `429` or `503` pushes our next attempt back.
 - Answer **`410 Gone`** to unsubscribe: the endpoint is disabled and its queued
   deliveries are cancelled.
-- An endpoint that **fails continuously for days** is disabled automatically,
-  and the workspace owner is emailed. No events are lost - replay what you missed
+- An endpoint that **fails continuously for three days** is disabled
+  automatically, and the workspace owner is emailed. No events are lost - replay what you missed
   from [`GET /events`](/api-reference/list-events) (see
   [Reconciling by polling](#reconciling-by-polling)).
 - Redirects are **not followed** - a `3xx` counts as a failure. If your URL
@@ -202,22 +203,27 @@ overlap, and the old one retires on its own - no delivery is lost mid-rotation.
 
 ## Payload versioning
 
-A delivery is rendered at the **webhook version** set for your workspace, not
-necessarily the latest. So `data.object` keeps the shape you integrated against
-even as newer API versions restructure the same resource. See
-[Versioning](/partner/versioning) for how this relates to the version your API
-calls resolve to.
+A delivery is rendered at the **version pinned on the endpoint**, or, when the
+endpoint has none, at the webhook version set for your workspace. So
+`data.object` keeps the shape you integrated against even as newer API
+versions restructure the same resource, and you can move one endpoint to a new
+version while the others stay put. See [Versioning](/partner/versioning) for
+how this relates to the version your API calls resolve to.
 
 ## Managing endpoints
 
 Endpoints are managed from the Webhooks page of your partner dashboard:
 
-- **Create** an endpoint - the signing secret is shown once, so store it then.
+- **Create** an endpoint with its URL. Optionally restrict it to some event
+  types and pin its payloads to an API version. The signing secret is shown
+  once, so store it then.
 - **Roll** its secret - confirmed by email, with the overlap above.
-- **Disable** an endpoint - deliveries stop.
+- **Disable** an endpoint - deliveries stop and queued ones are cancelled.
+- **Inspect deliveries** for the last 30 days, payload and response included,
+  and retry a failed one.
 
 The signing rule above is the whole contract. Nothing else about an endpoint
-changes how you verify.
+changes how you verify. See [Partner dashboard](/partner/dashboard#webhooks).
 
 ## Reconciling by polling
 

@@ -24,11 +24,20 @@ real. Live-mode keys (`clmt_live_`) run against real companies and billing.
   <Card title="Quickstart" icon="rocket" href="/partner/quickstart">
     Your first authenticated call in a minute.
   </Card>
+  <Card title="Partner dashboard" icon="gauge" href="/partner/dashboard">
+    Keys, webhooks, logs, billing, branding: the map of partner.clemta.com.
+  </Card>
   <Card title="Filtering and expanding" icon="filter" href="/partner/list-queries">
     Filters, cursor pagination, and expansions on list endpoints.
   </Card>
   <Card title="Idempotency" icon="arrows-rotate" href="/partner/idempotency">
     Retry writes safely with an idempotency key.
+  </Card>
+  <Card title="Build with an AI agent" icon="robot" href="/partner/ai-agents">
+    Skills and a docs search server for Claude Code, Cursor, and the rest.
+  </Card>
+  <Card title="OpenAPI specs" icon="file-code" href="/partner/openapi-specs">
+    Download the description, per version, and generate a client.
   </Card>
 </CardGroup>
 
@@ -42,10 +51,13 @@ real. Live-mode keys (`clmt_live_`) run against real companies and billing.
     Statuses, stages, identity documents, and the events at each step.
   </Card>
   <Card title="Requirements" icon="clipboard-check" href="/partner/requirements">
-    Documents, forms, and the asks your client answers without a key.
+    Documents, forms, and the asks your customer answers without a key.
   </Card>
   <Card title="Service orders" icon="cart-shopping" href="/partner/service-orders">
     Ordering, fulfilment steps, recurring services, the form standard.
+  </Card>
+  <Card title="Billing" icon="credit-card" href="/partner/billing">
+    Wholesale prices, a charge per order, one invoice a month.
   </Card>
   <Card title="Files" icon="file" href="/partner/files">
     Reading deliverables back, proxied through the API.
@@ -65,3 +77,5 @@ real. Live-mode keys (`clmt_live_`) run against real companies and billing.
 - Limits are published on every response. See [Rate Limiting](/partner/rate-limiting).
 - Every object names its own type in an `object` field, so it stays
   identifiable when nested or delivered in an event.
+- Support is [tech@clemta.com](mailto:tech@clemta.com). Include the
+  `request_id` from the response when you write about a specific call.

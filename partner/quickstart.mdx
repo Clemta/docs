@@ -3,6 +3,11 @@ title: "Quickstart"
 description: "Make your first Partner API call"
 ---
 
+<Tip>
+Using a coding agent? Install the Partner API [skills](/partner/ai-agents) and it
+follows these steps for you, test key and all.
+</Tip>
+
 ## 1. Get a key
 
 There is no public signup. Keys are issued from the partner dashboard once your
@@ -63,7 +68,7 @@ curl -X POST https://api.clemta.com/v1/companies \
 
 The company comes back in `requires_information`: each owner still
 owes an identity document (`document.status` is `required`). Attach one inline
-with `passport` (a file id from [`POST /v1/files`](/api-reference/create-file)), or hand your client a hosted
+with `passport` (a file id from [`POST /v1/files`](/api-reference/create-file)), or hand your customer a hosted
 upload page - [`POST /v1/companies/{id}/verification-sessions`](/api-reference/create-verification-session) returns a `url`
 you forward, no key needed. Once every owner's document is received, the
 company moves on.
@@ -92,5 +97,5 @@ simulable this way ([`company.ein.assigned`](/api-reference/webhooks/company-ein
 ## 5. Next
 
 - [How it fits together](/partner/concepts): the objects and the lifecycle.
-- [Requirements](/partner/requirements): everything Clemta asks of you, and how your client answers.
+- [Requirements](/partner/requirements): everything Clemta asks of you, and how your customer answers.
 - [Webhooks](/partner/webhooks): ordered, signed delivery of every event.

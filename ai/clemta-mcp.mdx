@@ -1,0 +1,29 @@
+---
+title: "Clemta MCP server"
+description: "Ask Clemta instead of opening it, from Claude, Cursor, or any MCP client."
+tag: "WIP"
+keywords: ['mcp', 'model context protocol', 'claude', 'cursor', 'agent', 'operations']
+---
+
+<Note>
+In development. Connection details will be published here when the server
+ships.
+</Note>
+
+The Clemta MCP server puts Clemta inside the tools you already talk to.
+Connect an MCP client, and ask in plain words.
+
+## Who it is for
+
+- **People using the Clemta app.** Ask about your own company: what is due,
+  what arrived, what is still needed from you.
+- **Partner teams.** An operations team connects with a Partner API key and
+  asks about the companies it formed: which ones are waiting on a document,
+  what stage an order is at, when a filing is due. The answers come from the
+  same objects the Partner API serves, with no code in between.
+
+The key sets what the agent can see. A test key sees the sandbox and nothing
+else.
+
+This is separate from the [docs search server](/ai/coding-agents#docs-search-mcp),
+which searches these pages and nothing else.

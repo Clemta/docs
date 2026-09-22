@@ -1,0 +1,60 @@
+---
+title: "Docs for agents"
+description: "A docs search server, Markdown pages, and llms.txt for Claude Code, Cursor, or any coding agent."
+keywords: ['llms.txt', 'markdown', 'mcp', 'claude code', 'cursor', 'vs code', 'skills', 'agents.md']
+---
+
+import DocsMcp from "/snippets/docs-mcp.mdx";
+
+Every page on this site is also served in a form an agent can read. None of it
+needs a key. Product-specific skills are listed by product, starting with the
+[Partner API](/ai/partner-api).
+
+## Docs search (MCP)
+
+A search server for these pages runs at `https://docs.clemta.com/mcp`. It
+searches the docs and does not call the API. To use Clemta itself from an
+agent, see the [Clemta MCP server](/ai/clemta-mcp).
+
+<DocsMcp />
+
+The **Connect** entries in the menu at the top of every page do the same in
+one click.
+
+## Markdown and llms.txt
+
+- Add `.md` to any page URL for its Markdown:
+  `https://docs.clemta.com/partner/webhooks.md`.
+- [`/llms.txt`](https://docs.clemta.com/llms.txt) lists every page.
+  [`/llms-full.txt`](https://docs.clemta.com/llms-full.txt) is the whole site
+  in one file.
+
+Any of these can go in a `CLAUDE.md`, `AGENTS.md`, or `.cursorrules` file.
+
+## Page menu
+
+The menu at the top of every page copies the page as Markdown, opens it in
+Claude or ChatGPT, connects the docs search server to Cursor or VS Code, and
+downloads the OpenAPI description.
+
+## Agent instructions
+
+Every Markdown export, and both `llms` files, end with a short block of
+instructions: use a `clmt_test_` key while developing, send an
+`Idempotency-Key` on every write, pin `Clemta-Version`, and branch on error
+`code`.
+
+## Skills
+
+A skill is a Markdown file an agent loads when the task matches its
+description. Skills are named `clemta-<product>-<topic>`, and the `clemta`
+skill is an index of all of them. One command installs the set:
+
+```bash
+npx skills add https://docs.clemta.com
+```
+
+The index is at [`/.well-known/agent-skills/index.json`](https://docs.clemta.com/.well-known/agent-skills/index.json)
+and each file at `/.well-known/agent-skills/<name>/SKILL.md`, for tools that
+read the agent-skills format directly. See [Partner API](/ai/partner-api) for
+what each skill covers.

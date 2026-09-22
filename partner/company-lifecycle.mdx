@@ -19,6 +19,7 @@ The API validates every field server-side:
   and never a leading "The". The suffix is the separate `ending` field.
   `name_style: comma` renders "Acme, LLC" and the company returns the
   assembled `legal_name` read-only.
+- **`state`** - any of the 50 states or DC, as a two-letter code.
 - **`owner_privacy`** - `public` (default) or `private`: whether the owners
   are kept off the public filing. It is the customer's choice, and only the
   states that offer it accept `private` (DE, NV, WY, NM).
@@ -49,7 +50,7 @@ The API validates every field server-side:
   has a legal address by definition). `ein` and `foreign_qualifications[]`
   stay optional. All three are rejected on companies Clemta forms. The
   incorporation date is never an input: a `formation_document` requirement
-  opens at creation, your client uploads the formation document, and Clemta
+  opens at creation, your customer uploads the formation document, and Clemta
   reads the date off it before onboarding completes.
 - **Shares and units** - a **C-Corp** declares `authorized_shares` and
   `par_value` (both required), and each owner's `percent_ownership` must
@@ -75,7 +76,7 @@ The API validates every field server-side:
 sequenceDiagram
   participant P as Partner
   participant API as Clemta API
-  participant C as Client
+  participant C as Customer
   P->>API: POST /companies {owners, services[]}
   API-->>P: 201 company (status: requires_information)
   API-->>P: webhook company.created + requirement.created (per owner)
@@ -242,8 +243,8 @@ POST /companies/{id}/verification-sessions   { "shareholder": "sh_..." }
 ```
 
 It returns a short-lived `url`. The URL is the credential - it authorizes
-exactly that owner's document upload and nothing else. Hand it to your client
-or open it from your own UI. Your client uploads the file there with no API
+exactly that owner's document upload and nothing else. Hand it to your customer
+or open it from your own UI. Your customer uploads the file there with no API
 key (PDF, JPEG or PNG, up to 10 MB). Each upload fires
 [`company.document.received`](/api-reference/webhooks/company-document-received) and moves the owner's `document.status` to
 `received`. When the last one lands, the company moves to `in_progress` and
@@ -257,7 +258,7 @@ to fulfill it.
 
 If the state rejects the name, the company's `stage` becomes `name_conflict`
 and a `name_change` requirement opens ([`requirement.created`](/api-reference/webhooks/requirement-created)). Fulfill it with
-a new name - over the API, or through a hosted link your client answers on -
+a new name - over the API, or through a hosted link your customer answers on -
 and Clemta refiles. When Clemta changes a company's legal name for any reason,
 [`company.name.changed`](/api-reference/webhooks/company-name-changed) tells you.
 

@@ -10,6 +10,9 @@ handler a public URL, and the **sandbox** lets you fire any event on demand. The
 whole loop runs in [test mode](/partner/concepts#modes-and-the-sandbox) with a
 `clmt_test_` key, so nothing you do here touches a live company.
 
+The same loop ships as a skill for coding agents. See
+[Build with an AI agent](/partner/ai-agents).
+
 ## The loop
 
 <Steps>
@@ -40,7 +43,7 @@ whole loop runs in [test mode](/partner/concepts#modes-and-the-sandbox) with a
     curl -X POST https://api.clemta.com/v1/companies \
       -H "Authorization: Bearer clmt_test_..." \
       -H "Content-Type: application/json" \
-      -d '{"external_id":"dev-1","name":"Dev Co","state":"DE","entity_type":"llc",
+      -d '{"external_id":"dev-1","name":"Dev Co","ending":"llc","state":"DE","entity_type":"llc","industry":"software",
            "account":{"external_id":"cust-1","email":"founder@dev.test"}}'
     # -> { "object":"company", "id":"cmp_...", ... }
     ```
@@ -70,7 +73,8 @@ whole loop runs in [test mode](/partner/concepts#modes-and-the-sandbox) with a
     Most of the [catalog](/partner/webhooks#events-we-deliver) is simulable this
     way, so you can replay any handler path without waiting on a real formation.
     See [Modes and the sandbox](/partner/concepts#modes-and-the-sandbox) for the
-    full event table.
+    full event table, and [Sandbox](/partner/sandbox) for the test clock that
+    moves time for renewals and deadlines.
   </Step>
 
   <Step title="Verify the delivery">
@@ -148,10 +152,10 @@ body as text or bytes before any JSON middleware touches it.
 - **Respond `2xx` quickly.** Acknowledge first, do the work after. A slow handler
   reads as a failed delivery and is [retried](/partner/webhooks#delivery-and-retries).
 - **Re-register when the tunnel URL changes.** A free tunnel rotates its URL on
-  restart; the old endpoint then delivers into nothing.
+  restart, and the old endpoint then delivers into nothing.
 - **Test and live never mix.** A `clmt_test_` key only drives test companies and
   only reaches test endpoints. Switching to `clmt_live_` is the same code against
   real formations - and there a company advances on its own, so `simulate` is
   gone (it answers an error to a live key, exactly as in production).
 - **`Clemta-Webhook-Id` is your idempotency key.** Retries and a poll sweep can
-  both deliver the same event; dedupe on that id and a duplicate is free.
+  both deliver the same event. Dedupe on that id and a duplicate is free.

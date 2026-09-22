@@ -3,7 +3,7 @@ title: "Errors"
 description: "Every error the Clemta Partner API returns, what it means, and how to fix it."
 ---
 
-{/* Code generated from the partner error registry (partner/fault) by errdocsgen. DO NOT EDIT. Edit the registry and run go generate ./partner/... */}
+{/* This page is generated. Do not edit it by hand. */}
 
 Every error the Clemta Partner API returns is a JSON body carrying a stable machine-readable `code`. Branch on `code` (never on `detail`, whose wording may change). The `type` field of every response links straight back to its section on this page. Validation failures additionally carry an `errors` array naming every violating field.
 
@@ -321,7 +321,7 @@ Too many requests from this API key or address in the current window.
 
 Something failed on Clemta's side. The request may or may not have taken effect.
 
-**How to fix:** Retry with backoff. If it persists, contact support with the `request_id` from the response body, which is what lets us find the cause.
+**How to fix:** Retry with backoff. If it persists, email tech@clemta.com with the `request_id` from the response body, which is what lets us find the cause.
 
 ```json Example response
 {

@@ -1,0 +1,84 @@
+---
+title: "Sandbox"
+description: "Test mode end to end: test keys, simulating what Clemta would do, and a clock you can move to rehearse renewals and deadlines."
+keywords: ['sandbox', 'test mode', 'simulate', 'test clock', 'clock', 'renewal', 'clmt_test']
+---
+
+A `clmt_test_` key runs against the sandbox. Every endpoint works, every event
+fires, and nothing reaches fulfilment or billing. The sandbox is where you
+rehearse an integration before a live key ever touches it.
+
+## Two worlds
+
+Test and live are separate. An id from one never resolves in the other, the
+same `Idempotency-Key` is a different key in each, and webhook endpoints are
+registered per mode. See
+[Modes and the sandbox](/partner/concepts#modes-and-the-sandbox).
+
+## Making things happen
+
+A test company never advances on its own, because Clemta is not fulfilling it.
+You advance it with
+[`POST /sandbox/companies/{id}/simulate`](/api-reference/create-sandbox-simulation):
+name the `event` and the fields it needs, and the change is applied exactly as
+a live one would be, once-only rules included, with the resulting events
+delivered to your test endpoints.
+
+```bash
+curl -X POST https://api.clemta.com/v1/sandbox/companies/cmp_.../simulate \
+  -H "Authorization: Bearer clmt_test_..." \
+  -H "Content-Type: application/json" \
+  -d '{"event": "company.ein.assigned", "ein": "12-3456789"}'
+```
+
+The full list of simulable events and their fields is in
+[the event table](/partner/concepts#modes-and-the-sandbox). A live key is
+refused with [`test_mode_only`](/partner/errors#test_mode_only).
+
+## The test clock
+
+Renewals, deadlines, and reminders depend on time passing. The test clock lets
+you move it. There is one clock in test mode, and while it runs, every
+time-based rule reads from it instead of the real clock.
+
+<Steps>
+  <Step title="Create the clock">
+    It starts frozen at the current time.
+
+    ```bash
+    curl -X POST https://api.clemta.com/v1/clock \
+      -H "Authorization: Bearer clmt_test_..."
+    # -> { "object": "clock", "livemode": false, "simulated_time": "2026-09-22T10:00:00Z", ... }
+    ```
+
+    Creating it again returns the existing clock.
+  </Step>
+
+  <Step title="Advance it">
+    Move forward to a moment of your choosing. A clock only moves forward, and
+    at most five years in one call.
+
+    ```bash
+    curl -X POST https://api.clemta.com/v1/clock/advance \
+      -H "Authorization: Bearer clmt_test_..." \
+      -H "Content-Type: application/json" \
+      -d '{"to": "2027-09-22T10:00:00Z"}'
+    ```
+
+    Every recurring order renews once for each period the jump crosses, at the
+    price captured on the order. A monthly service advanced a year renews
+    twelve times.
+  </Step>
+
+  <Step title="Read or delete it">
+    `GET /clock` shows where the clock stands. `DELETE /clock` returns the mode
+    to real time. Nothing that happened while the clock ran is undone.
+  </Step>
+</Steps>
+
+The clock is a test-mode tool. On production a live key cannot create one.
+
+## Limits
+
+The sandbox shares your key's [rate limits](/partner/rate-limiting). There is
+no separate sandbox quota.
