@@ -2492,7 +2492,7 @@ components:
       name: sort
       in: query
       required: false
-      description: Comma-separated fields to sort by, a minus prefix for descending (for example `-created_at`). Each endpoint's sortable fields are in its description; an unsupported one is rejected with a suggestion.
+      description: Comma-separated fields to sort by, a minus prefix for descending (for example `-created_at`). Each endpoint's sortable fields are in its description. An unsupported one is rejected with a suggestion.
       schema:
         type: string
         example: '-created_at,name'
@@ -3642,7 +3642,7 @@ components:
             - ux_designer
             - ui_designer
             - other
-          description: The owner's role, as an API token - the platform's owner position list. Officer-sounding roles (CEO, CFO, ...) are not owner titles; they belong on the officer roster. Use `other` with `custom_title` for any role outside this list.
+          description: The owner's role, as an API token - the platform's owner position list. Officer-sounding roles (CEO, CFO, ...) are not owner titles. They belong on the officer roster. Use `other` with `custom_title` for any role outside this list.
         custom_title:
           type: string
           maxLength: 120
@@ -5162,7 +5162,7 @@ components:
           description: What kind of deadline this is, as a stable token - so you can group, icon and word your own reminder without parsing the free-text title. `client_event` is one your client added; `other` is a deadline whose kind is not yet classified.
         description:
           type: string
-          description: Present only on a client-added event. Standard compliance deadlines carry no description - use `category` to word your own; the platform's own copy is never exposed.
+          description: Present only on a client-added event. Standard compliance deadlines carry no description - use `category` to word your own. The platform's own copy is never exposed.
         due_at:
           type: string
           format: date-time
@@ -5839,7 +5839,7 @@ components:
             $ref: '#/components/schemas/CalendarEvent'
     CreateCalendarEventBody:
       type: object
-      description: A calendar event to add to a company, beside the compliance deadlines. Your own event - a filing you track, a client meeting, an internal deadline - in a clean, self-contained shape. You choose how many days before to be reminded; a `calendar.reminder` webhook fires at each point so you notify your client on your own channel.
+      description: A calendar event to add to a company, beside the compliance deadlines. Your own event - a filing you track, a client meeting, an internal deadline - in a clean, self-contained shape. You choose how many days before to be reminded. A `calendar.reminder` webhook fires at each point so you notify your client on your own channel.
       required:
         - title
         - due_at
