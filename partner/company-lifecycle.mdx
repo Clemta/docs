@@ -34,10 +34,10 @@ The API validates every field server-side:
   description). Every other value refuses both.
 - **Owners** - each individual or company owner needs email, phone, a title
   and a complete address (filing charset: letters, numbers and
-  `& . , : ; ' # -`). `tax_id` is validated and normalized to the standard
-  masks: `123-45-6789` (ssn/itin), `12-3456789` (ein). Ownership must total
-  100 with exactly one representative, and every named owner's
-  `percent_ownership` must be above 0.
+  `& . , : ; ' # -`). `tax_id` is optional and, when provided, is validated
+  and normalized to the standard masks: `123-45-6789` (ssn/itin), `12-3456789`
+  (ein). Ownership must total 100 with exactly one representative, and every
+  named owner's `percent_ownership` must be above 0.
 - **Owner text fields** - `first_name` and `last_name` take English letters
   and spaces only. A company owner's `name` and `representative_name` take
   letters, numbers, spaces and `& . , -`. `email` must be a valid address.

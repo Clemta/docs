@@ -775,6 +775,7 @@ paths:
         - $ref: '#/components/parameters/EventTypeFilter'
         - $ref: '#/components/parameters/EventCompanyIdFilter'
         - $ref: '#/components/parameters/EventCreatedAtFilter'
+        - $ref: '#/components/parameters/ExpandEvent'
         - $ref: '#/components/parameters/Sort'
         - $ref: '#/components/parameters/Limit'
         - $ref: '#/components/parameters/After'
@@ -2729,6 +2730,17 @@ components:
                 type: string
                 format: date-time
                 description: At or before this moment.
+    ExpandEvent:
+      name: expand[]
+      in: query
+      required: false
+      description: 'Relations to embed. Expandable: company (the full company the event is about, when it carries a company_id). Requires a key scoped to read companies.'
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            - company
     TaxFilingId:
       name: filingID
       in: path
@@ -3603,6 +3615,9 @@ components:
           items:
             $ref: '#/components/schemas/RequirementSigner'
           description: For a signature requirement - every party that must sign, with each one's progress. The requirement resolves only when they have all signed.
+        signature_sequential:
+          type: boolean
+          description: For a signature requirement - true when the parties sign in the order of the `signers` array (each becomes able to sign only once the one before them has). Absent or false means everyone signs in parallel.
         message:
           type: string
           description: Why it was opened, in words you can show your customer.
@@ -4002,7 +4017,7 @@ components:
         - type
         - relationship
       additionalProperties: false
-      description: A company owner. An individual needs first_name, last_name and a tax_id with tax_id_type ssn or itin. A company needs name and a tax_id with tax_id_type ein. Identity documents are never sent here - each individual owner uploads theirs through the upload link returned on the company.
+      description: A company owner. An individual needs first_name and last_name. A company needs name and representative_name. A tax_id is optional. When present, its tax_id_type must be ssn or itin for an individual and ein for a company. Identity documents are never sent here - each individual owner uploads theirs through the upload link returned on the company.
       properties:
         type:
           type: string
@@ -4044,7 +4059,7 @@ components:
         tax_id:
           type: string
           maxLength: 32
-          description: SSN or ITIN for an individual, EIN for a company. Write-only, never returned.
+          description: SSN or ITIN for an individual, EIN for a company. Optional. Write-only, never returned.
         tax_id_type:
           type: string
           enum:
@@ -5581,6 +5596,10 @@ components:
           type: string
           pattern: ^cmp_[0-9A-Za-z]{22}$
           description: The company the event is about, when it is about one.
+        company:
+          allOf:
+            - $ref: '#/components/schemas/Company'
+          description: The full company this event is about. Present only when requested with `expand[]=company`, and only for an event that carries a `company_id`.
         data:
           $ref: '#/components/schemas/EventData'
         livemode:
@@ -6306,8 +6325,14 @@ components:
         redirect_url:
           type: string
           description: The after-completion destination minted with the session. The page offers it once the flow completes.
+        message:
+          type: string
+          description: A note to the signer, shown above the document on the hosted page - the operator's message when opening the signature. Absent when none was set.
         document_name:
           type: string
+        cancel_reason:
+          type: string
+          description: Why a canceled document was voided (a signer's decline reason), to show on the canceled screen. Present only when the status is `canceled`.
         page:
           allOf:
             - $ref: '#/components/schemas/HostedPageInfo'
@@ -6321,6 +6346,9 @@ components:
         others_pending:
           type: boolean
           description: True when this signer has completed their part but the document is not fully executed yet - other signers still have to sign. The page can then say the signature is recorded rather than that the whole document is done. It never names or counts the other signers.
+        waiting_for_others:
+          type: boolean
+          description: True when the document signs in order and it is not this signer's turn yet - someone earlier in the order has still to sign. There is no embed to render, so the page shows a wait state until the earlier signer completes. It never names or counts the other signers.
     RequirementContext:
       type: object
       description: What a hosted page shows, read through the link's own token - names only, no identifiers, since the holder is your customer rather than you.
