@@ -1614,7 +1614,7 @@ paths:
         - Requirements
       operationId: createSigningSession
       summary: Create a hosted signing session
-      description: Mints a fresh hosted signing URL for one open signature requirement. Live mode only, and your hosted page must be configured - the page presents your brand and legal links while collecting a signature.
+      description: Mints a fresh hosted signing URL for one open signature requirement. Your hosted page must be configured - it presents your brand and legal links while collecting the signature. In test mode the signature has no provider, so the page presents a test completion rather than a signing frame.
       parameters:
         - $ref: '#/components/parameters/CompanyId'
       requestBody:
@@ -1909,6 +1909,54 @@ paths:
           $ref: '#/components/responses/NotFound'
       x-mint:
         href: /api-reference/get-signing-link-context
+  /signing-links/{token}/complete:
+    post:
+      tags:
+        - Requirements
+      operationId: completeSigningLink
+      x-excluded: true
+      summary: Complete a test signing link
+      security: []
+      description: 'Completes a signature in TEST MODE, standing in for the signer finishing the document. Authenticated by the token itself, no API key. It marks every signer signed and resolves the requirement, so your `requirement.signature.signed` and `requirement.fulfilled` webhooks fire exactly as a live completion would - letting you rehearse the whole signature flow in sandbox. Available only for a test-mode signature (`livemode: false`) - a live signature is refused, since it resolves solely through the signing provider. Idempotent - completing an already-completed link is a no-op that returns its current state.'
+      parameters:
+        - $ref: '#/components/parameters/RequirementToken'
+      responses:
+        '200':
+          description: The signing context after completion.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SigningContext'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      x-mint:
+        href: /api-reference/complete-signing-link
+  /signing-links/{token}/view:
+    post:
+      tags:
+        - Requirements
+      operationId: viewSigningLink
+      x-excluded: true
+      summary: View a test signing link
+      security: []
+      description: Marks the signer as having opened the document, in TEST MODE, so your `requirement.signature.viewed` webhook fires - the sandbox stand-in for the provider's form.viewed (a separate event fired when the signer opens the signing screen). Authenticated by the token itself, no API key. Available only for a test-mode signature - idempotent.
+      parameters:
+        - $ref: '#/components/parameters/RequirementToken'
+      responses:
+        '200':
+          description: The signing context.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SigningContext'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      x-mint:
+        href: /api-reference/view-signing-link
   /requirement-links/{token}:
     get:
       tags:
@@ -4793,14 +4841,14 @@ components:
           type: object
           additionalProperties:
             type: string
-          description: Option choices for the formation itself, e.g. `{"turnaround":"expedited"}`.
+          description: Option choices for the formation itself, e.g. `{"turnaround":"expedited"}`. This is a shorthand for `service_options` under the `formation` key. Prefer putting the formation's options in `service_options`, which is the field the create request reads, so the same input drives both this quote and the charge. When both are given, `service_options.formation` takes precedence.
         service_options:
           type: object
           additionalProperties:
             type: object
             additionalProperties:
               type: string
-          description: Per-service option choices, keyed by product key, e.g. `{"ein":{"turnaround":"expedited"}}`.
+          description: Per-service option choices, keyed by product key, e.g. `{"ein":{"turnaround":"expedited"}}`. The formation's own options belong here too, under the `formation` key, in the same shape the create request reads, so the quote and the charge use the same option amounts.
     CompanyBasketLine:
       type: object
       description: One prospective charge of a company create - the formation or a service, with its own amount, interval and any pass-through fees.
@@ -5415,7 +5463,7 @@ components:
             - in_review
             - accepted
             - rejected
-          description: 'Review outcome: `draft` while the customer fills it in, `in_review` once submitted to Clemta, then `accepted` or `rejected`.'
+          description: 'Review outcome: `draft` while the customer fills it in, `in_review` once submitted to Clemta, then `accepted` or `rejected`. A `rejected` filing is re-openable - it can be corrected and resubmitted, moving it back to `in_review`.'
         progress:
           type: string
           enum:
@@ -5434,7 +5482,7 @@ components:
           description: How many IRS-1099 files are attached to the filing, however they were attached them. Present on the detail read and on write answers.
         submittable:
           type: boolean
-          description: True when the filing is a draft with every required section in place. Present on the detail read and on write answers.
+          description: True when the filing is editable (a draft, or a rejected filing sent back for correction) with every required section in place. Present on the detail read and on write answers.
         missing:
           type: array
           items:
@@ -5664,6 +5712,28 @@ components:
             - return_ready
             - completed
           default: draft
+    SandboxSigner:
+      type: object
+      required:
+        - email
+      additionalProperties: false
+      description: One signer on a simulated signature requirement. A test signature has no real provider round, so a signer is just an email and a display name - no owner check, no disposable-domain screen.
+      properties:
+        email:
+          type: string
+          format: email
+          description: The signer's email. Each signer on the document needs a distinct one.
+        name:
+          type: string
+          maxLength: 200
+          description: The signer's display name, shown on the hosted signing page.
+        role:
+          type: string
+          maxLength: 100
+          description: Optional label for the party this signer fills on the document. Omitted with a `person_ref`, it is derived from that person - a shareholder's title, an officer's role.
+        person_ref:
+          type: string
+          description: Optional. A shareholder or officer id (`sh_`/`off_`) of the company this signer IS, when picked from the company's people rather than typed by hand. The requirement's signer then carries `person`, and it must name a real person on the company.
     SandboxSimulateBody:
       type: object
       required:
@@ -5682,6 +5752,10 @@ components:
             - company.entitlements.changed
             - service_order.status.changed
             - service_order.completed
+            - service_order.quoted
+            - service_order.renewal_canceled
+            - service_order.renewal_cancel_denied
+            - service_order.updated
             - tax_filing.created
             - tax_filing.status.changed
             - file.created
@@ -5715,10 +5789,23 @@ components:
           description: For `service_order.status.changed` - the workflow step name to move the order to.
         form_required:
           type: boolean
-          description: For `service_order.status.changed` - whether the step waits on a form (opens a `form` requirement, status `requires_action`).
+          description: For `service_order.status.changed` - whether the step waits on a form (opens a `form` requirement, status `requires_action`). The requirement's `form.fields` are the product's real form for that step - the same schema the order would show live.
         completed:
           type: boolean
           description: For `service_order.status.changed` - whether the step is the final one (status `completed`, fires `service_order.completed` once).
+        amount:
+          type: integer
+          format: int64
+          minimum: 1
+          description: For `service_order.quoted` - the quoted amount in minor units, on a quote-priced test order (one created for a `get_a_quote` product). After it, the order can be accepted with `POST /companies/{id}/service-orders/{orderID}/accept-quote`.
+        currency:
+          type: string
+          maxLength: 3
+          description: For `service_order.quoted` - the quote's ISO currency. Defaults to the order's, else `usd`.
+        outcome:
+          type: string
+          maxLength: 100
+          description: For `service_order.updated` - the outcome recorded on a completed test order (e.g. a bank application `approved`/`declined`, a certificate `not_eligible`). The order must already be completed.
         tax_filing:
           $ref: '#/components/schemas/SandboxTaxFiling'
         file_name:
@@ -5728,7 +5815,27 @@ components:
         message:
           type: string
           maxLength: 500
-          description: For `requirement.created` - the Clemta ask (an `information` requirement).
+          description: For `requirement.created` - the ask's note to the client (an `information` requirement, or the signature's message).
+        requirement_type:
+          type: string
+          enum:
+            - information
+            - signature
+          description: For `requirement.created` - which kind of requirement to open. Defaults to `information`. `signature` opens a signature ask for `signers` (the partner then mints a signing session and completes it in test mode).
+        signers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SandboxSigner'
+          minItems: 1
+          maxItems: 20
+          description: 'For `requirement.created` with `requirement_type: signature` - the signers the signature ask is opened for. At least one is required.'
+        document_name:
+          type: string
+          maxLength: 200
+          description: 'For `requirement.created` with `requirement_type: signature` - the document''s display name.'
+        sequential:
+          type: boolean
+          description: 'For `requirement.created` with `requirement_type: signature` - make the signers sign in roster order (each waits for the one before). Off by default (everyone can sign in parallel).'
     Clock:
       type: object
       required:
@@ -5841,7 +5948,7 @@ components:
       required:
         - form
       additionalProperties: false
-      description: Replaces the provided form sections on a draft filing. Only drafts are editable - once submitted, changes go through Clemta.
+      description: Replaces the provided form sections on an editable filing. A filing is editable while it is a draft, and again if it was rejected - a rejected filing can be corrected and resubmitted. Once it is in review or accepted it is closed, and changes go through Clemta.
       properties:
         form:
           $ref: '#/components/schemas/TaxFilingForm'
@@ -6316,6 +6423,9 @@ components:
             - open
             - completed
             - canceled
+        livemode:
+          type: boolean
+          description: Whether the signature behind this link is live. A test-mode (sandbox) signature has no real document to embed, so `embed_url` is absent and the hosted page shows a test completion control instead of a signing frame. A live session carries an `embed_url` and completes inside it.
         partner_name:
           type: string
         company_name:
