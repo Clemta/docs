@@ -42,6 +42,14 @@ tags:
     description: |-
       Events we deliver to your endpoint, and how to verify them. Each webhook below is a request WE send to you. Respond 2xx to acknowledge. Deliveries are signed and retried up to 20 times with exponential backoff, from 15 seconds up to 6 hours apart, until acknowledged. Answer `410 Gone` to have the endpoint disabled and deliveries stopped. A `Retry-After` header on a `429` or `503` pushes the next attempt back. An endpoint that fails continuously for three days is disabled automatically and the workspace owner is emailed - no events are lost, the stream stays available on `GET /v1/events`.
 
+      ## Delivery semantics
+
+      Delivery is at-least-once, so the same event can reach you more than once. Deduplicate on `Clemta-Webhook-Id` and process each event once.
+
+      Ordering is best-effort, not a guarantee. Events for one endpoint are normally delivered in the order they occurred, but a delivery that keeps failing can let later events arrive ahead of it, and a retry can land out of order. Do not depend on receive order - use the event `timestamp` field when sequence matters, and treat each event as self-contained (fetch any related resource you need rather than assuming an earlier event arrived first).
+
+      Nothing is lost while your endpoint is down. Every event stays on `GET /v1/events` with no expiry, filterable by `created_at` and `company_id`, so you can reconcile anything a delivery missed - this is the source of truth, webhooks are the fast path to it.
+
       ## Verifying a delivery
 
       Deliveries are signed per the [Standard Webhooks](https://www.standardwebhooks.com) specification, carrying BOTH schemes in one header: a symmetric `v1` HMAC (verify with your endpoint secret and any standardwebhooks library) and an asymmetric `v1a` ed25519 signature (verify with the endpoint's public key, no shared secret held). Use whichever suits your setup.
@@ -395,6 +403,7 @@ paths:
       summary: List a company's service orders
       parameters:
         - $ref: '#/components/parameters/CompanyId'
+        - $ref: '#/components/parameters/ExpandServiceOrder'
         - $ref: '#/components/parameters/ClemtaVersion'
       responses:
         '200':
@@ -406,6 +415,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceOrderList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -423,6 +434,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/CompanyId'
         - $ref: '#/components/parameters/ServiceOrderId'
+        - $ref: '#/components/parameters/ExpandServiceOrder'
         - $ref: '#/components/parameters/ClemtaVersion'
       responses:
         '200':
@@ -434,6 +446,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ServiceOrder'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -1021,7 +1035,7 @@ paths:
         - Files
       operationId: listFiles
       summary: List all files
-      description: Every file in your account, newest first - Clemta-published deliverables and your own uploads alike. Filter by `purpose`, `source` or `company`.
+      description: Every file in your account, newest first - Clemta-published deliverables and your own uploads alike. Filter by `purpose`, `source`, `company_id`, `service_order_id` (the documents delivered on one service order) or `kind` (what a published document is).
       parameters:
         - $ref: '#/components/parameters/Sort'
         - $ref: '#/components/parameters/Limit'
@@ -1034,6 +1048,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PagedFileList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '429':
@@ -2676,6 +2692,17 @@ components:
         type: string
         pattern: ^cmp_[0-9A-Za-z]{22}$
       example: cmp_0346sFPEvSkJvY8vt14NNw
+    ExpandServiceOrder:
+      name: expand[]
+      in: query
+      required: false
+      description: 'Relations to embed. Expandable: files (the documents delivered on the order, newest first - the same set GET /v1/files?service_order_id= answers).'
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            - files
     ServiceOrderId:
       name: orderID
       in: path
@@ -3340,6 +3367,14 @@ components:
           $ref: '#/components/schemas/FieldValidation'
         file:
           $ref: '#/components/schemas/FieldFileRule'
+        group:
+          type: string
+          description: A stable id tying fields that belong together into one section - the generic shape a repeating block takes, such as one owner's details or one document set. Render every field sharing a `group` under a single heading and in the order they appear. Absent means a standalone field. Keys stay unique across the whole form, so `group` is only how you lay the fields out, never how you read or submit their values.
+          example: owner_1
+        group_label:
+          type: string
+          description: The heading to show for a field's `group`, for example the owner's name. Present on the fields of a group; read it from any of them.
+          example: Ada Lovelace
     ServiceOrderForm:
       type: object
       description: The form the order's current fulfilment step is waiting on.
@@ -3402,6 +3437,87 @@ components:
         currency:
           type: string
           example: usd
+    File:
+      type: object
+      description: 'A file: either a document Clemta published on one of your companies (`source: operations` - Articles, an EIN letter, a filed form - download the bytes from the content endpoint) or one you uploaded (`source: upload` - write-only, attach it by id). Nothing about storage is ever exposed - no URLs, no keys. Uploaded contents cannot be read back.'
+      required:
+        - object
+        - id
+        - name
+        - livemode
+        - created_at
+      properties:
+        object:
+          type: string
+          enum:
+            - file
+          description: Entity name.
+        id:
+          type: string
+          pattern: ^file_[0-9A-Za-z]{22}$
+          example: file_0346sFPEvSkJvY8vt14NNw
+        company:
+          type: string
+          pattern: ^cmp_[0-9A-Za-z]{22}$
+          description: The company this document belongs to. Absent on an upload not yet attached.
+        name:
+          type: string
+          description: The document's filename, extension included.
+          example: Articles_of_Incorporation.pdf
+        content_type:
+          type: string
+          example: application/pdf
+        size:
+          type: integer
+          format: int64
+          description: Size in bytes, when known.
+        purpose:
+          type: string
+          enum:
+            - identity_document
+            - formation_document
+            - additional_document
+            - tax_form_1099
+            - business_logo
+            - business_icon
+          description: What an uploaded file is for. Absent on documents Clemta published.
+        source:
+          type: string
+          enum:
+            - operations
+            - upload
+          description: 'Who put the file here. `operations` - a deliverable we published, its bytes downloadable from the content endpoint. `upload` - you sent it (POST /v1/files), write-only: reference it by id, its contents can never be read back.'
+        kind:
+          type: string
+          enum:
+            - formation_document
+            - ein_letter
+            - ss4
+            - w7
+            - ps1583
+            - governing_document
+            - good_standing_certificate
+            - signed_document
+            - form_attachment
+            - other
+          description: What a document we published is. `form_attachment` is a file you submitted on a service order form, coming back as a company document. `signed_document` is a completed e-signature. `other` covers anything not classified. Absent on your own uploads, which carry `purpose` instead.
+          example: ein_letter
+        service_order:
+          type: string
+          pattern: ^so_[0-9A-Za-z]{22}$
+          description: The service order this document was delivered on, when it belongs to one. Absent on documents published on the company in general.
+          example: so_0346sFPEvSkJvY8vt14NNw
+        url:
+          type: string
+          description: Where the file's contents can be downloaded, with your API key. Present only when the purpose allows downloading - Clemta-published deliverables, never your own uploads.
+        consumed:
+          type: boolean
+          description: True once an upload has been attached. Uploads are single-use.
+        livemode:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
     ServiceOrder:
       type: object
       description: One product ordered on a company. Billed to you when created (or at each period end for arrears products). Reversed by a credit if cancelled before fulfilment starts. An active recurring order can be cancelled to stop renewing at the period end.
@@ -3515,6 +3631,12 @@ components:
           type: string
           format: date-time
           description: When the order first reached `completed`. `service_order.completed` announces this moment, and it does not change afterward.
+        files:
+          type: array
+          readOnly: true
+          description: The documents delivered on this order, newest first. Present only when requested with `expand[]=files`; never in webhook payloads.
+          items:
+            $ref: '#/components/schemas/File'
     RequirementSigner:
       type: object
       description: One party on a signature requirement. A document may need several signatures. Each signer gets their own hosted signing session and signs independently, and the requirement resolves only once the last of them completes.
@@ -5047,67 +5169,6 @@ components:
         hosted_url:
           type: string
           description: A short-lived link to the hosted invoice, when available.
-        created_at:
-          type: string
-          format: date-time
-    File:
-      type: object
-      description: 'A file: either a document Clemta published on one of your companies (`source: operations` - Articles, an EIN letter, a filed form - download the bytes from the content endpoint) or one you uploaded (`source: upload` - write-only, attach it by id). Nothing about storage is ever exposed - no URLs, no keys. Uploaded contents cannot be read back.'
-      required:
-        - object
-        - id
-        - name
-        - livemode
-        - created_at
-      properties:
-        object:
-          type: string
-          enum:
-            - file
-          description: Entity name.
-        id:
-          type: string
-          pattern: ^file_[0-9A-Za-z]{22}$
-          example: file_0346sFPEvSkJvY8vt14NNw
-        company:
-          type: string
-          pattern: ^cmp_[0-9A-Za-z]{22}$
-          description: The company this document belongs to. Absent on an upload not yet attached.
-        name:
-          type: string
-          description: The document's filename, extension included.
-          example: Articles_of_Incorporation.pdf
-        content_type:
-          type: string
-          example: application/pdf
-        size:
-          type: integer
-          format: int64
-          description: Size in bytes, when known.
-        purpose:
-          type: string
-          enum:
-            - identity_document
-            - formation_document
-            - additional_document
-            - tax_form_1099
-            - business_logo
-            - business_icon
-          description: What an uploaded file is for. Absent on documents Clemta published.
-        source:
-          type: string
-          enum:
-            - operations
-            - upload
-          description: 'Who put the file here. `operations` - a deliverable we published, its bytes downloadable from the content endpoint. `upload` - you sent it (POST /v1/files), write-only: reference it by id, its contents can never be read back.'
-        url:
-          type: string
-          description: Where the file's contents can be downloaded, with your API key. Present only when the purpose allows downloading - Clemta-published deliverables, never your own uploads.
-        consumed:
-          type: boolean
-          description: True once an upload has been attached. Uploads are single-use.
-        livemode:
-          type: boolean
         created_at:
           type: string
           format: date-time

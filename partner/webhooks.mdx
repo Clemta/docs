@@ -55,20 +55,26 @@ guessing. The full catalog:
   trying for days until your endpoint answers `2xx`.
 - The same event may arrive **more than once** - dedupe on `webhook-id` (the
   event `id`), which is stable across retries.
-- Events reach each endpoint **in the order they occurred**: a newer event waits
-  until every older one for that endpoint has been acknowledged (or given up on
-  after its retries). So [`company.created`](/api-reference/webhooks/company-created) always lands before the
-  [`requirement.created`](/api-reference/webhooks/requirement-created) that followed it. While your endpoint rejects an event,
-  later events for that endpoint queue behind it - fix or acknowledge the first,
-  and the rest flow. To keep that order honest even for events created at
-  nearly the same instant, a fresh delivery starts a couple of seconds after its event.
+- Events for one endpoint are delivered **in order, best effort**: a newer event
+  normally waits until the older ones for that endpoint are acknowledged, so
+  [`company.created`](/api-reference/webhooks/company-created) lands before the
+  [`requirement.created`](/api-reference/webhooks/requirement-created) that followed it. That hold is
+  bounded, not absolute - an event that keeps failing is **set aside after a few
+  attempts** so one bad delivery cannot hold the rest of your events back for
+  days. Deliveries to a single endpoint are also **paced**: we send one at a time
+  rather than in a burst, so a slow listener is not flooded. Treat order as the
+  normal case, not a guarantee - dedupe on `webhook-id` and tolerate the
+  occasional reorder. To keep the order honest even for events created at nearly
+  the same instant, a fresh delivery starts a couple of seconds after its event.
 - A `Retry-After` header on a `429` or `503` pushes our next attempt back.
 - Answer **`410 Gone`** to unsubscribe: the endpoint is disabled and its queued
-  deliveries are cancelled.
-- An endpoint that **fails continuously for three days** is disabled
-  automatically, and the workspace owner is emailed. No events are lost - replay what you missed
-  from [`GET /events`](/api-reference/list-events) (see
-  [Reconciling by polling](#reconciling-by-polling)).
+  deliveries are paused.
+- An endpoint failing for a while has the workspace owner **emailed a warning**,
+  and one that **fails continuously for three days** is then disabled
+  automatically (the owner is emailed again). No events are lost - replay what you
+  missed from [`GET /events`](/api-reference/list-events) (see
+  [Reconciling by polling](#reconciling-by-polling)), and re-enabling the endpoint
+  resumes whatever was queued when it was disabled.
 - Redirects are **not followed** - a `3xx` counts as a failure. If your URL
   moved, update the endpoint.
 
@@ -218,9 +224,15 @@ Endpoints are managed from the Webhooks page of your partner dashboard:
   types and pin its payloads to an API version. The signing secret is shown
   once, so store it then.
 - **Roll** its secret - confirmed by email, with the overlap above.
-- **Disable** an endpoint - deliveries stop and queued ones are cancelled.
-- **Inspect deliveries** for the last 30 days, payload and response included,
-  and retry a failed one.
+- **Disable** an endpoint - deliveries stop and queued ones are paused. This is
+  reversible.
+- **Enable** a disabled endpoint again - it keeps its id, secret and signing key,
+  so you need not recreate it, and the deliveries paused when it was disabled
+  resume. A manual disable, a `410`, and an automatic disable all re-enable the
+  same way.
+- **Inspect deliveries** for the last 30 days - the exact payload sent, the
+  response body, and each attempt with its result - and retry a single stuck
+  delivery or an endpoint's whole backlog at once.
 
 The signing rule above is the whole contract. Nothing else about an endpoint
 changes how you verify. See [Partner dashboard](/partner/dashboard#webhooks).

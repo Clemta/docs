@@ -43,6 +43,11 @@ sequenceDiagram
 `GET .../service-orders/{id}` returns the **live** fulfilment step and, when
 that step is waiting on input, the `form` to collect.
 
+The documents Clemta delivers on an order - a filed return, a signed document, a
+form attachment coming back - are read with `expand[]=files` on either order
+read, or from [`GET /v1/files?service_order_id=so_...`](/api-reference/list-files),
+each carrying its `kind`. See [Files](/partner/files).
+
 ## Order status
 
 `status` is a small, stable set Clemta derives for you. `workflow_status`
@@ -80,8 +85,8 @@ stateDiagram-v2
 
 A product may be offered only to some companies. `available_when` on
 [`GET /products`](/api-reference/list-products) is a match condition over the company's `entity_type`,
-`state`, `pre_existing`, and `owners_count` - empty or absent means every
-company. Ordering it for a company outside the condition is refused with
+`state`, `pre_existing`, `owners_count`, `has_ein`, and `incorporated` - empty or
+absent means every company. Ordering it for a company outside the condition is refused with
 `400 invalid_request`, before anything is billed. A `required_for` product
 outside its condition simply does not auto-attach. A single option value can
 carry its own `available_when` too (an expedite offered in some states only).
@@ -142,9 +147,11 @@ curl -X POST https://api.clemta.com/v1/companies/cmp_.../service-orders \
   -d '{"product_key": "federal_tax_filing", "options": {"llc_members": "multi_member"}}'
 ```
 
-The order stores the choices, and the charge on your ledger is the value's
-`unit_amount` when it has one - unless you hold a negotiated override on the
-product, in which case that price applies whatever you choose. A missing
+The order stores the choices, and the charge on your ledger is the chosen
+value's `unit_amount` when it has one, otherwise the product's resolved price -
+which already reflects any negotiated override on the product. A negotiated
+override can also target a specific option value, so a value's own price is
+overridable too. A missing
 required option, an unknown key, or an unknown value answers
 `400 invalid_request` with one `errors[]` entry per problem (with a "did you
 mean" hint where one is close), so you fix the request in one round trip.

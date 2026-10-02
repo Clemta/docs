@@ -10,7 +10,10 @@ When Clemta publishes a document on one of your companies, it appears on
 filed state and IRS forms, and letters land here, alongside the files you
 uploaded yourself. Each file's `source` says which it is: `operations` for a
 document Clemta published (downloadable), `upload` for one you sent
-(write-only).
+(write-only). A published document also carries `kind` (what it is - an EIN
+letter, a signed document, a form attachment) and, when it came out of a service
+order, the `service_order` it belongs to - so you can route a delivered document
+without opening it.
 
 ```mermaid
 flowchart LR
@@ -24,8 +27,10 @@ flowchart LR
 - [`GET /companies/{id}/files`](/api-reference/list-company-files) - one company's published documents, newest
   first: name, content type, size, when it was created.
 - [`GET /v1/files`](/api-reference/list-files) - everything in your account, paginated, newest first: your
-  uploads and Clemta deliverables alike. Filter by `purpose`, `source` and
-  `company`.
+  uploads and Clemta deliverables alike. Filter by `purpose`, `source`,
+  `company_id`, `service_order_id` (the documents delivered on one order) or
+  `kind` (what a published document is - an EIN letter, a signed document, a form
+  attachment, and so on).
 - [`GET /files/{id}`](/api-reference/get-file) - one file's metadata.
 - [`GET /files/{id}/contents`](/api-reference/get-file-content) - the bytes, streamed with the right
   `Content-Type` and `Content-Disposition`, on your API key. A downloadable

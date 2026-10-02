@@ -71,7 +71,7 @@ Send a section to replace it whole. Sections you leave out keep their stored val
 
 ```bash
 curl -X POST https://api.clemta.com/v1/companies/cmp_.../tax-filings/txf_... \
-  -d '{"corp_info": {...}, "contact": {...}, "owners": [...]}'
+  -d '{"form": {"corp_info": {...}, "contact": {...}, "owners": [...]}}'
 ```
 
 The sections are `corp_info`, `contact`, `additional_questions`, `owners`, `revenue_expenses` (federal), `balance_sheet` (state), `officers`, and `directors`. `fixed_assets` is read-only on a filing - it is drawn from the company's register, so manage it with the fixed-assets API (`/companies/{id}/fixed-assets`), not here. Read the current state, `missing`, and `submittable` any time with `GET /companies/{id}/tax-filings/{id}`.

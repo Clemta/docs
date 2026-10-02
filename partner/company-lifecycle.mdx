@@ -41,10 +41,12 @@ The API validates every field server-side:
 - **Owner text fields** - `first_name` and `last_name` take English letters
   and spaces only. A company owner's `name` and `representative_name` take
   letters, numbers, spaces and `& . , -`. `email` must be a valid address.
-  `phone_country` (optional) is an ISO 3166 alpha-2 code.
+  `phone_country` is a required ISO 3166 alpha-2 code.
 - **Owner role** - `relationship.title` is a position token (`sole_owner`,
-  `ceo` ... `operations_manager`, or `other`). `other` requires
-  `custom_title` (filing charset), every other token refuses one.
+  `product_manager`, `software_engineer`, and the rest of the list, or `other`).
+  Officer roles like a director are not owner titles - they belong on the officer
+  roster. `other` requires `custom_title` (filing charset), every other token
+  refuses one.
 - **Owner identity** - no two owners may share an email or a tax id.
 - **`pre_existing` companies** - `address` is required (an existing company
   has a legal address by definition). `ein` and `foreign_qualifications[]`

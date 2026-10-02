@@ -8,7 +8,7 @@ The Partner API authenticates with a bearer key. Send it in the
 `Authorization` header on every request:
 
 ```
-Authorization: Bearer clmt_live_9f2aK4dQ8xR3mB1nT7cV
+Authorization: Bearer clmt_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 ## Keys
@@ -71,8 +71,9 @@ workspace owner.
 
 Rotating or revoking a key, changing an allowlist, and rolling a webhook
 secret each ask for a six-digit code emailed to you. A code lasts ten minutes
-and five wrong attempts void it. One confirmation covers further sensitive
-actions for the next five minutes.
+and five wrong attempts void it. Rotating or revoking a key always needs a fresh
+code. Changing an allowlist or rolling a webhook secret is lighter - one
+confirmation there covers further such actions for the next five minutes.
 
 ## Errors
 
@@ -98,12 +99,12 @@ Branch on `code`, never on `detail`. The wording may change.
 
 ```bash curl
 curl https://api.clemta.com/v1/me \
-  -H "Authorization: Bearer clmt_live_9f2aK4dQ8xR3mB1nT7cV"
+  -H "Authorization: Bearer clmt_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 ```
 
 ```typescript fetch
 await fetch("https://api.clemta.com/v1/me", {
-  headers: { Authorization: "Bearer clmt_live_9f2aK4dQ8xR3mB1nT7cV" },
+  headers: { Authorization: "Bearer clmt_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" },
 });
 ```
 
@@ -111,7 +112,7 @@ await fetch("https://api.clemta.com/v1/me", {
 import requests
 requests.get(
     "https://api.clemta.com/v1/me",
-    headers={"Authorization": "Bearer clmt_live_9f2aK4dQ8xR3mB1nT7cV"},
+    headers={"Authorization": "Bearer clmt_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"},
 )
 ```
 

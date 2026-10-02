@@ -1,10 +1,26 @@
 ---
 title: "Changelog"
-description: "Dated changes to the Partner API"
+description: "Notable changes to the Partner API"
 ---
 
-The Partner API is versioned by date. See [Versioning](/partner/versioning) for
-how to pin a version, and [API versions](/partner/versions) for the versions you
-can pin today.
+The API is versioned by date - see [Versioning](/partner/versioning) and
+[API versions](/partner/versions). Non-breaking changes land under the version
+you already pin. A change to a resource's shape ships as a new dated version.
 
-Release notes land here once the API is generally available.
+<Update label="2026-08-13" tags={["Current version"]}>
+
+Latest changes under this version, none of them breaking:
+
+**Webhooks**
+- Re-enable a disabled endpoint. It keeps its secret and signing key, and deliveries paused by the disable resume.
+- Delivery is best-effort ordered and paced per endpoint, so one failing event no longer blocks the rest.
+- Delivery detail shows the response body and each attempt. Retry one delivery or an endpoint's whole backlog.
+
+**Files**
+- Published documents carry `kind` and, when delivered on an order, `service_order`.
+- Filter `GET /v1/files` by `service_order_id` and `kind`. Embed an order's documents with `expand[]=files`.
+
+**Requirements**
+- A `form` requirement is withdrawn (`requirement.canceled`) when its order moves past the step that needed it.
+
+</Update>

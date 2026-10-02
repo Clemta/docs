@@ -38,11 +38,15 @@ asked). `message` says why, in words you can show your customer.
 
 ## Status
 
-`open` -> `resolved` (fulfilled) or `canceled` (its order was cancelled, or
-Clemta withdrew the ask). Fulfillment is atomic and single-shot: a second
-fulfill of the same requirement answers `invalid_request` ("this requirement is
-not open"). A canceled requirement carries a `cancel_reason` you can show your
-customer.
+`open` -> `resolved` (fulfilled) or `canceled`. The order moving past the step
+that needed it, a signer declining, or Clemta withdrawing the ask each fires
+[`requirement.canceled`](/api-reference/webhooks/requirement-canceled) carrying a
+`cancel_reason` you can show your customer. Cancelling the order or dissolving
+the company also closes its open requirements - there the order's or company's
+own event is the signal, so no separate `requirement.canceled` is sent and no
+`cancel_reason` is set. Fulfillment is atomic and single-shot: a second fulfill
+of the same requirement answers `invalid_request` ("this requirement is not
+open").
 
 ## Fulfilling a form
 

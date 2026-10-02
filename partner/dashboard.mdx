@@ -23,7 +23,7 @@ A workspace has one owner and any number of members.
 | Create test keys | Yes | Yes |
 | Create, rotate, revoke live keys | Yes | No |
 | Set a key's IP allowlist | Yes | No |
-| Register and disable webhook endpoints | Yes | No |
+| Register, disable, and enable webhook endpoints | Yes | No |
 | Change version settings and branding | Yes | No |
 | Accept or decline the price sheet | Yes | No |
 
@@ -40,10 +40,12 @@ them, and set an IP allowlist. Every key shows when it was last used. See
 
 Register an endpoint per mode with its URL, and optionally the event types and
 an API version to pin its payloads to. The signing secret is shown once, and
-the public key is readable any time. From here you also roll the secret,
-disable an endpoint, and browse the last 30 days of deliveries to retry a
-failed one. See [Webhooks](/partner/webhooks) for the signature and delivery
-rules.
+the public key is readable any time. From here you also roll the secret, disable
+an endpoint and enable it again (it keeps its secret, and the deliveries paused
+by the disable resume), and browse the last 30 days of deliveries - each with
+its payload, response body and per-attempt history - to retry a single stuck
+delivery or the whole endpoint's backlog. See [Webhooks](/partner/webhooks) for
+the signature and delivery rules.
 
 ## Logs
 

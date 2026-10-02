@@ -10,13 +10,13 @@ response** instead of the operation running twice.
 
 ## Sending a key
 
-Put a unique value in the `Idempotency-Key` header on any `POST`, `PUT` or
-`DELETE`. A UUID is the usual choice. Generate it **before** the first attempt
+Put a unique value in the `Idempotency-Key` header on any write - `POST`, `PUT`,
+`PATCH`, or `DELETE`. A UUID is the usual choice. Generate it **before** the first attempt
 and reuse the same value for every retry of that one operation.
 
 ```bash Request
 curl https://api.clemta.com/v1/companies \
-  -H "Authorization: Bearer clmt_live_9f2aK4dQ8xR3mB1nT7cV" \
+  -H "Authorization: Bearer clmt_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
   -H "Idempotency-Key: 5f8d0d55-b1e1-4a5b-9c1f-6f4e2a2b7c31" \
   -H "Content-Type: application/json" \
   -d '{"name": "Acme Platforms Inc", "state": "DE"}'
