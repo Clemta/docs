@@ -2309,7 +2309,7 @@ webhooks:
         - Webhooks
       operationId: onServiceOrderCompleted
       summary: A service order was fulfilled
-      description: Sent exactly once per order, the first time it reaches `completed` - `completed_at` is set then and never cleared, and a later status echo does not repeat it. The request body is the `event` resource, whose `data.object` is the completed service order. Verify the `Clemta-Webhook-Signature` header before trusting the payload, and respond with any 2xx to acknowledge - a non-2xx or a timeout is retried with backoff.
+      description: Sent when the order reaches `completed`. `completed_at` is set then, and a repeated echo of the same position does not fire it again. If Clemta moves the order back off its last step it reopens and `completed_at` clears, so the event fires again when the order completes once more. The request body is the `event` resource, whose `data.object` is the completed service order. Verify the `Clemta-Webhook-Signature` header before trusting the payload, and respond with any 2xx to acknowledge - a non-2xx or a timeout is retried with backoff.
       requestBody:
         required: true
         content:
@@ -3373,7 +3373,7 @@ components:
           example: owner_1
         group_label:
           type: string
-          description: The heading to show for a field's `group`, for example the owner's name. Present on the fields of a group; read it from any of them.
+          description: The heading to show for a field's `group`, for example the owner's name. Present on the fields of a group, readable from any of them.
           example: Ada Lovelace
     ServiceOrderForm:
       type: object
@@ -3563,7 +3563,7 @@ components:
             - requires_action
             - completed
             - canceled
-          description: 'Fulfilment status, derived from where Clemta has the order: `received` until fulfilment starts (a cancellable state), `quote_pending` while a priced-by-quote product waits for the price and your acceptance (also cancellable - cancelling declines the quote), `in_progress` while Clemta works, `requires_action` while the current step waits on a form from you or your customer (an open `form` requirement says which), `completed` once the final step is reached - terminal, `completed_at` is set and `service_order.completed` fires once - and `canceled`.'
+          description: 'Fulfilment status, derived from where Clemta has the order: `received` until fulfilment starts (a cancellable state), `quote_pending` while a priced-by-quote product waits for the price and your acceptance (also cancellable - cancelling declines the quote), `in_progress` while Clemta works, `requires_action` while the current step waits on a form from you or your customer (an open `form` requirement says which), `completed` once the final step is reached (`completed_at` is set and `service_order.completed` fires, and the order reopens if Clemta moves it back off its last step), and `canceled`.'
         options:
           type: object
           additionalProperties:
@@ -3634,7 +3634,7 @@ components:
         files:
           type: array
           readOnly: true
-          description: The documents delivered on this order, newest first. Present only when requested with `expand[]=files`; never in webhook payloads.
+          description: The documents delivered on this order, newest first. Present only when requested with `expand[]=files`, and never in webhook payloads.
           items:
             $ref: '#/components/schemas/File'
     RequirementSigner:
@@ -5624,7 +5624,7 @@ components:
             - estimated_tax_q4
             - client_event
             - other
-          description: What kind of deadline this is, as a stable token - so you can group, icon and word your own reminder without parsing the free-text title. `client_event` is one your customer added; `other` is a deadline whose kind is not yet classified.
+          description: What kind of deadline this is, as a stable token - so you can group, icon and word your own reminder without parsing the free-text title. `client_event` is one your customer added. `other` is a deadline whose kind is not yet classified.
         description:
           type: string
           description: Present only on a customer-added event. Standard compliance deadlines carry no description - use `category` to word your own. The platform's own copy is never exposed.
@@ -5853,7 +5853,7 @@ components:
           description: For `service_order.status.changed` - whether the step waits on a form (opens a `form` requirement, status `requires_action`). The requirement's `form.fields` are the product's real form for that step - the same schema the order would show live.
         completed:
           type: boolean
-          description: For `service_order.status.changed` - whether the step is the final one (status `completed`, fires `service_order.completed` once).
+          description: For `service_order.status.changed` - whether the step is the final one (status `completed`, fires `service_order.completed`).
         amount:
           type: integer
           format: int64

@@ -37,7 +37,7 @@ sequenceDiagram
     end
   end
   C-->>P: service_order.status.changed (completed)
-  C-->>P: service_order.completed (once)
+  C-->>P: service_order.completed
 ```
 
 `GET .../service-orders/{id}` returns the **live** fulfilment step and, when
@@ -60,12 +60,14 @@ product. Branch on `status`:
 | `quote_pending` | A priced-by-quote product is waiting for its price and your acceptance. Cancellable. | see [Products priced by quote](#products-priced-by-quote) |
 | `in_progress` | Clemta is working the order. | wait for [`service_order.status.changed`](/api-reference/webhooks/service-order-status-changed) |
 | `requires_action` | Fulfilment is waiting on a form from you or your customer. An open `form` requirement names the fields. | fulfil the requirement |
-| `completed` | Fulfilment is done. Terminal: `completed_at` is set once, [`service_order.completed`](/api-reference/webhooks/service-order-completed) fires once. | - |
+| `completed` | Fulfilment is done. `completed_at` is set and [`service_order.completed`](/api-reference/webhooks/service-order-completed) fires. Not final: if Clemta moves the order back off its last step it reopens. | can reopen |
 | `canceled` | Cancelled before fulfilment. Terminal. | - |
 
-Terminal states stick: a later correction Clemta makes after completion does
-not reopen the order, and `service_order.completed` never fires a second time.
-A test-mode order is not fulfilled and stays `received`.
+A cancellation is terminal and never reopens. A completed order is not final:
+if Clemta moves it back off its last step it returns to `in_progress` or
+`requires_action`, `completed_at` clears, and `service_order.completed` fires
+again when it completes once more. A test-mode order is not fulfilled and stays
+`received`.
 
 ```mermaid
 stateDiagram-v2
@@ -77,6 +79,8 @@ stateDiagram-v2
   requires_action --> in_progress: form submitted
   in_progress --> completed: fulfilment done
   requires_action --> completed: fulfilment done
+  completed --> in_progress: Clemta moves the step back
+  completed --> requires_action: a form is needed again
   completed --> [*]
   canceled --> [*]
 ```

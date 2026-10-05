@@ -34,7 +34,7 @@ guessing. The full catalog:
 | [`tax_filing.created`](/api-reference/webhooks/tax-filing-created) | A federal or state filing was opened on the company. One right consumed. Payload: the tax filing. |
 | [`tax_filing.status.changed`](/api-reference/webhooks/tax-filing-status-changed) | A filing's `status` or `progress` moved. Payload: the tax filing as of the change. |
 | [`service_order.status.changed`](/api-reference/webhooks/service-order-status-changed) | A service order was created or moved through fulfilment, including cancellation. Branch on its status. |
-| [`service_order.completed`](/api-reference/webhooks/service-order-completed) | The order reached its final step. Fires once, when the order is fulfilled. |
+| [`service_order.completed`](/api-reference/webhooks/service-order-completed) | The order reached its final step. Fires again if the order reopens and completes once more. |
 | [`service_order.updated`](/api-reference/webhooks/service-order-updated) | An order's options or price changed without your call - today, a reversed options upgrade, whose billed difference is credited back. Payload: the order. |
 | [`service_order.quoted`](/api-reference/webhooks/service-order-quoted) | A `quote_pending` order was priced. The payload carries the order with its `quote` - accept before `quote.expires_at`, nothing bills until you do. |
 | [`service_order.renewal_canceled`](/api-reference/webhooks/service-order-renewal-canceled) | Your renewal-cancellation request was approved. The service runs to `renewal_ends_at` and is not billed past it (an arrears-billed product bills its running period once). |

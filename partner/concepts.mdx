@@ -70,7 +70,7 @@ flowchart LR
 | [`company.ein.assigned`](/api-reference/webhooks/company-ein-assigned) | `ein` | fires once. A second EIN updates silently |
 | [`company.entitlements.changed`](/api-reference/webhooks/company-entitlements-changed) | `entitlements` | |
 | [`service_order.status.changed`](/api-reference/webhooks/service-order-status-changed) | `order`, `step`, `form_required`, `completed` | `form_required` opens a `form` requirement |
-| [`service_order.completed`](/api-reference/webhooks/service-order-completed) | `order` | fires once |
+| [`service_order.completed`](/api-reference/webhooks/service-order-completed) | `order` | fires when the order completes, and again if it reopens and completes again |
 | [`tax_filing.created`](/api-reference/webhooks/tax-filing-created) / [`tax_filing.status.changed`](/api-reference/webhooks/tax-filing-status-changed) | `tax_filing` | |
 | [`file.created`](/api-reference/webhooks/file-created) | `file_name` | a placeholder PDF is served from the content endpoint |
 | [`requirement.created`](/api-reference/webhooks/requirement-created) | `message` | an `information` ask from Clemta |
