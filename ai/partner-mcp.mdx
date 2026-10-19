@@ -1,0 +1,225 @@
+---
+title: "Partner MCP server"
+description: "Ask about your companies, orders, billing and webhooks from Claude, Cursor, or any MCP client."
+keywords: ['mcp', 'model context protocol', 'partner', 'claude', 'cursor', 'oauth', 'operations', 'read-only']
+---
+
+The partner MCP server lets an agent read your partner account. Your team asks
+in plain words, and the agent answers from the same objects the
+[Partner API](/partner/introduction) serves:
+
+- Which companies are still waiting on a document?
+- What stage is the EIN order for Acme LLC at?
+- What would a Delaware LLC with an EIN and a registered agent cost us?
+- Why did our endpoint never get `company.incorporated` yesterday?
+- What does the March statement come to, and which companies are behind it?
+
+The server only reads. It cannot form a company, place an order, or submit a
+filing. See [What it cannot do](#what-it-cannot-do).
+
+This is not the [docs search server](/ai/coding-agents#docs-search-mcp), which
+searches these pages and calls nothing.
+
+## Connect
+
+The server is at:
+
+```text
+https://mcp.clemta.partners
+```
+
+Add it to your client. There is no key to paste: the first time the client
+connects, it opens the [partner dashboard](/partner/dashboard) in your
+browser, and you approve the connection there.
+
+<div className="client-tabs">
+
+<Tabs>
+  <Tab title="Claude" icon="/images/clients/claude.svg">
+    For Claude.ai, Claude Desktop and the Claude mobile apps, add a custom
+    connector with this address:
+
+    ```text
+    https://mcp.clemta.partners
+    ```
+
+    1. Open **Settings > Connectors** and choose **Add custom connector**.
+    2. Name it `Clemta Partner` and paste the address.
+    3. Choose **Connect**.
+
+    On a Team or Enterprise plan, an owner adds the connector under
+    **Organization settings > Connectors** first. Each member then connects
+    it with their own partner dashboard login.
+  </Tab>
+  <Tab title="Claude Code" icon="/images/clients/claude.svg">
+    ```bash
+    claude mcp add --transport http clemta-partner https://mcp.clemta.partners
+    ```
+
+    Then run `/mcp` inside Claude Code and choose **Authenticate**.
+  </Tab>
+  <Tab title="ChatGPT" icon="comments">
+    Create a connector in developer mode with this address:
+
+    ```text
+    https://mcp.clemta.partners
+    ```
+
+    1. Open **Settings > Apps & Connectors > Advanced settings** and turn on
+       **Developer mode**.
+    2. Back in **Apps & Connectors**, choose **Create**.
+    3. Paste the address, set authentication to **OAuth**, and create it.
+  </Tab>
+  <Tab title="Codex" icon="terminal">
+    ```bash
+    codex mcp add clemta-partner --url https://mcp.clemta.partners
+    codex mcp login clemta-partner
+    ```
+  </Tab>
+  <Tab title="Cursor" icon="/images/clients/cursor.svg">
+    In `.cursor/mcp.json`, or `~/.cursor/mcp.json` for every project:
+
+    ```json
+    {
+      "mcpServers": {
+        "clemta-partner": { "url": "https://mcp.clemta.partners" }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="VS Code" icon="/images/clients/githubcopilot.svg">
+    For GitHub Copilot in VS Code, in `.vscode/mcp.json`:
+
+    ```json
+    {
+      "servers": {
+        "clemta-partner": { "type": "http", "url": "https://mcp.clemta.partners" }
+      }
+    }
+    ```
+
+    Or from a terminal:
+
+    ```bash
+    code --add-mcp '{"name":"clemta-partner","type":"http","url":"https://mcp.clemta.partners"}'
+    ```
+  </Tab>
+  <Tab title="Windsurf" icon="/images/clients/windsurf.svg">
+    In `~/.codeium/windsurf/mcp_config.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "clemta-partner": { "serverUrl": "https://mcp.clemta.partners" }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Gemini CLI" icon="/images/clients/googlegemini.svg">
+    ```bash
+    gemini mcp add --transport http clemta-partner https://mcp.clemta.partners
+    ```
+
+    Then run `/mcp auth clemta-partner` inside Gemini CLI.
+  </Tab>
+  <Tab title="Zed" icon="/images/clients/zedindustries.svg">
+    In Zed's `settings.json`:
+
+    ```json
+    {
+      "context_servers": {
+        "clemta-partner": { "url": "https://mcp.clemta.partners" }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Cline" icon="/images/clients/cline.svg">
+    In `cline_mcp_settings.json`, opened from **MCP Servers > Configure**:
+
+    ```json
+    {
+      "mcpServers": {
+        "clemta-partner": { "type": "streamableHttp", "url": "https://mcp.clemta.partners" }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Other" icon="plug">
+    Any client that speaks Streamable HTTP and OAuth connects with the address
+    alone. For a client that only runs local servers, bridge it with
+    `mcp-remote`:
+
+    ```json
+    {
+      "mcpServers": {
+        "clemta-partner": {
+          "command": "npx",
+          "args": ["-y", "mcp-remote", "https://mcp.clemta.partners"]
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</div>
+
+<Steps>
+  <Step title="Add the server">
+    Use the instructions for your client above.
+  </Step>
+  <Step title="Sign in and approve">
+    Your client opens the partner dashboard. Sign in if you are not already,
+    check which agent is asking, and approve. A connection is either test or
+    live, never both.
+  </Step>
+  <Step title="Ask">
+    Start with "which mode am I in?". The agent tells you whether it is
+    reading the sandbox or real data.
+  </Step>
+</Steps>
+
+## What a connection is
+
+Approving creates an **MCP connection** in the partner dashboard: which
+agent, approved when, in which mode, last used when.
+
+- **Read-only.** The agent can look things up. It cannot change anything.
+- **Sees what your account sees.** A connection covers all your companies.
+  Use a test connection while you try things out.
+- **Logged.** Every lookup shows in the dashboard's
+  [Logs](/partner/dashboard#logs), next to your integration's requests.
+
+There is no API key to copy or keep safe. Clemta creates one for the
+connection, and it does not appear in your API key list.
+
+## Revoke a connection
+
+Delete the connection in the partner dashboard. The agent loses access on its
+next question and tells you the connection is no longer valid.
+
+Removing the server from your MCP client does not delete the connection.
+Delete it in the dashboard too if you are done with it.
+
+## What it cannot do
+
+The agent cannot:
+
+- create or update an account or a company
+- place, cancel or pay for a service order
+- submit or sign a tax filing, or fulfill a requirement
+- create, re-enable or delete a webhook endpoint
+- move a test company with the sandbox
+
+Do these with the API or in the partner dashboard.
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Tools" icon="wrench" href="/ai/partner-mcp-tools">
+    What the agent can look up, and what to ask.
+  </Card>
+  <Card title="Build with an AI agent" icon="code" href="/partner/ai-agents">
+    Skills and docs search for the coding agent that writes your integration.
+  </Card>
+</CardGroup>

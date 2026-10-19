@@ -318,7 +318,9 @@
           {
             "group": "Connect",
             "pages": [
-              "ai/clemta-mcp"
+              "ai/clemta-mcp",
+              "ai/partner-mcp",
+              "ai/partner-mcp-tools"
             ]
           },
           {

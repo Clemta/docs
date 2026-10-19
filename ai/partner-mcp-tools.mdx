@@ -1,0 +1,62 @@
+---
+title: "Partner MCP tools"
+description: "What the agent can look up for you through the partner MCP server."
+keywords: ['mcp', 'tools', 'partner', 'companies', 'service orders', 'billing', 'webhooks', 'logs', 'pricing']
+---
+
+The agent picks the tool and fills in its inputs. You ask in plain words. This
+page lists what is there, so you know what to ask. Every tool only reads.
+
+## Companies and orders
+
+| Tool | What you can ask |
+|---|---|
+| `whoami` | Which mode am I in? The agent calls it first and tells you whether it is reading the sandbox or real data. |
+| `list_companies` | Which companies do we have, or which are in a given status? |
+| `get_company` | Where is this company in formation, and what do we hold on it? |
+| `list_service_orders` | What was bought for this company, and where is each order? |
+| `list_events` | What changed on our account today? The same events your webhooks deliver. |
+| `preview_company_price` | What would a Delaware LLC with an EIN cost us? |
+
+`preview_company_price` quotes the whole basket at your own rates, state fees
+included. A bundle can price lower than its products added one by one, so ask
+for the basket rather than each product. Monthly and yearly services are quoted
+separately from the up-front total. Nothing is created or charged.
+
+## Billing
+
+| Tool | What you can ask |
+|---|---|
+| `get_billing_account` | Can we still sell? `past_due` means an invoice went unpaid and credit sales stop until it is paid. Your companies and data are untouched. |
+| `list_usage` | What did this client cost us? Every charge and credit, at the price it was billed. |
+| `list_invoices` | What have we been invoiced, and what is paid? |
+| `list_statements` | What did each month come to? A month without an invoice has not been billed yet. |
+| `get_statement` | Which companies are behind a line on this month's invoice? Where the invoice says "State Fee x50", the statement lists the fifty companies. |
+
+Invoice links from the agent are short-lived. Open them when you get them.
+
+## Webhooks and logs
+
+| Tool | What you can ask |
+|---|---|
+| `list_webhook_deliveries` | Why did our endpoint never get this webhook? A `pending` delivery is waiting for its next attempt, not lost. |
+| `get_webhook_delivery` | What exactly did Clemta send in this delivery? |
+| `list_request_logs` | Which of our requests failed since this morning? The same record Clemta support reads. |
+| `get_request_log` | What did Clemta receive and answer for this `request_id`? Secrets are replaced with `[redacted]`. |
+
+## Everything else
+
+For anything the tools above do not cover, such as a company's tax filings,
+requirements, files or calendar, the agent searches the Partner API's reads
+with `discover` and runs the one it needs with `execute_read`. Neither can
+change anything.
+
+## When something goes wrong
+
+The agent tells you what to do in words. The common cases:
+
+- **The connection is no longer valid.** It was revoked in the
+  [partner dashboard](/partner/dashboard). Connect the agent again.
+- **No such record.** Check the id, and check the mode. A test connection
+  cannot see live companies, and a live one cannot see the sandbox.
+- **Rate limited.** Wait a moment and ask again.
