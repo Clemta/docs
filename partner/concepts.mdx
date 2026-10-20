@@ -6,7 +6,7 @@ description: "The Partner API object model, the test and live modes, and the one
 The Partner API lets you offer company formation and the services around it
 under your own brand. You create companies for your customers. Clemta forms
 them, files with the state and the IRS, and delivers the paperwork. You are
-invoiced once a month at your wholesale prices. Your customer deals only with
+invoiced once a month at your partner prices. Your customer deals only with
 you.
 
 ## The objects
@@ -14,7 +14,7 @@ you.
 ```mermaid
 flowchart LR
   A[Account<br/><small>your customer, the incorporator</small>] -->|owns| C[Company]
-  P[Product catalog<br/><small>your wholesale prices</small>] -.->|ordered as| S[Service order]
+  P[Product catalog<br/><small>your partner prices</small>] -.->|ordered as| S[Service order]
   C --> S
   C -->|files| TF[Tax filing]
   C -->|needs| R[Requirement]
@@ -27,7 +27,7 @@ flowchart LR
 |---|---|---|
 | **Account** (`acct_`) | Your customer - the person companies are formed for. Unique per email within your workspace. | You create it, or it is created with a company. |
 | **Company** (`cmp_`) | One entity Clemta forms, or one that already existed and you bring in (`pre_existing: true`). | You create it. Clemta moves its `status`. |
-| **Product** | One thing you can offer - formation, EIN, registered agent, bookkeeping - at your wholesale price. A read-only catalog. | Clemta, priced for you. |
+| **Product** | One thing you can offer - formation, EIN, registered agent, bookkeeping - at your partner price. A read-only catalog. | Clemta, priced for you. |
 | **Service order** (`so_`) | One product ordered on one company. Recurring products renew on their own. | You attach. Clemta fulfills, step by step. |
 | **Tax filing** (`txf_`) | A federal or state return on a company. You buy the right to file, draft it, and submit. | You create and submit. Clemta reviews and files. |
 | **Requirement** (`rqmt_`) | Something needed from you or your customer: an identity document, a form for a fulfillment step, a new name, extra information. | Opened automatically or by Clemta. Fulfilled by you or, through a link, your customer. |

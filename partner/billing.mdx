@@ -1,18 +1,18 @@
 ---
 title: "Billing"
-description: "How you are charged: one billing account, wholesale prices, a charge per order, and one invoice a month."
-keywords: ['invoice', 'statement', 'payment method', 'wholesale', 'credit', 'past due', 'ledger']
+description: "How you are charged: one billing account, partner prices, a charge per order, and one invoice a month."
+keywords: ['invoice', 'statement', 'payment method', 'partner price', 'credit', 'past due', 'ledger']
 ---
 
 You have one billing account, and everything you sell is billed to it. There is
-no subscription and nothing to commit to up front. You pay wholesale prices,
+no subscription and nothing to commit to up front. You pay partner prices,
 once a month, for what you ordered.
 
 ## What creates a charge
 
 | Moment | What lands on your ledger |
 |---|---|
-| A service order is created, or a company is created with `services[]` | One charge at the product's wholesale price. |
+| A service order is created, or a company is created with `services[]` | One charge at the product's partner price. |
 | A recurring product renews | One charge per period, at the price captured on the order. A later price change never touches a running service. |
 | A quoted product is accepted | The quoted amount, at acceptance. Nothing before. |
 | An order in `received` is cancelled | A credit for the full charge. |
@@ -54,7 +54,7 @@ advance and sell against the balance.
 ## Prices
 
 [`GET /products`](/api-reference/list-products) lists every product at your
-wholesale price, in the currency's smallest unit. Preview what a company or a
+partner price, in the currency's smallest unit. Preview what a company or a
 product would cost before ordering with the price-preview endpoints. Your price
 sheet, and any negotiated rates on it, live on the Pricing page of the
 dashboard.

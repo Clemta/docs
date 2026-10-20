@@ -27,7 +27,7 @@ tags:
   - name: Service orders
     description: Order services against a company and follow their fulfilment.
   - name: Products
-    description: The catalog you can offer, at your wholesale prices.
+    description: The catalog you can offer, at your partner prices.
   - name: Tax filings
     description: Federal and state tax filings on your companies, opened by your customer against the company's entitlements and worked by Clemta. Read-only. Follow them with the tax_filing.* events.
   - name: Files
@@ -364,7 +364,7 @@ paths:
         - Service orders
       operationId: createServiceOrder
       summary: Attach a service to a company
-      description: Orders a product against the company and bills you for it at creation, at your wholesale price. Idempotent - re-attaching the same product returns the existing order and does not bill you twice. Pass `Idempotency-Key` for safe retries.
+      description: Orders a product against the company and bills you for it at creation, at your partner price. Idempotent - re-attaching the same product returns the existing order and does not bill you twice. Pass `Idempotency-Key` for safe retries.
       parameters:
         - $ref: '#/components/parameters/CompanyId'
         - $ref: '#/components/parameters/ClemtaVersion'
@@ -530,7 +530,7 @@ paths:
         - Products
       operationId: listProducts
       summary: List the products you can offer, at your prices
-      description: Your catalog with your wholesale price on each line - your override where you have one, the default otherwise. These keys are what you pass as `product_key` when you attach a service order.
+      description: Your catalog with your partner price on each line - your override where you have one, the default otherwise. These keys are what you pass as `product_key` when you attach a service order.
       parameters:
         - $ref: '#/components/parameters/ClemtaVersion'
       responses:
@@ -2524,8 +2524,8 @@ webhooks:
       tags:
         - Webhooks
       operationId: onInvoiceFinalized
-      summary: A wholesale invoice was finalized
-      description: Sent when your month-end wholesale invoice is raised. The request body is the `event` resource, whose `data.object` is the invoice. It is collected automatically from your payment method on file. Verify the `Clemta-Webhook-Signature` header before trusting the payload, and respond with any 2xx to acknowledge - a non-2xx or a timeout is retried with backoff.
+      summary: A monthly invoice was finalized
+      description: Sent when your month-end invoice is raised. The request body is the `event` resource, whose `data.object` is the invoice. It is collected automatically from your payment method on file. Verify the `Clemta-Webhook-Signature` header before trusting the payload, and respond with any 2xx to acknowledge - a non-2xx or a timeout is retried with backoff.
       requestBody:
         required: true
         content:
@@ -3405,7 +3405,7 @@ components:
         unit_amount:
           type: integer
           format: int64
-          description: The Clemta-set wholesale price, in the currency's smallest unit. Absent while pending.
+          description: The Clemta-set partner price, in the currency's smallest unit. Absent while pending.
         currency:
           type: string
         quoted_at:
@@ -3584,7 +3584,7 @@ components:
         unit_amount:
           type: integer
           format: int64
-          description: The wholesale price you were billed, in the currency's smallest unit (cents).
+          description: The partner price you were billed, in the currency's smallest unit (cents).
           example: 7900
         currency:
           type: string
@@ -4432,7 +4432,7 @@ components:
           items:
             type: string
             pattern: ^[a-z][a-z0-9_]{1,48}$
-          description: Products to order on the company at creation, by key - the same keys `GET /products` lists. Each is attached as a service order and billed to you at your wholesale price, alongside the formation. Formation itself is implied by creating the company and need not be listed here.
+          description: Products to order on the company at creation, by key - the same keys `GET /products` lists. Each is attached as a service order and billed to you at your partner price, alongside the formation. Formation itself is implied by creating the company and need not be listed here.
           example:
             - ein
             - registered_agent
@@ -4442,10 +4442,10 @@ components:
             type: object
             additionalProperties:
               type: string
-          description: 'Variant choices for the services attached at creation, keyed by product key - the listed ones, the mandatory ones, the formation itself (`{"formation_llc": {"turnaround": "expedited"}}` is how expedited filing is chosen, and registration is the only moment it can be), and the formation bundle''s included services. A key naming a product that is not being attached is refused.'
+          description: 'Variant choices for the services attached at creation, keyed by product key - the listed ones, the mandatory ones, the formation itself (`{"formation": {"turnaround": "expedited"}}` is how expedited filing is chosen, and registration is the only moment it can be), and the formation bundle''s included services. A key naming a product that is not being attached is refused.'
           example:
             ein:
-              processing: expedited
+              turnaround: expedited
         metadata:
           type: object
           maxProperties: 50
@@ -4658,7 +4658,7 @@ components:
           type: integer
           format: int64
           minimum: 0
-          description: The wholesale price of the product when this value is chosen, in the currency's smallest unit. Absent means the product's own price applies. If Clemta set you an override on the product, the override applies whatever you choose.
+          description: The partner price of the product when this value is chosen, in the currency's smallest unit. Absent means the product's own price applies. If Clemta set you an override on the product, the override applies whatever you choose.
           example: 24900
     ProductOption:
       type: object
@@ -4718,7 +4718,7 @@ components:
           example: 31500
     Product:
       type: object
-      description: A product you can offer, priced at your wholesale rate.
+      description: A product you can offer, priced at your partner rate.
       required:
         - object
         - key
@@ -4742,7 +4742,7 @@ components:
           type: integer
           format: int64
           minimum: 0
-          description: Your wholesale price in the currency's smallest unit (cents) - your override if you have one, otherwise the default.
+          description: Your partner price in the currency's smallest unit (cents) - your override if you have one, otherwise the default.
           example: 14900
         currency:
           type: string
@@ -4992,7 +4992,7 @@ components:
         unit_amount:
           type: integer
           format: int64
-          description: Your wholesale amount in cents (the override, a matching rule, or the default), or the chosen option's amount when one is picked.
+          description: Your partner price in cents (the override, a matching rule, or the default), or the chosen option's amount when one is picked.
         currency:
           type: string
           example: usd
@@ -5128,7 +5128,7 @@ components:
           format: date-time
     Invoice:
       type: object
-      description: A wholesale invoice raised on your account at month end.
+      description: An invoice raised on your account at month end.
       required:
         - object
         - id

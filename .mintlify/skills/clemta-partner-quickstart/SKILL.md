@@ -37,7 +37,7 @@ Markdown by appending `.md` to its URL, e.g. `https://docs.clemta.com/partner/we
 
 ## Object model
 
-Account (your customer) owns Companies. A Company has Service orders (products from your wholesale
+Account (your customer) owns Companies. A Company has Service orders (products from your partner
 catalog), Tax filings, Requirements (things needed from you or your customer), and Files (deliverables Clemta
 publishes). Everything emits Events, delivered by webhook and readable on `GET /events`.
 

@@ -46,7 +46,7 @@ guessing. The full catalog:
 | [`requirement.signature.signed`](/api-reference/webhooks/requirement-signature-signed) | A signer signed (once per signer). The requirement resolves with [`requirement.fulfilled`](/api-reference/webhooks/requirement-fulfilled) when the last signs. |
 | [`file.created`](/api-reference/webhooks/file-created) | A document was published on one of your companies. Download its bytes from the file's content endpoint. |
 | [`calendar.reminder`](/api-reference/webhooks/calendar-reminder) | A compliance deadline is approaching (once per reminder point). No mail is sent to your customer - relay it under your own brand. Payload: the calendar event with `due_at` and the `remind_at` that fired. |
-| [`invoice.finalized`](/api-reference/webhooks/invoice-finalized) | A month-end wholesale invoice was issued. |
+| [`invoice.finalized`](/api-reference/webhooks/invoice-finalized) | A month-end invoice was issued. |
 
 ## Delivery and retries
 
