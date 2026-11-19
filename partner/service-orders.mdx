@@ -22,6 +22,14 @@ the billable event (see [Billing](/partner/billing)). A product is idempotent pe
 returns the existing order and charges nothing. Passing `services[]` on [`POST /companies`](/api-reference/create-company) attaches
 products the same way, billed alongside the formation.
 
+Orders have no `external_id`. To check whether an order that timed out or
+failed with a `5xx` was created, list the company's orders with
+[`GET /companies/{id}/service-orders`](/api-reference/list-service-orders). A
+`4xx` means no order was created and nothing was billed. The exception is a
+create body with `form`: the order is created before the answers are applied,
+so rejected answers return a `4xx` but the order exists. See
+[Which failures created nothing](/partner/idempotency#which-failures-created-nothing).
+
 ```mermaid
 sequenceDiagram
   participant P as Partner

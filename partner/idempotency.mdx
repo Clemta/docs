@@ -65,6 +65,55 @@ Both successes and rejections are settled outcomes and are replayed: retrying a
 outcome. The key is released, so a retry runs the request again, which is
 exactly what a retry is for.
 
+## Which failures created nothing
+
+Creating a company (`POST /v1/companies`) and attaching a service
+(`POST /v1/companies/{id}/service-orders`) each commit as one unit. The
+company, its account, its service orders and their charges land together or
+not at all, so the response status tells you what happened:
+
+| Response | What it means |
+|---|---|
+| `2xx` | It was created. The body is the resource. |
+| Any `4xx` | Nothing was created - no company, no account, no order, no charge. Fix the request and send it again. |
+| `5xx`, a timeout, or a dropped connection | Unknown. See [Finding a lost request](#finding-a-lost-request). |
+
+Two exceptions:
+
+- **`409 idempotency_key_in_use`.** This request created nothing, but the
+  earlier request with the same key is still running and may. Retry with the
+  same key after a short pause to get its answer.
+- **A service order created with `form`.** The order is created first and the
+  form answers are applied after. If the answers are rejected, you get a
+  `4xx`, but the order exists. Find it in the company's order list and answer
+  the form through its requirement.
+
+## Finding a lost request
+
+**After a timeout or a dropped connection,** send the same request again with
+the same key within 24 hours. If the first request finished, you get its
+response: the `201` with the same resource id, or the error it returned. If it
+is still running, you get `409 idempotency_key_in_use`. Wait and retry.
+
+**After a `5xx`,** the key is released, so sending the request again runs it
+again. The first attempt may still have landed, so check before you retry:
+
+- **Companies.** Send an `external_id` when you create one, and look the
+  company up with `GET /v1/companies?external_id=<your id>`. The value is
+  unique across your companies (test and live mode separately), so a second
+  attempt is refused with `409 resource_already_exists` instead of creating a
+  duplicate.
+- **Service orders.** Orders have no `external_id`. List them with
+  `GET /v1/companies/{id}/service-orders`. Attaching a product again returns
+  the existing order (`201`, same id) and bills nothing. For a
+  [repeatable product](/partner/service-orders#repeatable-products) this holds
+  per instance: the same `tax_year`, `state` or `shareholder` returns the
+  existing order. Only `repeat: per_order` products create a new order on
+  every request, so check the list before sending one again.
+
+Use the same lookups once the 24 hours are up, or if you sent no key. A
+request cannot be looked up by its key.
+
 ## Recommended usage
 
 <Steps>

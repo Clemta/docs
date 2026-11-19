@@ -11,6 +11,13 @@ to attach at the same time. Everything lands in **one transaction**: the
 account (if created inline), the company, its service orders, the charges,
 and the [`company.created`](/api-reference/webhooks/company-created) event - all or nothing.
 
+Give each company your own identifier in **`external_id`**. It is unique
+across your companies (test and live mode separately), so a second company
+with the same value is refused with `409 resource_already_exists`. Find the
+company again with `GET /companies?external_id=<your id>`. This is how you
+check whether a create that timed out or failed with a `5xx` landed. See
+[Finding a lost request](/partner/idempotency#finding-a-lost-request).
+
 ### Input rules
 
 The API validates every field server-side:
