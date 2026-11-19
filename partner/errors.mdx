@@ -7,6 +7,8 @@ description: "Every error the Clemta Partner API returns, what it means, and how
 
 Every error the Clemta Partner API returns is a JSON body carrying a stable machine-readable `code`. Branch on `code` (never on `detail`, whose wording may change). The `type` field of every response links straight back to its section on this page. Validation failures additionally carry an `errors` array naming every violating field.
 
+**Did a failed write create anything?** A `4xx` on a company or service order create means nothing was created, with two exceptions listed under [Which failures created nothing](/partner/idempotency#which-failures-created-nothing). After a `5xx`, a timeout or a dropped connection the outcome is unknown. See [Finding a lost request](/partner/idempotency#finding-a-lost-request).
+
 | Code | Status | Meaning |
 |---|---|---|
 | [`api_key_invalid`](#api_key_invalid) | `401` | Invalid API key |
@@ -321,7 +323,7 @@ Too many requests from this API key or address in the current window.
 
 Something failed on Clemta's side. The request may or may not have taken effect.
 
-**How to fix:** Retry with backoff. If it persists, email tech@clemta.com with the `request_id` from the response body, which is what lets us find the cause.
+**How to fix:** Retry with backoff. A `5xx` releases the `Idempotency-Key`, so a retry runs the request again. Before retrying a create, check whether the first attempt landed (see [Finding a lost request](/partner/idempotency#finding-a-lost-request)). If it persists, email tech@clemta.com with the `request_id` from the response body, which is what lets us find the cause.
 
 ```json Example response
 {

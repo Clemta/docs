@@ -56,7 +56,7 @@
     ]
   },
   "markdown": {
-    "instructions": "Use a clmt_test_ key while developing. It never touches live data. Send a UUID Idempotency-Key on every POST, PUT and DELETE, generated once per operation and reused on retries. Pin Clemta-Version: 2026-08-13 on every request. Branch on the error code field, never on detail. Retry only timeouts, 5xx and 429, and honor Retry-After. Test companies never advance on their own. Drive them with POST /sandbox/companies/{id}/simulate. OpenAPI: https://api.clemta.com/v1/openapi.json. Skills: npx skills add https://docs.clemta.com. Docs search MCP: https://docs.clemta.com/mcp. Guide: https://docs.clemta.com/partner/ai-agents.md."
+    "instructions": "Use a clmt_test_ key while developing. It never touches live data. Send a UUID Idempotency-Key on every POST, PUT and DELETE, generated once per operation and reused on retries. Pin Clemta-Version: 2026-08-13 on every request. Branch on the error code field, never on detail. Retry only timeouts, 5xx and 429, and honor Retry-After. A 5xx releases the Idempotency-Key, so before retrying a create, check whether it landed with GET /companies?external_id=... or GET /companies/{id}/service-orders. Test companies never advance on their own. Drive them with POST /sandbox/companies/{id}/simulate. OpenAPI: https://api.clemta.com/v1/openapi.json. Skills: npx skills add https://docs.clemta.com. Docs search MCP: https://docs.clemta.com/mcp. Guide: https://docs.clemta.com/partner/ai-agents.md."
   },
   "favicon": "favicon.svg",
   "navigation": {
