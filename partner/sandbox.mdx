@@ -1,7 +1,7 @@
 ---
 title: "Sandbox"
-description: "Test mode end to end: test keys, simulating what Clemta would do, and a clock you can move to rehearse renewals and deadlines."
-keywords: ['sandbox', 'test mode', 'simulate', 'test clock', 'clock', 'renewal', 'clmt_test']
+description: "Test mode end to end: test keys, simulating what Clemta would do, a clock you can move to rehearse renewals and deadlines, and deleting test data to start over."
+keywords: ['sandbox', 'test mode', 'simulate', 'test clock', 'clock', 'renewal', 'clmt_test', 'delete test data', 'reset']
 ---
 
 A `clmt_test_` key runs against the sandbox. Every endpoint works, every event
@@ -77,6 +77,34 @@ time-based rule reads from it instead of the real clock.
 </Steps>
 
 The clock is a test-mode tool. On production a live key cannot create one.
+
+## Deleting test data
+
+Test objects stay until you delete them. To start over, the workspace owner can
+delete all test data in the [dashboard](/partner/dashboard#settings), under
+**Settings > Test data**. Type the workspace name to confirm. The deletion runs
+in the background, and the page shows what was removed when it finishes.
+
+| Deleted | Kept |
+|---|---|
+| Accounts and companies | API keys |
+| Service orders, requirements and tax filings | Webhook endpoints |
+| Files, file links and status tokens | Settings and branding |
+| Events and webhook deliveries | The test clock |
+| Usage ledger entries, fixed assets and calendar events | Request logs |
+
+Live data is never touched. Ids of deleted objects no longer resolve, so clear
+any you stored.
+
+- Only the owner can delete test data.
+- One deletion runs at a time. Starting another while one runs returns the one
+  in progress.
+- After a deletion finishes, wait 10 minutes before the next one.
+- At most 5 deletions in 24 hours. A failed deletion counts toward this, but
+  you can start another right away to finish the job.
+
+Objects created with a test key while a deletion runs might survive it. Let it
+finish before you run your tests again.
 
 ## Limits
 
