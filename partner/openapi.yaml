@@ -3696,7 +3696,7 @@ components:
           type: string
           description: The field's label from the form schema.
         value:
-          description: The answer - a string, number, or boolean. A file field's value is a pre-uploaded file id (POST /v1/files, purpose additional_document).
+          description: 'The answer, in the shape the field''s `field_type` takes: a string for `text`, `textarea`, `email`, `phone`, `select` and `date` (YYYY-MM-DD), a number (or a numeric string) for `number`, true or false for `boolean`, a list of option strings for `multi_select`, and a string or an address object for `address`. A file field''s value is a pre-uploaded file id (POST /v1/files, purpose additional_document). Send text answers as strings.'
     RequirementAttachment:
       type: object
       description: One file-field upload collected on a form requirement.
