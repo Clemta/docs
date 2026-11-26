@@ -1,24 +1,233 @@
 ---
 title: "Clemta MCP server"
-description: "Ask Clemta instead of opening it, from Claude, Cursor, or any MCP client."
-tag: "WIP"
-keywords: ['mcp', 'model context protocol', 'claude', 'cursor', 'agent', 'operations']
+description: "Ask about your company's invoices, bills, bank and books from Claude, Cursor, or any MCP client."
+keywords: ['mcp', 'model context protocol', 'claude', 'cursor', 'agent', 'invoices', 'bookkeeping']
 ---
 
-<Note>
-In development. Connection details will be published here when the server
-ships.
-</Note>
+The Clemta MCP server lets an agent work with your Clemta account. Ask in
+plain words, and the agent answers from your own companies:
 
-The Clemta MCP server puts Clemta inside the tools you already talk to.
-Connect an MCP client, and ask in plain words.
+- Which invoices are still unpaid, and from whom?
+- What did we spend on software last quarter?
+- What came into the business checking account this week?
+- What does the profit and loss look like for March?
+- Draft an invoice to Acme for 20 hours of consulting.
 
-## Who it is for
+It is for people using the Clemta app, about their own companies. Partner
+teams have their own server: see [Partner MCP server](/ai/partner-mcp).
 
-- **People using the Clemta app.** Ask about your own company: what is due,
-  what arrived, what is still needed from you.
-Partner teams have their own server, available now: see
-[Partner MCP server](/ai/partner-mcp).
+This is not the [docs search server](/ai/coding-agents#docs-search-mcp), which
+searches these pages and calls nothing.
 
-This is separate from the [docs search server](/ai/coding-agents#docs-search-mcp),
-which searches these pages and nothing else.
+## Connect
+
+The server is at:
+
+```text
+https://mcp.clemta.com
+```
+
+Add it to your client. There is no key to paste: the first time the client
+connects, it opens Clemta in your browser, and you approve the connection
+there.
+
+<div className="client-tabs">
+
+<Tabs>
+  <Tab title="Claude" icon="/images/clients/claude.svg">
+    For Claude.ai, Claude Desktop and the Claude mobile apps, add a custom
+    connector with this address:
+
+    ```text
+    https://mcp.clemta.com
+    ```
+
+    1. Open **Settings > Connectors** and choose **Add custom connector**.
+    2. Name it `Clemta` and paste the address.
+    3. Choose **Connect**.
+
+    On a Team or Enterprise plan, an owner adds the connector under
+    **Organization settings > Connectors** first. Each member then connects
+    it with their own Clemta login.
+  </Tab>
+  <Tab title="Claude Code" icon="/images/clients/claude.svg">
+    ```bash
+    claude mcp add --transport http clemta https://mcp.clemta.com
+    ```
+
+    Then run `/mcp` inside Claude Code and choose **Authenticate**.
+  </Tab>
+  <Tab title="ChatGPT" icon="comments">
+    Create a connector in developer mode with this address:
+
+    ```text
+    https://mcp.clemta.com
+    ```
+
+    1. Open **Settings > Apps & Connectors > Advanced settings** and turn on
+       **Developer mode**.
+    2. Back in **Apps & Connectors**, choose **Create**.
+    3. Paste the address, set authentication to **OAuth**, and create it.
+  </Tab>
+  <Tab title="Codex" icon="terminal">
+    ```bash
+    codex mcp add clemta --url https://mcp.clemta.com
+    codex mcp login clemta
+    ```
+  </Tab>
+  <Tab title="Cursor" icon="/images/clients/cursor.svg">
+    In `.cursor/mcp.json`, or `~/.cursor/mcp.json` for every project:
+
+    ```json
+    {
+      "mcpServers": {
+        "clemta": { "url": "https://mcp.clemta.com" }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="VS Code" icon="/images/clients/githubcopilot.svg">
+    For GitHub Copilot in VS Code, in `.vscode/mcp.json`:
+
+    ```json
+    {
+      "servers": {
+        "clemta": { "type": "http", "url": "https://mcp.clemta.com" }
+      }
+    }
+    ```
+
+    Or from a terminal:
+
+    ```bash
+    code --add-mcp '{"name":"clemta","type":"http","url":"https://mcp.clemta.com"}'
+    ```
+  </Tab>
+  <Tab title="Windsurf" icon="/images/clients/windsurf.svg">
+    In `~/.codeium/windsurf/mcp_config.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "clemta": { "serverUrl": "https://mcp.clemta.com" }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Gemini CLI" icon="/images/clients/googlegemini.svg">
+    ```bash
+    gemini mcp add --transport http clemta https://mcp.clemta.com
+    ```
+
+    Then run `/mcp auth clemta` inside Gemini CLI.
+  </Tab>
+  <Tab title="Zed" icon="/images/clients/zedindustries.svg">
+    In Zed's `settings.json`:
+
+    ```json
+    {
+      "context_servers": {
+        "clemta": { "url": "https://mcp.clemta.com" }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Cline" icon="/images/clients/cline.svg">
+    In `cline_mcp_settings.json`, opened from **MCP Servers > Configure**:
+
+    ```json
+    {
+      "mcpServers": {
+        "clemta": { "type": "streamableHttp", "url": "https://mcp.clemta.com" }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Other" icon="plug">
+    Any client that speaks Streamable HTTP and OAuth connects with the address
+    alone. For a client that only runs local servers, bridge it with
+    `mcp-remote`:
+
+    ```json
+    {
+      "mcpServers": {
+        "clemta": {
+          "command": "npx",
+          "args": ["-y", "mcp-remote", "https://mcp.clemta.com"]
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</div>
+
+<Steps>
+  <Step title="Add the server">
+    Use the instructions for your client above.
+  </Step>
+  <Step title="Sign in and approve">
+    Your client opens Clemta. Sign in if you are not already, check what the
+    agent is asking for, and approve. You can untick an area you do not want
+    it to see.
+  </Step>
+  <Step title="Ask">
+    Start with "which companies can you see?". The agent lists the companies
+    the connection covers.
+  </Step>
+</Steps>
+
+## What it can see
+
+What you approve decides what the agent gets. Each area is a separate
+permission on the approval screen:
+
+| Area | What the agent can look up |
+|---|---|
+| Company | Your companies and their details |
+| Sales | Invoices, credit notes, contacts, revenue accounts |
+| Purchases | Bills and vendor credits |
+| Banking | Bank accounts, transactions, payouts |
+| Accounting | Balance sheet, profit and loss, cash flow, trial balance, general ledger, journal entries, periods and fiscal years |
+
+An area you decline is not there at all: the agent does not see its tools and
+does not try them. The same goes for an area your plan does not include. A
+company without bookkeeping, for example, gets no accounting tools.
+
+## What it can change
+
+Two things, both under the sales permission:
+
+- **Draft an invoice.** The draft is not sent and not issued. It has no
+  invoice number and nobody is emailed. The agent gives you a link, and you
+  review and send it in Clemta yourself.
+- **Create a contact.** A contact is created right away, so you can invoice
+  it. It sends no email, and you can edit or delete it in Clemta.
+
+Nothing else. The agent cannot send or void an invoice, pay a bill, move
+money, or change your books.
+
+## Prompts
+
+Claude shows three ready-made prompts in its slash menu once the server is
+connected:
+
+- `draft-invoice` drafts an invoice to a contact.
+- `monthly-summary` reads back what was invoiced, paid and still outstanding
+  for a month.
+- `financial-summary` covers profit and loss, balance sheet and cash for a
+  period.
+
+Other clients see the same tools, but may not show the prompts.
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="AI agents" icon="robot" href="/ai/introduction">
+    Every way to use Clemta from an agent.
+  </Card>
+  <Card title="Partner MCP server" icon="handshake" href="/ai/partner-mcp">
+    The server for partner teams.
+  </Card>
+</CardGroup>
